@@ -1,0 +1,26 @@
+@model MeetingAuthentication
+<div class="container text-center py-3">
+  @Svg.Icon("microsoft-teams", color: "native", size: 48)
+  @if (Model.Authenticated) {
+    <h3>@T["Successfully authenticated with Microsoft Teams"]</h3>
+    <p>@T["Please wait, redirecting..."]</p>
+    @Svg.Spinner(spin: true)
+  } else {
+    <div class="alert alert-danger my-2">@T["Teams authentication failed. Please make sure the Teams Online settings are correct."]</div>
+  }
+</div>
+
+<script>
+  (function () {
+  @if (Model.Authenticated) {
+    <text>
+        if (window.opener !== null ) {
+            window.opener.postMessage({ name: "teams-signed-in", guid: "@Model.State" });
+            window.close();
+        } else {
+            //location.href = wvy.url.resolve('/messenger/@Model.State')
+        }
+    </text>
+  }
+  })();
+</script>

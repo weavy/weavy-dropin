@@ -1,0 +1,18 @@
+@model IReactable
+
+@if (Model.Reactions.Any()) {
+  <turbo-frame id="@DomId(Model)">
+    <a class="reaction-list" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ReactionsModal)" asp-route-id="@Model.Uid()" data-turbo-frame="modal">
+      @foreach (var emoji in Model.Reactions) {
+        <span class="reaction"><emoji name="@emoji" /></span>
+      }
+      @if (Model.Reactions.Count() > 1) {
+        <small class="text-muted">@Model.Reactions.Count()</small>
+      }
+    </a>
+  </turbo-frame>
+} else {
+  <turbo-frame id="@DomId(Model)" class="reaction-list"></turbo-frame>
+}
+
+

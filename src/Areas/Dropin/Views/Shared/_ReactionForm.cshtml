@@ -1,0 +1,10 @@
+@model IReactable
+
+<turbo-frame id="@DomId(Model)">
+  <form class="d-flex" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ToggleReaction)" asp-route-id="@Model.Uid()">
+    @foreach (var emoji in ConfigurationService.Reactions) {
+      <button type="submit" class="btn btn-icon @(Model.HasReacted(emoji) ? "active" : "")" name="reaction" value="@emoji"><emoji name="@emoji" size="20" /></button>
+    }
+  </form>
+</turbo-frame>
+

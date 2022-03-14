@@ -1,0 +1,21 @@
+/// <reference path="core" />
+
+.pager {
+  pointer-events: none;
+}
+
+a.pager {
+  display: block;
+  text-align: center;
+  margin: 1rem auto;
+}
+
+tr.pager td {
+  text-align: center;
+  border: 0;
+
+  .spinner {
+    display: inline;
+    margin: 1rem auto;
+  }
+}

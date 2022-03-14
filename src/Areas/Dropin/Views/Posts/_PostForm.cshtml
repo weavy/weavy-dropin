@@ -1,0 +1,9 @@
+@model MessageModel
+<turbo-frame id="post-form">
+    <form class="d-flex align-items-start my-3" data-controller="editor" data-action="submit->editor#prepare" asp-action="@nameof(PostsController.Insert)" method="post" autocomplete="off" novalidate>        
+        <vc:editor placeholder="Post a message..."
+                   send-button="Post">
+        </vc:editor>
+    </form>
+</turbo-frame>
+

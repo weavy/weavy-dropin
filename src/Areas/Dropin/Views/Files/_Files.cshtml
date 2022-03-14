@@ -1,0 +1,11 @@
+@model FileSearchResult
+
+@foreach (var file in Model) {
+    <partial name="_File" model="file" />
+}
+
+@if (Model.HasNextPage) {
+    <tr class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">
+        <td colspan="6">@Svg.Spinner(spin:true)</td>
+    </tr>
+}

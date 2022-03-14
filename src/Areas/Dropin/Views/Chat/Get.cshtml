@@ -1,0 +1,27 @@
+@model Chat
+@{
+  BodyAttributes.Add("data-app-uid", Model.Uid());
+  BodyAttributes.Add("data-app-id", Model.Id.ToString());
+    BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
+}
+<!DOCTYPE html>
+<html data-controller="turbo-stream" data-turbo-stream-app-value="@Model.Id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@Model.GetTitle()</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/chat.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true" data-turbo-track="reload"></script>
+  <script src="~/js/chat.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body>
+  <main role="main" class="pane" data-controller="scroll" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom">
+    <partial name="_Messages" model="Model.Messages" />
+    <partial name="_MessageForm" model="new MessageModel()" />
+  </main>
+  <turbo-frame id="modal"></turbo-frame>
+</body>
+</html>

@@ -1,0 +1,13 @@
+@model PagedList<Message>
+@{
+  ViewData["IsInitialLoad"] = true;
+}
+@if (Model.HasNextPage) {
+  <a class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
+}
+@foreach (var messagesGroupedByDate in Model.GroupBy(x => x.CreatedAt.ToLocal().Date)) {
+  <div class="date-separator"><time>@messagesGroupedByDate.Key.ToShortDateString()</time></div>
+  foreach (var message in messagesGroupedByDate) {
+    <partial name="_Message" model="message" />
+  }
+}

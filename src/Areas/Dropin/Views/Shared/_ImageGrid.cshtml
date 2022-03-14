@@ -1,0 +1,54 @@
+@model IEnumerable<File>
+@{
+    var count = Model?.Count() ?? 0;
+    var index = 0;
+    var limit = 3;
+    var thumbSize = 512;
+
+    // calculate a max-width to avoid upscaling the images more than necessary
+    int? maxWidth = null;
+    if (count == 1) {
+        maxWidth = Math.Min(thumbSize, Model.First().Blob.Width ?? thumbSize);
+    } else if (count == 2) {
+        maxWidth = Math.Min(thumbSize * 2, Model.Sum(x => x.Blob.Width ?? thumbSize));
+    } else if (count >= 3) {
+        var row1 = Model.First().Blob.Width ?? thumbSize;
+        var row2 = Model.Skip(1).Take(2).Sum(x => x.Blob.Width ?? thumbSize);
+        maxWidth = Math.Max(row1, row2);
+        maxWidth = Math.Min(thumbSize * 2, (int)maxWidth);
+    }
+}
+
+<div class="image-grid" style="max-width: @(maxWidth != null ? maxWidth + "px" : "100%")">
+    @foreach (var img in Model.Take(limit)) {
+        // we don't have proper resizing of animated gifs/svgs so we use the original image instead of a thumbnail
+        var blob = img.Blob;
+        var ext = FileUtils.GetExtension(blob.Name);
+        var ani = ext.Equals(".gif") || ext.Equals(".svg");
+        var src = ani ? img.Url() : img.ThumbUrl(thumbSize, thumbSize);
+
+        // calculate padding and flex for positioning and scaling
+        var ratio = blob.Ratio();
+        var padding = (100 / ratio).ToString("0.00000", System.Globalization.CultureInfo.InvariantCulture) + "%";
+        var flexRatio = ratio.ToString("0.00000", System.Globalization.CultureInfo.InvariantCulture);
+        var flexBasis = flexRatio + "px";
+        if (index == 0 && count != 2) {
+            // first image should span entire row (unless only 2 images)
+            flexBasis = "100%";
+        }
+
+        <div class="image" style="flex: @flexRatio @flexRatio @flexBasis;">
+            <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@img.Id" target="preview" title="@img.Name" style="padding-bottom: @padding;">
+                <img src="@src" alt="" loading="lazy" decoding="async" />
+                @if (count > limit && index == limit - 1) {
+                    // display number of additional images
+                    <span class="more">+@Model.Skip(limit).Count()</span>
+                }
+            </a>
+        </div>
+
+        index++;
+    }
+
+
+</div>

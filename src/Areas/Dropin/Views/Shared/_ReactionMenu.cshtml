@@ -1,0 +1,19 @@
+@model IReactable
+
+<div class="reaction-menu dropdown dropup">
+  <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="emoticon-plus" size="20" /></button>
+  <div class="dropdown-menu">
+    <turbo-frame id="@DomId("_ReactionForm", Model)" src="@Url.Action(nameof(EntityController.ReactionForm), typeof(EntityController).ControllerName(), new { id = Model.Uid()} )" loading="lazy">
+      @* render placeholder with same size as final result (replaced when turbo-frame loads) *@
+      <div class="d-flex">
+        @foreach (var emoji in ConfigurationService.Reactions) {
+          <button type="submit" class="btn btn-icon">
+            <div class="e rounded-circle bg-light"></div>
+          </button>
+        }
+      </div>
+    </turbo-frame>
+  </div>
+</div>
+
+

@@ -1,0 +1,77 @@
+/// <reference path="core" />
+
+.table {
+  > thead {
+    th {
+      font-size: $font-size-xs;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      line-height: 1;
+      padding-top: .875rem;
+      padding-bottom: .875rem
+    }
+  }
+}
+// table with avatar/icon in first and last column
+.table-icons {
+  table-layout: fixed;
+
+  th, td {
+    // cell with img or icon
+    &:first-child, &:last-child {
+      color: $icon-color;
+      vertical-align: middle;
+      text-align: center;
+      padding: $table-cell-padding-y-sm $table-cell-padding-x;
+      width: 2rem + $table-cell-padding-x;
+      // reset th styles (for dropdown menus in th)
+      font-size: $font-size-base;
+      font-weight: $font-weight-base;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    &:first-child {
+      padding-right: 0;
+    }
+
+    &:last-child {
+      padding-left: 0;
+    }
+  }
+}
+
+
+.table-muted {
+
+  th, td {
+    color: $text-muted;
+
+    &:not(:last-child) {
+      opacity: $btn-disabled-opacity;
+    }
+
+    > a {
+      color: $text-muted;
+    }
+  }
+
+  &:hover {
+    th, td {
+      opacity: 1;
+    }
+  }
+}
+
+
+.table-trashed {
+  @extend .table-muted;
+
+  th, td {
+    text-decoration: line-through;
+  }
+}
+
+.table-checkbox {
+    cursor: pointer;
+}

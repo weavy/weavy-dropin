@@ -1,0 +1,535 @@
+// core bootstrap functionality and custom variables
+@import "core";
+
+// optional bootstrap components
+@import "../node_modules/bootstrap/scss/root";
+@import "../node_modules/bootstrap/scss/reboot";
+@import "../node_modules/bootstrap/scss/type";
+@import "../node_modules/bootstrap/scss/images";
+//@import "../node_modules/bootstrap/scss/containers";
+//@import "../node_modules/bootstrap/scss/grid";
+@import "../node_modules/bootstrap/scss/tables";
+@import "../node_modules/bootstrap/scss/forms";
+@import "../node_modules/bootstrap/scss/buttons";
+@import "../node_modules/bootstrap/scss/transitions";
+@import "../node_modules/bootstrap/scss/dropdown";
+//@import "../node_modules/bootstrap/scss/button-group";
+//@import "../node_modules/bootstrap/scss/nav";
+//@import "../node_modules/bootstrap/scss/navbar";
+//@import "../node_modules/bootstrap/scss/card";
+//@import "../node_modules/bootstrap/scss/breadcrumb";
+//@import "../node_modules/bootstrap/scss/pagination";
+//@import "../node_modules/bootstrap/scss/badge";
+@import "../node_modules/bootstrap/scss/alert";
+//@import "../node_modules/bootstrap/scss/progress";
+@import "../node_modules/bootstrap/scss/list-group";
+//@import "../node_modules/bootstrap/scss/close";
+//@import "../node_modules/bootstrap/scss/toasts";
+@import "../node_modules/bootstrap/scss/modal";
+//@import "../node_modules/bootstrap/scss/tooltip";
+//@import "../node_modules/bootstrap/scss/popover";
+//@import "../node_modules/bootstrap/scss/carousel";
+//@import "../node_modules/bootstrap/scss/spinners";
+
+@import "../node_modules/bootstrap/scss/helpers";
+@import "../node_modules/bootstrap/scss/utilities/api";
+
+// custom components
+@import "scroll";
+@import "buttons";
+@import "appbar";
+@import "content";
+@import "dropdown";
+@import "emoji";
+@import "form";
+@import "editor";
+@import "icons";
+@import "image-grid";
+@import "pager";
+@import "reactions";
+@import "spinner";
+@import "tables";
+@import "turbo";
+
+
+input[type="search"]::-webkit-search-cancel-button {
+  // REVIEW: can we use close.svg?
+  -webkit-appearance: none;
+}
+
+html[data-turbo-preview] {
+
+  main {
+    opacity: .6;
+  }
+}
+
+body {
+  // REVIEW:why relative?
+  position: relative;
+}
+
+.searching .search-form, .searching.search-form {
+  [type=reset] {
+    display: inline;
+  }
+
+  [type=submit] {
+    display: none;
+  }
+}
+
+.search-form {
+  position: relative;
+  padding: .5rem;
+
+  [type=reset] {
+    display: none;
+  }
+
+  .btn-icon {
+    position: absolute;
+    top: .25rem;
+    border-radius: 50%;
+    top: .5rem;
+    left: .5rem;
+    padding: 0.25rem;
+    z-index: 4;
+
+    + .form-control {
+      background: $light;
+      border-color: transparent;
+      padding-left: 2rem;
+    }
+  }
+}
+
+// custom checkboxes
+.btn-check + .btn-icon {
+  svg:last-child {
+    display: none;
+  }
+}
+
+.btn-check:checked + .btn-icon {
+  svg:first-child {
+    display: none;
+  }
+
+  svg:last-child {
+    display: inline-block;
+  }
+}
+
+.conversation {
+  display: flex;
+  position: relative;
+
+  .list-group-item {
+    padding: .5rem;
+    border: none
+  }
+
+  .list-group-item-action {
+    z-index: unset;
+  }
+
+  .position-absolute {
+    right: .5rem;
+    bottom: .25rem;
+  }
+
+  time {
+    color: $text-muted;
+    font-size: $font-size-xs;
+  }
+
+  .excerpt {
+    color: $text-muted;
+    font-size: $font-size-sm;
+    margin-right: 4rem; // room for icons
+
+    // vertically align text and icons
+    height: 1.5rem;
+    line-height: 1.5rem;
+
+    .e {
+      vertical-align: -.3125rem;
+    }
+
+    .i {
+      vertical-align: -.4375rem;
+    }
+  }
+
+  &.unread {
+    .title {
+      font-weight: $font-weight-bold;
+    }
+
+    .excerpt {
+      font-weight: 600;
+      color: $body-color;
+    }
+  }
+}
+
+.min-width-0 {
+  min-width: 0;
+}
+
+.table-checkbox {
+  cursor: pointer;
+
+  input[type='checkbox'] {
+    pointer-events: none;
+  }
+}
+
+
+.pane {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .pane-header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    height: 3rem;
+    flex: 0 0 3rem;
+    border-bottom: $border-width solid $border-color;
+    padding: 0 .5rem;
+    background: $body-bg;
+    position: sticky;
+    top: 0;
+    z-index: 1020
+  }
+
+  .pane-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1
+  }
+}
+
+#messages {
+  padding: 1rem 1rem 0 .75rem;
+
+  > .date-separator {
+    margin-top: -1rem;
+  }
+
+  > .date-separator ~ .date-separator {
+    margin-top: 0;
+  }
+}
+
+#message-ph {
+  opacity: .5;
+}
+
+.date-separator {
+  font-size: $font-size-xs;
+  pointer-events: none;
+  margin: .5rem;
+  text-align: center;
+  position: sticky;
+  top: 3.5rem;
+  z-index: 2;
+
+  time {
+    background: $light;
+    padding: .25rem .5rem;
+    border-radius: $border-radius;
+    display: inline-block;
+  }
+}
+
+.message {
+  display: flex;
+  margin-bottom: 1.5rem;
+  margin-right: 1.5rem; // make room for .reaction-menu
+
+  .author {
+    margin: 1.375rem .5rem 0 0;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .meta {
+    font-size: $font-size-xs;
+    margin: 0 0 .25rem .25rem;
+    color: $text-muted;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .text {
+    overflow-wrap: break-word;
+
+    pre {
+      white-space: pre-wrap;
+    }
+  }
+
+  &:not(:hover) .reaction-menu {
+      display: none;
+  }
+}
+
+.bubble {
+  background-color: $gray-100;
+  border-radius: $border-radius-bubble;
+  display: inline-block;
+  padding: .75rem;
+  position: relative; // so that we can position reactions
+  max-width: calc(100vw - 6rem);
+
+  > div {
+    // message section (images, attachments, embeds etc.)
+    margin-bottom: .5rem;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .reaction-menu {
+    position: absolute;
+    right: -2.25rem;
+    top: calc(50% - 1rem);
+  }
+  // (responsive) styles to prevent content in bubble from overflowing
+  .image-grid {
+    // maximum allowed width of image grid to avoid overflow (further constrained by inline max-width)
+    width: calc(100vw - 7.5rem);
+  }
+
+  .image-grid, .attachments {
+    border-radius: $border-radius-bubble * .5;
+  }
+
+  @media (min-width: 576px) and (max-width: 900px) {
+    max-width: 90%;
+
+    .image-grid {
+      width: calc(90vw - 7.5rem);
+    }
+  }
+
+  @media (min-width: 901px) and (max-width: 1024px) {
+    max-width: 85%;
+
+    .image-grid {
+      width: calc(85vw - 7.5rem);
+    }
+  }
+
+  @media (min-width: 1025px) and (max-width: 1300px) {
+    max-width: 75%;
+
+    .image-grid {
+      width: calc(75vw - 6rem);
+    }
+  }
+
+  @media (min-width: 1301px) {
+    max-width: 65%;
+
+    .image-grid {
+      width: calc(65vw - 6rem);
+    }
+  }
+}
+
+
+.reaction-list {
+  position: absolute;
+  right: .25rem;
+  bottom: -.75rem;
+  background: $white;
+  border-radius: 1.5rem;
+  border: $border-width solid $gray-100;
+  padding: .125rem;
+  // hidden when empty
+  &:empty {
+    display: none;
+  }
+}
+
+// override some styles for message by current user
+.message.me {
+  display: block;
+  margin-right: 0;
+  margin-left: 2.5rem;
+
+  .meta {
+    margin: 0 .25rem .25rem 0;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .bubble {
+    background-color: $primary-100;
+
+    .reaction-menu {
+      right: auto;
+      left: -2.25rem;
+    }
+  }
+
+  .reaction-list {
+    border-color: $primary-100;
+  }
+}
+
+// override some styles for message that contains only emoji
+.message.emoji {
+  .bubble {
+    background: none;
+    padding: 0;
+  }
+
+  .text {
+    .e {
+      width: 3rem;
+      height: 3rem;
+      margin: 0;
+    }
+  }
+}
+
+
+// message status indicator (sending, sent, delivered, read)
+.status {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -.5rem;
+  margin-bottom: .75rem;
+
+  > * {
+    margin-left: .25rem;
+  }
+}
+
+
+#message-form {
+  @include sticky-bottom;
+  @include backdrop-filter;
+  background-color: rgba($light, $opacity-backdrop);
+
+  .message-editor {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    border-top: $border-width solid rgba($gray-200, $opacity-backdrop);
+    padding: .5rem;
+    min-height: 3rem;
+  }
+
+  .cm-editor {
+    background-color: $input-bg;
+    outline-color: $light;
+    border-radius: $border-radius-bubble;
+  }
+
+  .cm-editor.cm-focused {
+    outline-color: $light !important;
+  }
+
+  textarea.is-invalid + [data-editor-target] .cm-editor {
+    outline-color: $form-feedback-invalid-color !important;
+  }
+
+
+  .spinner-container {
+    margin-right: .75rem;
+    display: none;
+  }
+
+  .uploading {
+    .spinner-container {
+      display: block;
+    }
+
+    .i-attachment {
+      display: none;
+    }
+  }
+}
+
+.attachments, .meetings {
+  border: none;
+  border-radius: $border-radius-sm;
+
+  .list-group-item {
+    border-left: none;
+    border-right: none;
+  }
+
+  > * {
+    padding: .25rem .5rem;
+  }
+
+  > :first-child {
+    border-top: none;
+  }
+
+  > :last-child {
+    //border-top: $border-width solid $border-color;
+    border-bottom: none;
+  }
+}
+
+.typing-show {
+  font-style: italic;
+  display: none;
+}
+
+.typing-active {
+  .typing-show {
+    display: block;
+  }
+
+  .typing-hide {
+    display: none;
+  }
+}
+
+.appbar {
+  .typing-hide {
+    position: relative;
+    padding: 0 1rem;
+
+    .presence.presence-active {
+      top: 0.375rem;
+    }
+  }
+}
+
+.message-toaster {
+  position: sticky;
+  top: 3.5rem;
+  bottom: 3.5rem;
+  cursor: pointer;
+  z-index: 3;
+  border-radius: 50rem;
+  background-color: $primary;
+  color: $white;
+  padding: .5rem 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: .5rem;
+  font-size: $font-size-sm;
+  width: max-content;
+}

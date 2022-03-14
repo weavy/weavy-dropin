@@ -1,0 +1,119 @@
+// core bootstrap functionality and custom variables
+@import "core";
+@import "../node_modules/bootstrap/scss/root";
+@import "../node_modules/bootstrap/scss/reboot";
+@import "../node_modules/bootstrap/scss/buttons";
+@import "../node_modules/bootstrap/scss/utilities/api";
+
+@import "scroll";
+@import "buttons";
+@import "icons";
+@import "appbar";
+@import "spinner";
+
+$content-page-width: 50rem; // 816px ~216 mm US Letter, 794px ~210mm A4
+$content-page-height: 70rem; // 794px * 1.4142 (A4)
+$content-page-padding-x: 6rem; // 96px = 1 inch (25.4 mm)
+$content-page-padding-y: 7.5rem; // 120px = 1.25 in (31.7 mm)
+
+@import "./preview/pdf";
+@import "./preview/image";
+@import "./preview/media";
+@import "./preview/embed";
+@import "./preview/text";
+
+html {
+  font-family: $font-family-base;
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+    height: 100%;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+main {
+    height: 100%;
+    position: relative;
+}
+
+.content-area {
+  //display: flex;
+  height: 100%;
+  max-height: 100%;
+  bottom: 0;
+  padding: 0;
+  //flex-direction: row-reverse;
+
+  html.scrollbars &.scroll-y {
+    @include scrollbar-top-padding($navbar-height);
+  }
+}
+
+.content-viewer {
+    padding-top: $navbar-height;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+
+.preview-nav {
+  position: fixed;
+  z-index: $zindex-dropdown;
+  top: 50%;
+  padding: .75rem;
+  margin-top: -1rem;
+
+  &.nav-prev {
+    left: 0;
+  }
+
+  &.nav-next {
+    right: 0;
+    /*body.controller-content & {
+      @include media-breakpoint-up(lg) {
+        right: $drawer-right-width;
+      }
+    }*/
+  }
+
+  .btn {
+    @extend .btn-circle, .btn-sm;
+    @include button-variant(#000, #000);
+    box-shadow: none !important;
+  }
+}
+
+// Generic link with big icon and filename
+.content-media {
+  text-align: center;
+  max-width: $content-page-width;
+  padding: 0 $content-page-padding-x;
+  margin: auto;
+
+  .content-icon svg {
+    width: 8rem;
+    height: 8rem
+  }
+
+  .content-icon .i {
+    width: 8rem;
+    height: 8rem;
+
+    &.i-stack {
+      .i:last-child {
+        width: 4rem;
+        height: 4rem;
+      }
+    }
+  }
+
+  .content-name {
+    //@extend .h5;
+  }
+}

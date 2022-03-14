@@ -1,0 +1,40 @@
+import { Application } from "@hotwired/stimulus";
+import ModalController from "./controllers/modal-controller";
+import AttachmentsController from "./controllers/attachments-controller";
+import TurboStreamController from "./controllers/turbo-stream-controller";
+import PaginationController from "./controllers/pagination-controller";
+import MeetingsController from "./controllers/meetings-controller";
+import SearchController from "./controllers/search-controller";
+import CheckboxController from "./controllers/checkbox-controller";
+import FormController from "./controllers/form-controller";
+import ScrollController from "./controllers/scroll-controller";
+import SortController from "./controllers/sort-controller";
+import EditorController from "./controllers/editor-controller";
+import FilePickerController from "./controllers/file-picker-controller";
+import PresenceController from "./controllers/presence-controller";
+import ReadByController from "./controllers/readby-controller";
+import TypingController from "./controllers/typing-controller";
+import BadgeController from "./controllers/badge-controller";
+import MessageToastController from "./controllers/message-toast-controller";
+import 'bootstrap/js/dist/dropdown';
+
+const application = Application.start();
+application.register("modal", ModalController);
+application.register("attachments", AttachmentsController);
+application.register("turbo-stream", TurboStreamController);
+application.register("pagination", PaginationController);
+application.register("meetings", MeetingsController);
+application.register("search", SearchController);
+application.register("checkbox", CheckboxController);
+application.register("form", FormController);
+application.register("scroll", ScrollController);
+application.register("sort", SortController);
+application.register("editor", EditorController);
+application.register("file-picker", FilePickerController);
+application.register("presence", PresenceController);
+application.register("readby", ReadByController);
+application.register("typing", TypingController);
+application.register("badge", BadgeController);
+application.register("message-toast", MessageToastController);
+
+

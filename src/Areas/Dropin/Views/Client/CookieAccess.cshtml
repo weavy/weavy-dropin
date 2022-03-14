@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@T["Cookie access"]</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true"></script>
+</head>
+<body>
+  <div class="container-fluid text-center my-5">
+    <img class="mb-3" src="@Url.Favicon(128)" width="128" height="128" alt="" />
+    <h1 class="display-5">@T["Cookie access"]</h1>
+    <p>@T["Cookies are required to use collaborative features from {0}.", ViewContext.HttpContext.Request.Host]</p>
+    <div>
+      <button id="saa" class="btn btn-primary">@T["Allow cookie access"]</button>
+      <button id="saa_cancel" class="btn btn-secondary">@T["Cancel"]</button>
+    </div>
+  </div>
+
+  <script>
+    function enableCookie() {
+      window.location = "./cookie-access-notify";
+    }
+
+    function notify() {
+      wvy.postal.postToParent({ weavyId: true, name: "storage-access-granted", domain: window.location.origin });
+      wvy.postal.whenLeader().finally(() => window.close());
+    }
+
+    if ('hasStorageAccess' in document) {
+      // User interaction access
+      // There is no way to determine if user interaction is really needed, so we must presume it's needed
+        document.getElementById("saa").addEventListener("click", () => {
+          if ('requestStorageAccess' in document) {
+            document.requestStorageAccess().then(
+              function (hasAccess) {
+                console.log("Storage access was granted.", hasAccess);
+                enableCookie();
+              },
+              function (reason) {
+                console.log("Storage access was denied.", reason);
+                window.close();
+              }
+            );
+          } else {
+            enableCookie();
+          }
+        });
+
+      document.getElementById("saa_cancel").addEventListener("click", () => window.close());
+    } else {
+      enableCookie();
+    }
+  </script>
+</body>
+</html>
+
+
+
+

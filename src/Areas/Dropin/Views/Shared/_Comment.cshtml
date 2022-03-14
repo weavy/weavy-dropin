@@ -1,0 +1,69 @@
+@model Message
+@{
+  var user = Model.CreatedBy();
+  var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbPlaceholderUrl() != null);
+  var files = Model.Attachments().Except(images);
+}
+
+<turbo-frame id="@DomId(Model)">
+
+  @if (Model.IsTrashed() && Model.HasPermission(Permission.Delete)) {
+    <form class="alert alert-warning d-flex align-items-center justify-content-center my-3" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Restore)" asp-route-id="@Model.Uid()">
+      Comment was trashed. <button type="submit" class="btn alert-link p-0 ms-1">@T["Undo"]</button>.
+    </form>
+  } else {
+    <div class="d-flex align-items-start mb-2">
+      <avatar for="@user" size="48" class="me-3 d-none d-sm-block" />
+      <div class="flex-grow-1">
+        <div class="d-flex align-items-center mb-2">
+          <div class="me-auto">
+            <avatar for="@user" size="24" class="me-1 d-sm-none" />
+            <strong>@user.GetTitle()</strong>
+            <small class="text-lowercase text-muted">
+              @if (user.Username != null) {
+                <text>@@@user.Username ·</text>
+              }
+              <time datetime="@Model.CreatedAt" />
+              @if (Model.CreatedAt != Model.ModifiedAt) {
+                <text>·</text> <time datetime="@Model.ModifiedAt">edited</time>
+              }
+
+            </small>
+          </div>
+          <partial name="_StarButton" />
+          <div class="dropdown">
+            <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+            <div class="dropdown-menu">
+              @if (Model.HasPermission(Permission.Update)) {
+                <a class="dropdown-item" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Edit)" asp-route-id="@Model.Uid()"><icon name="pencil" /> @T["Edit"]</a>
+              }
+
+              <partial name="_StarMenuItem" />
+
+              @if (Model.HasPermission(Permission.Delete)) {
+                <hr class="dropdown-divider">
+                <form asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Trash)" asp-route-id="@Model.Uid()"><button type="submit" class="dropdown-item"><icon name="delete" color="danger" /> @T["Trash"]</button></form>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (images.Any()) {
+          <partial name="_ImageGrid" model="images" />
+        }
+
+        <div class="content">@Html.Raw(TextUtils.ToHtml(Model.Text))</div>
+
+        @if (files.Any()) {
+          <partial name="_Attachments" model="files" />
+        }
+
+        @if (Model.Meeting != null) {
+          <partial name="_Meeting" model="Model.Meeting" />
+        }
+        <partial name="_Reactions" />
+      </div>
+    </div>
+  }
+</turbo-frame>
+

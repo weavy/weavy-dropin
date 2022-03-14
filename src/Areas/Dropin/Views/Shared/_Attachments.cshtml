@@ -1,0 +1,16 @@
+@model IEnumerable<File>
+<div class="list-group attachments">
+  @foreach (var file in Model) {
+    var icon = file.GetIcon();
+    <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@file.Id" target="preview" title="@file.GetTitle()" class="list-group-item list-group-item-action d-flex">
+      <div class="flex-shrink-0 me-2">
+        <icon name="@icon.Name" color="@icon.Color" size="48" />
+      </div>
+      <div class="flex-grow-1 min-width-0">
+        <h6 class="lh-base text-truncate m-0">@file.GetTitle()</h6>
+        <div class="text-muted text-truncate"><small>@FileUtils.FileSizeAsString(file.Blob.Size)</small></div>
+      </div>
+    </a>
+  }
+</div>
+

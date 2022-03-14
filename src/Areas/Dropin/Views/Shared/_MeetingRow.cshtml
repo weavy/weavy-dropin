@@ -1,0 +1,28 @@
+@model Meeting
+@{
+    var meetingId = Model.ProviderId.IsNullOrEmpty() ? $"new_{Model.Provider}_meeting" : DomId($"meeting{Model.Id}");
+    var provider = Model.Provider;
+    var icon = Model.Icon;
+    var iconColorLo = Model.Provider.Equals("zoom") ? "" : "native";    
+    var title = Model.Title;
+}
+<turbo-frame id="@meetingId">
+    @if (!Model.ProviderId.IsNullOrEmpty()) {
+        <div class="meeting">
+            <icon name="@icon" color="native" class="mx-1" />
+            <span class="me-2">@title</span> <a href="#" data-action="meetings#signOut" data-meetings-provider-param="@provider">Sign out...</a>
+            <input type="hidden" name="MeetingId" value="@Model.Id" />
+            <button type="button" class="btn btn-icon" data-action="meetings#remove" data-meetings-id-param="@Model.Id"><icon name="close" /></button>
+        </div>
+
+    } else {        
+        <div class="meeting">
+            <icon name="@icon" color="@iconColorLo" class="mx-1" />
+            <span class="me-2">Please <a href="#" data-action="meetings#signIn" data-meetings-provider-param="@provider" data-meetings-state-param="/">Sign In</a> to add a new @title</span>
+            <button type="button" class="btn btn-icon" data-action="meetings#remove"><icon name="close" /></button>
+        </div>
+        
+    }
+</turbo-frame>
+
+

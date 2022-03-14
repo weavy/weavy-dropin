@@ -1,0 +1,74 @@
+/// <reference path="core" />
+
+// stacked icons (icon+overlay icon)
+.i-stack {
+  display: inline-block;
+  position: relative;
+  line-height: 1;
+
+  .i:last-child {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: $white;
+    border-radius: 50%;
+  }
+}
+
+// icon colors
+svg.i:not(.text-native) * {
+  // by default, every icon will inherit the text color of its parent,
+  // to override this and show the icon with its native colors (for example on logos) add the text-native class
+  fill: currentColor;
+}
+
+svg.i.text-icon * {
+  // default icon color according to material design
+  fill: $icon-color;
+}
+
+// presence indicator
+.presence {
+  display: none;
+}
+
+.presence-active {
+  display: block;
+  background-color: $green-400;
+  width: .75rem;
+  height: .75rem;
+  border-radius: 50%;
+  outline: .125rem solid $white;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+// override defaults to handle margins, flex etc.
+img[width="24"] + .presence {
+  width: 6px;
+  height: 6px;
+  top: 18px;
+  left: 18px;
+}
+
+img[width="32"] + .presence {
+  width: 8px;
+  height: 8px;
+  top: 24px;
+  left: 24px;
+}
+
+img[width="48"] + .presence {
+  width: 12px;
+  height: 12px;
+  top: 36px;
+  left: 36px;
+}
+
+img[width="128"] + .presence {
+  width: 32px;
+  height: 32px;
+  top: 96px;
+  left: 96px;
+}

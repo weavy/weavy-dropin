@@ -1,0 +1,24 @@
+@model File
+@{
+    var css = Model.IsTrashed() ? "table-trashed" : "";
+    var url = Model.IsTrashed() ? null : Model.Url();
+}
+
+<tr id="@DomId(Model)" class="@css" asp-turbo-link="@url">
+    <td>@Svg.Icon(Model)</td>
+    <td><a href="@url">@Model.Name</a></td>
+    <td><time date="@Model.ModifiedAt">@Model.ModifiedAt.ToLocal().ToShortDateString()</time></td>
+    <td>@Model.GetKind()</td>
+    <td>@FileUtils.FileSizeAsString(Model.Blob.Size)</td>
+    <td class="table-icon">
+        <div class="dropdown">
+            <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+            <div class="dropdown-menu">
+              <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="Model.Id" class="dropdown-item"><icon name="preview" color="icon" /> @T["Preview"]</a>
+              <a href="@Model.OfficeUrl(hmac:true)" class="dropdown-item"><icon name="file-word" color="native" /> @T["Open in Word"]</a>
+              <a href="@Model.Url()" class="dropdown-item" download><icon name="download" color="icon" /> @T["Download"]</a>
+            </div>
+        </div>
+    </td>
+</tr>
+

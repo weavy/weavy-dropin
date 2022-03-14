@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Description>Razor class library containing the Weavy drop-in UI.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
+    <TargetFramework>net6.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Weavy.Core" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Do not copy these to output -->
+    <Content Remove="package.json" />
+    <Content Remove="package-lock.json" />
+    <None Include="package-lock.json" />
+    <None Include="package.json" />
+  </ItemGroup>
+
+</Project>

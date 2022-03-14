@@ -1,0 +1,26 @@
+@model MessageModel
+@{
+    var user = Model.Message.CreatedBy(); 
+}
+
+<turbo-frame id="@DomId("_Post", Model.Message.Uid())">
+    <div class="d-flex align-items-start my-3">
+        <avatar for="@user" size="48" class="me-3 d-none d-sm-block" />
+        <div class="flex-grow-1">
+            <div class="d-flex align-items-center mb-2 ">
+
+                <div class="me-auto">
+                    <avatar for="@user" size="24" class="me-1 d-sm-none" />
+                    <strong>@user.GetTitle()</strong>
+                </div>
+                <a asp-action="@nameof(PostsController.Get)" asp-controller="@typeof(PostsController).ControllerName()" asp-route-id="@Model.Message.Uid()" class="btn btn-icon"><icon name="close" /></a>
+            </div>
+            <form class="bg-primary bg-opacity-25 p-2" data-controller="editor attachments meetings" data-action="submit->editor#prepare" asp-action="@nameof(PostsController.Update)" asp-route-id="@Model.Message.Uid()" method="put" autocomplete="off" novalidate>
+                <vc:editor placeholder="Edit a post..."
+                           send-button="Update">
+                </vc:editor>
+            </form>
+        </div>
+    </div>
+</turbo-frame>
+

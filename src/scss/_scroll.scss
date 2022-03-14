@@ -1,0 +1,192 @@
+/// <reference path="./_core.scss" />
+
+@mixin scroll-y {
+  overflow-y: auto;
+  touch-action: pan-y, pan-x;
+
+  &.scroll-y:not(.scroll-x) {
+    overflow-x: hidden;
+    touch-action: pan-y;
+  }
+  // to enable HW acceleration and not cause repaint on scroll
+  will-change: scroll-position;
+  backface-visibility: hidden;
+  // ios momentum scrolling on iOS <= 12, cannot be used on the <body> element!
+  &:not(body) {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  max-height: 100%;
+}
+
+@mixin scroll-x {
+  overflow-x: auto;
+  touch-action: pan-y, pan-x;
+
+  &.scroll-x:not(.scroll-y) {
+    overflow-y: hidden;
+    touch-action: pan-x;
+  }
+  // to enable HW acceleration and not cause repaint on scroll
+  will-change: scroll-position;
+  backface-visibility: hidden;
+  max-width: 100%;
+}
+
+
+.scroll-y {
+  @include scroll-y;
+}
+
+.scroll-x {
+  @include scroll-x;
+}
+
+// custom scrollbar styling
+@mixin custom-scrollbar {
+  // custom scrollbar for webkit browsers
+  // reference https://webkit.org/blog/363/styling-scrollbars/
+
+  &::-webkit-scrollbar {
+    height: .625rem;
+    width: .625rem;
+    background: transparent;
+    z-index: 999;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($gray-500, 0.75);
+    border: .125rem solid transparent;
+    border-radius: .5rem;
+    background-clip: padding-box;
+
+    &:hover {
+      background-color: rgba($gray-700, 0.75);
+    }
+
+    &:window-inactive {
+      background-color: rgba($gray-500, 0.5);
+    }
+  }
+  // custom scrollbar for firefox
+  scrollbar-width: thin;
+  scrollbar-color: rgba($gray-500, 0.75) transparent;
+}
+
+// custom scrollbar styling
+@mixin thin-scrollbar {
+  // custom scrollbar for webkit browsers
+  &::-webkit-scrollbar {
+    height: .375rem;
+    width: .375rem;
+    background: transparent;
+    z-index: 999;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($gray-700, 0.75);
+    border: 0 solid transparent;
+    border-radius: 0;
+    background-clip: padding-box;
+
+    &:hover {
+      background-color: rgba($gray-500, 0.75);
+    }
+
+    &:window-inactive {
+      background-color: rgba($gray-500, 0.5);
+    }
+  }
+  // custom scrollbar for firefox
+  scrollbar-width: thin;
+  scrollbar-color: rgba($gray-700, 0.75) transparent;
+}
+
+@mixin scrollbar-top-padding($scrollbar-padding) {
+  &::-webkit-scrollbar-button:vertical:start {
+    height: $scrollbar-padding;
+  }
+}
+
+@mixin scrollbar-bottom-padding($scrollbar-padding) {
+  &::-webkit-scrollbar-button:vertical:end {
+    height: $scrollbar-padding;
+  }
+}
+
+html {
+  overflow-x: hidden;
+  touch-action: pan-y;
+
+  &.windows {
+    &.firefox {
+      // Initially hidden scrollbars to avoid relayouting
+      //overflow: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba($gray-500, 0.75) transparent;
+
+      .scroll-y {
+        // custom scrollbar for firefox
+        scrollbar-width: thin;
+        scrollbar-color: rgba($gray-500, 0.75) transparent;
+      }
+    }
+  }
+
+  &.scrollbars {
+    // custom scrollbar styling
+    // use overlay scrollbars if supported
+    @supports (overflow-y: overlay) {
+      @include custom-scrollbar;
+      overflow-y: overlay;
+
+      .fixed-top {
+        width: 100vw;
+      }
+    }
+
+    @supports (overflow-y: overlay) {
+      @include scrollbar-top-padding(#{'var(--scrollbar-adjust-top, 0)'});
+      @include scrollbar-bottom-padding(#{'var(--scrollbar-adjust-bottom, 0)'});
+    }
+
+    .custom-scrollbar {
+      @include custom-scrollbar;
+    }
+
+    .scroll-y {
+      @supports (overflow-y: overlay) {
+        @include custom-scrollbar;
+        overflow-y: overlay;
+      }
+    }
+  }
+}
+
+html, html.scrollbars {
+  // prevent scroll when opening modals etc.
+  &.backdrop, &.block-scroll {
+    overflow: hidden !important;
+  }
+}
+
+// element for detecting scrollbar capabilities (visibility, overlay etc.)
+.scrollbar-detection {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8rem;
+  height: 8rem;
+  overflow: scroll;
+  z-index: -99999;
+  pointer-events: none;
+  visibility: hidden;
+}

@@ -1,0 +1,6 @@
+@model Message
+@if (Model.CreatedById != WeavyContext.Current.User.Id){
+  <turbo-frame id="message_toast" data-controller="message-toast" data-message-toast-id-value="@DomId("_Message", Model)" class="d-none">
+    <div>@T["New messages"]</div>
+  </turbo-frame>
+}

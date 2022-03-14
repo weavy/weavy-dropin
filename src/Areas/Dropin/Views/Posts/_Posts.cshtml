@@ -1,0 +1,11 @@
+@model MessageSearchResult
+
+<div id="posts">
+    @foreach (var post in Model) {
+        <partial name="_Post" model="post" />
+    }
+
+    @if (Model.HasNextPage) {
+        <a class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
+    }
+</div>

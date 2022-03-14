@@ -1,0 +1,101 @@
+// core bootstrap functionality and custom variables
+@import "core";
+
+// optional bootstrap components
+@import "../node_modules/bootstrap/scss/root";
+@import "../node_modules/bootstrap/scss/reboot";
+@import "../node_modules/bootstrap/scss/type";
+@import "../node_modules/bootstrap/scss/containers";
+@import "../node_modules/bootstrap/scss/grid";
+
+@import "../node_modules/bootstrap/scss/helpers";
+@import "../node_modules/bootstrap/scss/utilities/api";
+
+// map-collect function for combining multiple maps (since the builtin map-merge function only takes 2 arguments)
+@function map-collect($maps...) {
+  $collection: ();
+
+  @each $map in $maps {
+    $collection: map-merge($collection, $map);
+  }
+
+  @return $collection;
+}
+
+// color swatches (for test page)
+.swatch-var {
+  display: flex;
+  align-items: center;
+
+  &::after {
+    margin-left: auto;
+    font-size: $font-size-xs;
+    font-weight: normal;
+  }
+}
+
+.swatch-val {
+  display: flex;
+  align-items: center;
+
+  &::after {
+    margin-left: auto;
+    font-size: $font-size-xs;
+    font-weight: normal;
+  }
+}
+
+
+@each $color, $value in map-merge($theme-colors, ("primary": $primary, "black": $black, "white": $white)) {
+  .swatch-#{$color} {
+    color: color-contrast($value);
+    background-color: #{$value};
+
+    .swatch-var::after {
+      color: $color-contrast-light;
+      content: str-slice("#{contrast-ratio($value, $white)}", 1, 4);
+    }
+
+    .swatch-val {
+
+      &::before {
+        content: quote("#{$value}");
+      }
+
+      &::after {
+        color: $color-contrast-dark;
+        content: str-slice("#{contrast-ratio($value, $black)}", 1, 4);
+      }
+    }
+  }
+}
+
+
+
+// shades
+@each $color, $value in map-collect($primaries, $reds, $pinks, $purples, $deep-purples, $indigos, $blues, $light-blues, $cyans, $teals, $greens, $light-greens, $limes, $yellows, $ambers, $oranges, $deep-oranges) {
+  .swatch-#{$color} {
+    color: color-contrast($value);
+    background-color: $value;
+
+    .swatch-var {
+      &::after {
+        content: str-slice("#{contrast-ratio($value, color-contrast($value))}", 1, 4);
+      }
+    }
+  }
+}
+
+// grays
+@each $color, $value in $grays {
+  .swatch-gray-#{$color} {
+    color: color-contrast($value);
+    background-color: $value;
+
+    .swatch-var {
+      &::after {
+        content: str-slice("#{contrast-ratio($value, color-contrast($value))}", 1, 4);
+      }
+    }
+  }
+}

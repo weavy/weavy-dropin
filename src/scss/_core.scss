@@ -1,0 +1,19 @@
+// include functions first (so we can manipulate colors, SVGs, calc, etc)
+@import "../node_modules/bootstrap/scss/functions";
+
+// weavy color system
+@import "functions/color";
+@import "variables-colors";
+
+// customize variables, see https://getbootstrap.com/docs/5.0/customize/sass/
+@import "variables";
+@import "../node_modules/bootstrap/scss/variables";
+
+// include required Bootstrap stylesheets
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/utilities";
+
+// custom utilities
+@import "utils/backdrop-filter";
+@import "utils/fonts";
+@import "utils/position";

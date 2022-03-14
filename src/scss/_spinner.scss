@@ -1,0 +1,63 @@
+/// <reference path="core" />
+
+$offset: 187;
+$spinner-duration: 1.4s;
+
+svg.spinner {
+
+  circle {
+    stroke-dasharray: 1, 100;
+    stroke-dashoffset: 0;
+    transform-origin: center;
+  }
+
+  &.spin {
+    // add class .spin to animate the spinner (otherwise it will not be visible)
+    animation: rotate $spinner-duration linear infinite;
+
+    circle {
+      animation: dash $spinner-duration ease-in-out infinite, color ($spinner-duration*2) ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 100;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 44.5, 100;
+    stroke-dashoffset: -17.5;
+  }
+
+  100% {
+    stroke-dasharray: 44.5, 100;
+    stroke-dashoffset: -62;
+  }
+}
+
+@keyframes color {
+  0%, 100% {
+    stroke: $blue;
+  }
+
+  25% {
+    stroke: $red;
+  }
+
+  50% {
+    stroke: $yellow;
+  }
+
+  75% {
+    stroke: $green;
+  }
+}

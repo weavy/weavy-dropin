@@ -1,0 +1,60 @@
+@model Conversation
+
+<div id="@DomId(Model)" class="conversation @Html.If(Model.IsUnread(), "unread")" data-controller="@Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc">
+  <a asp-action="@nameof(MessengerController.Get)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Id" class="d-flex list-group-item list-group-item-action" data-turbo-frame="_top">
+    <avatar for="@Model" size="48" class="me-3" presence="true" />
+    <div class="flex-grow-1 min-width-0">
+      <div class="d-flex align-items-center">
+        <div class="title text-truncate me-auto">@Model.GetTitle()</div>
+        @if (Model.LastMessage != null) {
+          <time class="ms-2 me-1 flex-shrink-0" datetime="@Model.LastMessage.CreatedAt" />
+        }
+      </div>
+      <div class="excerpt text-truncate" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="typing-active" data-typing-target="element">
+        <span class="typing-hide">
+          @if (Model.LastMessage != null) {
+              @if (Model.LastMessage.CreatedById == WeavyContext.Current.User.Id) {
+                <text>@T["You"]: </text>    
+              } else if (Model is ChatRoom) {
+                <text>@Model.LastMessage.CreatedBy().GetTitle(): </text>    
+              }
+              @Html.Raw(Model.LastMessage.GetExcerpt(html:true))
+          } else {
+            <text>&nbsp;</text>
+          }
+        </span>
+        <span class="typing-show fw-normal text-truncate" data-typing-target="indicator"></span>
+        
+      </div>
+    </div>
+  </a>
+
+  <div class="d-flex align-items-center position-absolute">
+    <partial name="_StarButton" />
+    <div class="dropdown">
+      <button type="button" class="btn btn-icon" data-bs-toggle="dropdown">
+        @if (Model.IsPinned()) {
+          <icon name="pin" />
+        } else {
+          <icon name="dots-vertical" />
+        }
+      </button>
+      <div class="dropdown-menu">
+        @if (Model.LastMessage != null) {
+          <partial name="_ReadMenuItem" />
+        }
+        <partial name="_PinMenuItem" />
+        <partial name="_StarMenuItem" />
+
+
+        @if (Model is ChatRoom) {
+          <form asp-action="@nameof(MessengerController.Leave)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Id">
+            <button type="submit" class="dropdown-item"><icon name="account-minus" /> @T["Leave conversation"]</button>
+          </form>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
+

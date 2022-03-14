@@ -1,0 +1,6 @@
+@model Meeting
+
+@{
+    await Html.RenderPartialAsync($"_Meeting_{Model.Provider}"); 
+}
+

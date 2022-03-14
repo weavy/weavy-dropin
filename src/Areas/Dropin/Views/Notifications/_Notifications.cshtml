@@ -1,0 +1,10 @@
+@model NotificationSearchResult
+
+@foreach (var notification in Model) {
+    <partial name="_Notification" model="notification" />
+}
+
+@if (Model.HasNextPage) {
+    <a class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
+}
+

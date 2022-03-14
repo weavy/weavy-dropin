@@ -1,0 +1,24 @@
+@model Notifications
+<!DOCTYPE html>
+<html data-controller="turbo-stream" data-turbo-stream-app-value="@Model.Id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@Model.GetTitle()</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true" data-turbo-track="reload"></script>
+  <script src="~/js/notifications.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body class="m-3 me-1" data-controller="pagination">
+  <div id="notifications">
+    @if (Model.Items.Any()) {
+      <partial name="_Notifications" model="Model.Items" />
+      } else {
+      <p class="text-center">@T["All caught up!"]</p>
+      }
+  </div>
+</body>
+</html>

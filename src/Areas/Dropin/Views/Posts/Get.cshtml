@@ -1,0 +1,22 @@
+@model Posts
+<!DOCTYPE html>
+<html data-controller="turbo-stream" data-turbo-stream-app-value="@Model.Id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@Model.GetTitle()</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/posts.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true" data-turbo-track="reload"></script>
+  <script src="~/js/posts.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body>
+  <main role="main" class="m-3" data-controller="pagination">
+    <partial name="_PostForm" model="new MessageModel()" />
+    <partial name="_Posts" model="Model.Items" />
+  </main>
+  <turbo-frame id="modal"></turbo-frame>
+</body>
+</html>

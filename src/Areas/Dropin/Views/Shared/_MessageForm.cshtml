@@ -1,0 +1,74 @@
+@model MessageModel
+
+<turbo-frame id="message-form" data-adjust-scrollbar-bottom>
+  <form asp-action="@nameof(ChatController.InsertMessage)" method="post" autocomplete="off" novalidate
+        data-controller="editor attachments meetings file-picker"
+        data-editor-target="form"
+        data-editor-typing-value="true"
+        data-attachments-uploading-class="uploading"
+        data-meetings-zoom-authentication-url-value="@ConfigurationService.ZoomAuthenticationUrl"
+        data-meetings-teams-authentication-url-value="@ConfigurationService.TeamsAuthenticationUrl" data-action="submit->editor#prepare imagePasted@window->attachments#pasteImage">
+
+    @* attachments *@
+    <div class="attachments" data-attachments-target="list" data-file-picker-target="list">@{
+      if (Model != null && Model.Message != null) {
+        @foreach (var attachment in Model.Message.Attachments()) {
+          var icon = attachment.GetIcon();
+          <div class="attachment">
+            <icon name="@icon.Name" color="@icon.Color" />
+            @attachment.GetTitle()
+            <input type="hidden" name="attachments" value="@attachment.Id" />
+            <button type="button" class="btn btn-icon ms-auto" data-action="attachments#remove"><icon name="close" /></button>
+          </div>
+        }
+      }
+    }</div>
+
+    @* meetings *@
+    <div class="meetings" data-meetings-target="list">@{
+      if (Model != null && Model.Message != null && Model.Message.Meeting != null) {
+        var icon = Model.Message.Meeting.Icon;
+        <turbo-frame id="@DomId($"meeting{Model.Message.MeetingId}")">
+          <div class="meeting">
+            <icon name="@icon" color="native" class="mx-1" />
+            @Model.Message.Meeting.Title
+            <input type="hidden" name="MeetingId" value="@Model.Message.MeetingId" />
+            <button type="button" class="btn btn-icon ms-auto" data-action="meetings#remove" data-meetings-id-param="@Model.Message.MeetingId"><icon name="close" /></button>
+          </div>
+        </turbo-frame>
+      }
+    }</div>
+
+    @* editor *@
+    <div class="message-editor">
+
+      <div class="me-2 flex-shrink-0">
+        <input class="form-control" type="file" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
+
+        <div class="btn-group dropup d-inline-block">
+          <button class="btn btn-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown"><icon name="attachment" /><span class="spinner-container">@Svg.Spinner(size: 20, spin: true) </span></button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" data-action="click->file-picker#open" href="#"><icon name="cloud" /> Cloud </a></li>
+            <li>
+              <a class="dropdown-item" href="#" data-action="attachments#select"><icon name="laptop" />@T["Your computer"]</a>
+              <input class="form-control" type="file" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
+            </li>
+            
+          </ul>
+        </div>
+        @if (@ConfigurationService.ZoomMeetings) {
+          <button type="button" class="btn btn-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" />@Svg.Spinner(size: 20, spin: false)</button>
+        }
+        @if (@ConfigurationService.TeamsMeetings) {
+          <button type="button" class="btn btn-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" />@Svg.Spinner(size: 20, spin: false)</button>
+        }
+      </div>
+      <div class="flex-grow-1">
+        <textarea asp-for="Text" class="form-control mb-2 d-none" data-editor-target="control" placeholder="@T["Type a message..."]"></textarea>
+        <div id="editor-container" data-editor-target="container"></div>
+      </div>
+      <div class="ms-2"><button type="submit" class="btn btn-icon btn-primary" data-editor-target="button"><icon name="send" /></button></div>
+    </div>
+  </form>
+
+</turbo-frame>

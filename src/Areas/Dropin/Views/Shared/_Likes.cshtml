@@ -1,0 +1,19 @@
+@model IReactable
+@{
+    var likes = Model.Reactions.Count("👍");
+}
+
+<div id="@DomId(Model)" class="likes">
+    @if (Model.IsLiked()) {
+        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unlike)" asp-route-id="@Model.Uid()">
+            <button type="submit" class="btn btn-icon"><icon name="thumb-up" color="primary" size="20" /></button>
+        </form>
+    } else {
+        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Like)" asp-route-id="@Model.Uid()">
+            <button type="submit" class="btn btn-icon"><icon name="thumb-up-outline" color="primary" size="20" /></button>
+        </form>
+    }
+    @if (likes > 0) {
+        <a class="p-1" href="#"><small>@likes</small></a>
+    }
+</div>

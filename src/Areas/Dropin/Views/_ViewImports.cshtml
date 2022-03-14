@@ -1,0 +1,17 @@
+@using Weavy.Core
+@using Weavy.Core.Http
+@using Weavy.Core.Models
+@using Weavy.Core.Mvc
+@using Weavy.Core.Services
+@using Weavy.Core.Utils
+@using Weavy.Core.Collections
+@using Weavy.Dropin.Controllers;
+@using Weavy.Dropin.Models;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Net.Http
+@inherits WeavyPage<TModel>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Weavy.Core
+@addTagHelper *, Weavy.Dropin
+@addTagHelper *, Weavy
+@inject IViewLocalizer T

@@ -1,0 +1,10 @@
+/// <reference path="core" />
+
+pre.code-block {
+  font-family: $font-family-monospace;
+  line-height: $line-height-sm;
+  background-color: $light;
+  border: $border-width solid $border-color;
+  border-radius: $border-radius;
+  padding: .75rem;
+}

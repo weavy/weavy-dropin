@@ -1,0 +1,16 @@
+@model IStarrable
+
+@if (Model.IsStarred()) {
+    <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unstar)" asp-route-id="@Model.Uid()">
+        <button type="submit" class="btn btn-icon"><icon name="star" color="warning" /></button>
+    </form>
+} else if (Action == nameof(EntityController.Unstar)) {
+    <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Star)" asp-route-id="@Model.Uid()">
+        <button type="submit" class="btn btn-icon"><icon name="star-outline" color="warning" /></button>
+    </form>
+} else if (Model.HasPermission(Permission.Read)) {
+    <div id="@DomId(Model)"></div>
+}
+
+
+

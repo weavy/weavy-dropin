@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>@(string.IsNullOrWhiteSpace(Title) ? Application.Name : Title + " | " + Application.Name)</title>
+    <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+    <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+    <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+    <link rel="stylesheet" href="~/css/test.css" asp-append-version="true" />
+</head>
+<body>
+    <main role="main">
+        @RenderBody()
+    </main>
+</body>
+</html>

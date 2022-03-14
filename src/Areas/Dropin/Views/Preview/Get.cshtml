@@ -1,0 +1,48 @@
+@model PreviewModel
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@Model.Current.GetTitle()</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/preview.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true" data-turbo-track="reload"></script>
+  <script src="~/js/preview.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body>
+  <header class="appbars fixed-top">
+    <nav class="appbar appbar-dark">
+      <div class="appbar-left">
+        <button class="btn btn-icon close-back">@Svg.Icon("close")</button>
+      </div>
+      <div class="appbar-middle">
+        <div class="appbar-text">@Model.Current.GetTitle()</div>
+      </div>
+      <div class="appbar-right">
+        @if (Model.Current.Blob?.Link != null) {
+          <a class="btn btn-icon" href="@Model.Current.Blob.Link" target="_blank" title="@T["Open in {0}", Model.Current.Blob.Provider]">@Svg.Icon(Model.Current, "inherit")</a>
+          } else {
+          <a class="btn btn-icon" href="@Model.Current.Url()" title="@T["Download"]" download>@Svg.Icon("download")</a>
+          }
+          @if (Model.Current.Blob.Link == null && FileUtils.IsOfficeDocument(Model.Current.Name)) {
+          <a class="btn btn-icon" href="@Model.Current.OfficeUrl(hmac: true)" target="_top" title="Open in @FileUtils.OpenWith(Model.Current.Name)">@Svg.Icon(Model.Current, "inherit")</a>
+          }
+      </div>
+    </nav>
+  </header>
+
+  <main role="main">
+      @if (Model.Prev != null) {
+      <nav class="preview-nav nav-prev"><a class="btn" asp-action="@nameof(PreviewController.Get)" asp-route-id="@Model.Prev.Id">@Svg.Icon("arrow-left")</a></nav>
+      }
+
+      @if (Model.Next != null) {
+      <nav class="preview-nav nav-next"><a class="btn" asp-action="@nameof(PreviewController.Get)" asp-route-id="@Model.Next.Id">@Svg.Icon("arrow-right")</a></nav>
+      }
+    <partial name="_Preview" model="Model.Current" />
+  </main>
+</body>
+</html>

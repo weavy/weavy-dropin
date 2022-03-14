@@ -1,0 +1,19 @@
+@model ConversationSearchResult
+@{
+  ViewData["IsInitialLoad"] = true;
+}
+<turbo-frame id="conversations">
+    @foreach (var conversation in Model) {
+      <partial name="_Conversation" model="conversation" />
+    }
+
+    @if (Model.HasNextPage) {
+      <a class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
+    }
+
+    @if (!Model.Any()) {
+      <div class="m-3 text-center text-muted">
+        @(Model.Query.Text != null ? @T["Your search did not match any conversations."] : @T["There are no conversations."])        
+      </div>
+    }
+</turbo-frame>

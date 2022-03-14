@@ -1,0 +1,3 @@
+@model Member
+@* IMPORTANT: match content with html emitted from UiHook:AfterReadConversation *@
+<avatar for="Model" size="18" id="readby-@Model.Id" title="@T["Seen by {0} {1}", Model.GetTitle(), Model.ReadAt.Value.When()]" data-readby-who-value="@Model.Id" data-readby-when-value="@Model.ReadAt.AsSortableDate()" />

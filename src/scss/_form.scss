@@ -1,0 +1,110 @@
+/// <reference path="core" />
+
+.is-invalid ~ span.invalid-feedback {
+  display: inline-block;
+  width: auto;
+}
+
+
+.blob-editor {
+
+
+  .blob-thumb {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    width: 8rem; // 128px;
+    height: 8rem; // 128px;
+
+    @include border-radius($input-border-radius, 0);
+    // checkered bg
+    background-position: 0 0, .5rem .5rem;
+    background-size: 1rem 1rem;
+    background-image: linear-gradient(45deg, $gray-100 25%, transparent 25%, transparent 75%, $gray-100 75%, $gray-100 100%), linear-gradient(45deg, $gray-100 25%, $white 25%, $white 75%, $gray-100 75%, $gray-100 100%);
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      @include border-radius($input-border-radius, 0);
+    }
+
+    .backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: transparent;
+      border: $input-border-width solid $input-border-color;
+      @include border-radius($input-border-radius, 0);
+      pointer-events: none;
+    }
+
+    .btn-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: rgba(255, 255, 255, .5);
+    }
+
+    &:hover, &:focus {
+      .backdrop {
+        background: rgba(0,0,0,0.3);
+      }
+
+      .btn-icon {
+
+        &:hover, &:focus {
+          color: rgba(255, 255, 255, .7);
+        }
+
+        &:focus {
+          color: rgba(255, 255, 255, 1);
+        }
+      }
+    }
+  }
+}
+
+// form buttons
+.form-buttons {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+
+  > .btn:not(:last-child),
+  > .btn-group:not(:last-child) {
+    margin-right: .5rem;
+  }
+}
+
+.form-group-bottom {
+  padding-bottom: 3.75rem;
+
+  .form-buttons {
+    position: fixed;
+    bottom: 0;
+    z-index: $zindex-sticky;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    &::after {
+      content: "";
+      position: fixed;
+      width: 100vw;
+      left: 0;
+      bottom: 0;
+      height: 3.75rem;
+      border-top: $border-width solid rgba($gray-200, $opacity-backdrop);
+      background: rgba($gray-50, $opacity-backdrop);
+      z-index: -1;
+
+      @include backdrop-filter;
+    }
+  }
+}

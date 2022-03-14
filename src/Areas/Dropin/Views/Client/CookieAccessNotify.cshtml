@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@T["Cookie access"]</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true"></script>
+</head>
+<body>
+  <div class="container-fluid text-center my-5">
+    <img class="mb-3" src="@Url.Favicon(128)" width="128" height="128" alt="" />
+    <h1 class="display-5">@T["Cookie access"]</h1>
+    <p>@T["Saving cookie access."]</p>
+  </div>
+
+  <script>
+    wvy.postal.postToParent({ weavyId: true, name: "storage-access-granted", domain: window.location.origin });
+    wvy.postal.whenLeader().finally(() => window.close());
+  </script>
+</body>
+</html>
+
+
+
+

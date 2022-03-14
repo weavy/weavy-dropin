@@ -1,0 +1,57 @@
+@model Conversation
+@{
+  Layout = "_Layout";
+  BodyAttributes.Add("data-app-id", Model.Id.ToString());
+  BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
+  ViewData["NewMessageLabelBeforeId"] = Model.IsUnread() ? Model.Messages.FirstOrDefault(x => x.CreatedAt > (Model.Member.ReadAt ?? DateTime.MinValue))?.Id : null;
+  ViewData["Conversation"] = Model;
+}
+<main role="main" class="pane" data-controller="scroll turbo-stream badge" data-badge-apps-value="[@GetRouteValue("id"), @Model.Id]" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-turbo-stream-app-value="@Model.Id">
+  <header class="appbars sticky-top" data-adjust-scrollbar-top>
+    <nav class="appbar appbar-light">
+      <div class="appbar-left">
+        <a class="btn btn-icon" asp-action="@nameof(MessengerController.Index)" asp-route-id="@GetRouteValue("id")"><icon name="arrow-left" /></a>
+      </div>
+      <div class="appbar-middle" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="typing-active" data-typing-target="element">
+        <div class="typing-hide text-truncate">
+          @if (Model is PrivateChat chat && chat.Other != null)
+          {
+            <span class="presence @Html.If(UserService.GetPresence(chat.Other.Id)?.Status == PresenceStatus.Active, "presence-active")" data-presence-id="@chat.Other.Id"></span>
+          }
+          <a class="btn-link" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Get)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Id">@Model.GetTitle()</a>
+        </div>
+        <span class="typing-show text-truncate" data-typing-target="indicator"></span>
+      </div>
+      <div class="appbar-right">
+        <a class="btn btn-icon" asp-action="@nameof(MessengerController.Details)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Id" data-target="modal" title="@T["Details"]"><icon name="information-outline" /></a>
+      </div>
+    </nav>
+  </header>
+  <div class="d-flex flex-grow-1 flex-column">
+
+    <div id="messages" data-controller="pagination" class="invisible">
+      <partial name="_Messages" model="Model.Messages" />
+    </div>
+    <div id="message-placeholder" class="d-none">
+      <div class="message me sending">
+        <div class="content">
+          <div class="meta">
+            <a href="#">
+              <time datetime="@DateTime.Now" />
+            </a>
+          </div>
+          <div class="bubble">
+            <div class="reaction-menu dropdown dropup">
+              <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><svg height="20" viewBox="0 0 24 24" width="20" class="i i-emoticon-plus"><path d="m12 17.5c2.3 0 4.3-1.5 5.1-3.5h-10.2c.8 2 2.8 3.5 5.1 3.5"></path><path d="m8.5 11c.8 0 1.5-.7 1.5-1.5s-.7-1.5-1.5-1.5-1.5.7-1.5 1.5.7 1.5 1.5 1.5"></path><path d="m15.5 11c.8 0 1.5-.7 1.5-1.5s-.7-1.5-1.5-1.5-1.5.7-1.5 1.5.7 1.5 1.5 1.5"></path><path d="m20 12c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8v-2c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10z"></path><path d="m24 3v2h-3v3h-2v-3h-3v-2h3v-3h2v3z"></path></svg></button>
+            </div>
+            <div class="text"></div>
+          </div>
+        </div>
+      </div>
+      <div class="status"></div>
+    </div>
+  </div>
+  <div id="readby-append" class="d-none"></div>
+  <partial name="_MessageForm" model="new MessageModel()" />
+  <turbo-frame id="modal"></turbo-frame>
+</main>
