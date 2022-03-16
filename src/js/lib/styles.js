@@ -11,7 +11,7 @@ WeavyPostal.on("styles", (e, styles) => {
   console.log("CSS: received internal css styles from parent", styles.id);
   applyId(styles.id);
   // Splits className by space to an array and filters out empty entries
-  applyClassNames(...styles.className.split(" ").filter((x) => x));
+  applyClassNames(...styles.className?.split(" ").filter((x) => x));
   applyCss(styles.css);
 })
 
