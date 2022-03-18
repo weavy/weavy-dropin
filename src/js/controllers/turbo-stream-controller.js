@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import { connectStreamSource, disconnectStreamSource, renderStreamMessage } from "@hotwired/turbo";
 import { subscribe, unsubscribe } from "../helpers/connection-helpers.js"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("turbo-stream");
 
 export default class extends Controller {
 
@@ -16,7 +19,7 @@ export default class extends Controller {
   }
 
   turboFetch(url) {
-    console.debug("turbo-fetch:", url)
+    console.debug("fetch:", url)
     fetch(url, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
       .then(response => response.text())
       .then(html => {
@@ -25,7 +28,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.debug("turbo-stream:connected:app:" + this.appValue);
+    console.debug("connected:app:" + this.appValue);
     this.eventTarget = new EventTarget();
     connectStreamSource(this.eventTarget);
     subscribe(this.appValue + ":ui", "turbo-fetch", this.turboFetch);

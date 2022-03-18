@@ -1,10 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 import Modal from 'bootstrap/js/dist/modal';
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("modal");
 
 export default class extends Controller {
 
   connect() {
-    console.debug("modal:connected");
+    console.debug("connected");
 
     var modal = new Modal(this.element);
     modal.show();

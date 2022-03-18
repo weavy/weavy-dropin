@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import { subscribe, unsubscribe } from "../helpers/connection-helpers.js"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("typing");
 
 export default class extends Controller {
 
@@ -34,7 +37,7 @@ export default class extends Controller {
   stopTyping(msg) {
     
     if (msg.parent.id === this.appValue) {
-      console.debug("typing:stop");
+      console.debug("stop");
       let typers = this.activeTypers;
       
       // remove typing indicator for message sender

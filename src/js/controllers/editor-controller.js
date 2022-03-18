@@ -6,6 +6,9 @@ import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import { weavyKeymap } from "../lib/editor/commands"
 import utils from "@weavy/dropin-js/src/common/utils"
 import { b64toBlob } from "../helpers/conversion-helpers"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("editor");
 
 export default class extends Controller {
 
@@ -18,7 +21,7 @@ export default class extends Controller {
   editor;
 
   connect() {
-    console.debug("editor:connected");
+    console.debug("connected");
 
     // define extensions
     var extensions = [
@@ -101,7 +104,7 @@ export default class extends Controller {
   }
 
   sendTyping() {
-    console.debug("editor:sendtyping")
+    console.debug("sendtyping")
     fetch("/dropin/messenger/" + this.appId + "/typing", { method: "POST" }).catch(err => { /* deal with error */ });
   }
 
@@ -147,7 +150,7 @@ export default class extends Controller {
   }
 
   prepare() {
-    console.debug("editor:prepare");
+    console.debug("prepare");
     this.controlTarget.value = this.editor.state.doc.toString();
     
     if (this.controlTarget.value !== "" || document.querySelector("#message-form .attachments").children.length > 0 || document.querySelector("#message-form .meetings").children.length > 0) {
@@ -159,7 +162,7 @@ export default class extends Controller {
   }
     
   disconnect() {
-    console.debug("editor:disconnect");
+    console.debug("disconnect");
     this.editor.destroy();
     this.saveDraft();
   }

@@ -12,7 +12,7 @@
     "css-minify": "cleancss -O1 --format breakWith=lf --with-rebase --output wwwroot/css/ --batch --batch-suffix \"\" \"wwwroot/css/*.css\"",
     "css-prefix": "postcss --replace \"wwwroot/css/*.css\"",
     "dev": "npm-run-all --parallel css-dev js-dev",
-    "js": "webpack",
+    "js": "webpack --mode production",
     "js-dev": "webpack --mode development",
     "watch": "npm-run-all --parallel watch-*",
     "watch-css": "nodemon --watch scss/ --ext scss --exec \"npm run css-dev\"",

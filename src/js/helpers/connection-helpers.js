@@ -1,4 +1,7 @@
 import * as signalR from "@microsoft/signalr";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("realtime");
 
 const HUB_PATH = "/hubs/rtm";
 const EVENT_NAMESPACE = ".connection";
@@ -12,7 +15,7 @@ function triggerHandler(name, ...data) {
   name = name.endsWith(EVENT_NAMESPACE) ? name : name + EVENT_NAMESPACE;
   let event = new CustomEvent(name, { cancelable: false });
 
-  console.debug("weavy-realtime:triggerHandler", name);
+  console.debug("triggerHandler", name);
 
   connectionEvents.forEach((eventHandler) => {
     if (eventHandler.name === name) {

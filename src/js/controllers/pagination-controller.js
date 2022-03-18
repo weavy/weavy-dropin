@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import { delay, nextFrame } from "../helpers/timing-helpers"
 import { request } from "../helpers/request-helpers"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("pagination");
 
 // inspired by https://world.hey.com/daniel.colson/adventures-in-infinite-scrolling-9b4abaa4?ref=bestwebsite.gallery
 export default class extends Controller {
@@ -12,7 +15,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.debug("pagination:connected");
+    console.debug("connected");
   }
 
   async loadNextPage(event) {

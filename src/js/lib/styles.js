@@ -1,4 +1,7 @@
 import WeavyPostal from '@weavy/dropin-js/src/common/postal';
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("CSS");
 
 /**
  * Postmessage styles received from parent
@@ -8,10 +11,9 @@ import WeavyPostal from '@weavy/dropin-js/src/common/postal';
  * @param {WeavyPostal#event:styles~data} styles
  */
 WeavyPostal.on("styles", (e, styles) => {
-  console.log("CSS: received internal css styles from parent", styles.id);
+  console.log("received internal css styles from parent", styles.id);
   applyId(styles.id);
-  // Splits className by space to an array and filters out empty entries
-  applyClassNames(...styles.className?.split(" ").filter((x) => x));
+  applyClassNames(styles.className);
   applyCss(styles.css);
 })
 
@@ -27,11 +29,15 @@ function applyId(id) {
 
 /**
  * Adds classNames to the HTML element
- * @param {...string} classNames - Any number of className strings
+ * @param {string} classNames - Any number of className strings
  */
-function applyClassNames(...classNames) {
-  if (classNames.length) {
-    document.documentElement.classList.add(...classNames);
+function applyClassNames(classNames) {
+  if (classNames && typeof classNames === "string") {
+    // Splits className by space to an array and filters out empty entries
+    let classNamesList = classNames.split(" ").filter((x) => x);
+    if (classNamesList && classNamesList.length) {
+      document.documentElement.classList.add(...classNamesList);
+    }
   }
 }
 

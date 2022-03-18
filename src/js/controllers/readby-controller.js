@@ -1,11 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("readby");
 
 export default class extends Controller {
 
   static values = { who: String, when: Number };
 
   connect() {
-    console.debug("readby:connected");
+    console.debug("connected");
 
     // remove data-controller attribute to prevent subsequent actions when elements are moved arount in the DOM.
     this.element.removeAttribute("data-controller");

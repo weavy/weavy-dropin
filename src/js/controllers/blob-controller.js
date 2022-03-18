@@ -1,10 +1,14 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("blob");
+
 export default class extends Controller {
 
   static targets = ["hidden", "file", "thumb", "remove"];
 
   connect() {
-    console.debug("blob:connected");
+    console.debug("connected");
   }
 
   select() {

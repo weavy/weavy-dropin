@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import postal from "@weavy/dropin-js/src/common/postal";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("file-picker");
 
 export default class extends Controller {
 
@@ -8,7 +11,7 @@ export default class extends Controller {
   handler = this.receiveFiles.bind(this);
 
   connect() {
-    console.debug("file-picker:connected");
+    console.debug("connected");
 
     // listen to messages from weavy client    
     postal.on("addExternalBlobs", this.handler);
@@ -25,7 +28,7 @@ export default class extends Controller {
   }
 
   attach(blobs, open) {
-    console.debug("file-picker:attach");
+    console.debug("attach");
     let self = this;
 
     // insert external blobs 
@@ -45,7 +48,7 @@ export default class extends Controller {
       .then(html => {        
         self.listTarget.insertAdjacentHTML('beforeend', html);        
       }).catch((err) => {
-        console.error("Weavy: Error attaching external blobs. Check the logfile for more information.", err)
+        console.error("Error attaching external blobs. Check the logfile for more information.", err)
       });
   }
 
@@ -58,7 +61,7 @@ export default class extends Controller {
 
 
   disconnect() {
-    console.debug("file-picker:disconnected");
+    console.debug("disconnected");
     postal.off("addExternalBlobs", this.handler);
   }
 }

@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
 import { renderStreamMessage } from "@hotwired/turbo";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("meetings");
 
 export default class extends Controller {
 
@@ -10,7 +13,7 @@ export default class extends Controller {
   };
 
   connect() {
-    console.debug("meetings:connected:");
+    console.debug("connected:");
 
     var self = this;
     window.addEventListener("message", function (e) {
@@ -51,7 +54,7 @@ export default class extends Controller {
     const provider = e.params.provider;
     const state = e.params.state;
 
-    console.debug("meetings:signIn:" + provider + ":" + state);
+    console.debug("signIn:" + provider + ":" + state);
 
     switch (provider) {
       case "zoom": {
@@ -78,7 +81,7 @@ export default class extends Controller {
   }
 
   clearMeetings(provider) {
-    console.debug("meetings:clear");
+    console.debug("clear");
 
     const list = this.listTarget;
     while (list.firstChild) {
@@ -87,7 +90,7 @@ export default class extends Controller {
   }
 
   signOut(e) {
-    console.debug("meetings:signOut");
+    console.debug("signOut");
 
     e.preventDefault();
 
@@ -106,7 +109,7 @@ export default class extends Controller {
 
   add(e) {
     
-    console.debug("meetings:add:" + event.params.provider);
+    console.debug("add:" + event.params.provider);
 
     const data = new FormData();
     const list = this.listTarget;

@@ -2,6 +2,9 @@ import utils from '@weavy/dropin-js/src/common/utils';
 import postal from '@weavy/dropin-js/src/common/postal';
 import turbo from './turbo';
 import browser from './browser';
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("overlay");
 
 const _overlays = new Map();
 
@@ -172,12 +175,12 @@ function overlayNavigation(href, target) {
         _overlays.set(target, overlayWindow);
         postal.registerContentWindow(overlayWindow, "panel-overlay:" + target, true, window.location.origin);
       } else {
-        console.debug("wvy.overlay: opening " + target + " via referred turbo navigation");
+        console.debug("opening " + target + " via referred turbo navigation");
         turbo.visit(href);
       }
     }
   } else {
-    console.debug("wvy.overlay: opening overlay via turbo navigation");
+    console.debug("opening overlay via turbo navigation");
     turbo.visit(href);
   }
 }
@@ -187,7 +190,7 @@ function overlayLinkOpen(href, target, title) {
   var isSameDomain = window.location.origin === new URL(href, window.location).origin;
 
   if (!isSameDomain) {
-    console.warn("wvy.preview: invalid overlay url", href);
+    console.warn("invalid overlay url", href);
     return false;
   }
 

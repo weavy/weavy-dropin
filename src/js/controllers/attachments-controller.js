@@ -1,11 +1,15 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("attachments");
+
 export default class extends Controller {
 
   static targets = ["input", "list"];
   static classes = ["uploading"];
 
   connect() {
-    console.debug("attachments:connected");
+    console.debug("connected");
   }
 
   // trigger file selection

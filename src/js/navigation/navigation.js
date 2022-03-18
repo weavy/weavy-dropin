@@ -3,6 +3,9 @@ import postal from '@weavy/dropin-js/src/common/postal';
 import turbo from './turbo';
 import overlay from './overlay';
 import browser from './browser';
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("navigation");
 
 // Opens url in _blank if possible
 function openExternal(url, force) {
@@ -14,7 +17,7 @@ function openExternal(url, force) {
 
   // force, external domain and not javascript
   if (force || !(isSameDomain || isJavascript || isHashLink)) {
-    console.log("wvy.navigation: external navigation");
+    console.log("external navigation");
 
     setTimeout(turbo.hideProgress, 1);
 
@@ -35,7 +38,7 @@ function openExternal(url, force) {
 
     return true;
   }
-  console.log("wvy.navigation: not external");
+  console.log("not external");
   return false;
 }
 
@@ -47,7 +50,7 @@ function openDownload(url, link) {
   var linkIsDownload = link && link.hasAttribute("download");
 
   if (linkIsDownload || isDownload && isHttp) {
-    console.log("wvy.navigation: download url");
+    console.log("download url");
 
     setTimeout(turbo.hideProgress, 1);
 
@@ -90,7 +93,7 @@ function openOverlay(href, linkOrTarget) {
   }
 
   if (target === "overlay" || target === "modal" || target === "preview") {
-    console.log("wvy.navigation: open overlay");
+    console.log("open overlay");
     overlay.open(href, target, title);
     return true;
   } else if (!target) {
@@ -103,7 +106,7 @@ function openOverlay(href, linkOrTarget) {
       }
   }
 
-  console.log("wvy.navigation: not overlay")
+  console.log("not overlay")
 
   return false;
 }
@@ -176,7 +179,7 @@ postal.whenLeader().then(function (isLeader) {
   if (!isLeader && !(overlay && overlay.isOpenedWindow())) {
     document.addEventListener("turbo:before-visit", function (e) {
       var url = e.detail.url;
-      console.log("wvy:navigation: turbo:before-visit checking if visit link should open in other app (via navigation-open)")
+      console.log("turbo:before-visit checking if visit link should open in other app (via navigation-open)")
 
       // cancel event to prevent navigation
       let currentApp = getAppByUrl();
@@ -185,7 +188,7 @@ postal.whenLeader().then(function (isLeader) {
       if (nextApp.appId && currentApp.appId !== nextApp.appId) {
         e.preventDefault();
 
-        console.log("wvy.navigation: requested url is the not same app, sending request to client ");
+        console.log("requested url is the not same app, sending request to client ");
         
         postal.postToParent({ name: "navigation-open", route: { url: url, app: { appId: nextApp.appId } } });
       }
@@ -218,7 +221,7 @@ document.addEventListener("click", utils.delegate("a[href], [data-href]", functi
   var nearestClickable = e.target.closest("A[href], BUTTON, .btn, input[type='button'], [data-href]");
 
   if (!e.defaultPrevented && (!nearestClickable || nearestClickable === this)) {
-    console.log("wvy.navigation: click");
+    console.log("click");
 
     var nearestDropdown = nearestClickable.closest(".dropdown-menu");
     var href = this.dataset.href || this.href;
@@ -236,7 +239,7 @@ document.addEventListener("click", utils.delegate("a[href], [data-href]", functi
     var forceExternal = targetIsBlank || isWebView && targetIsTop;
 
     if (!isHashLink) {
-      console.log("wvy.navigation: checking external and overlay")
+      console.log("checking external and overlay")
       if (openExternal(href, forceExternal) || openOverlay(href, this)) {
         // If open new window
         e.preventDefault();
@@ -266,7 +269,7 @@ document.addEventListener("turbo:click", function (e) {
   //console.log("turbolinks:click")
   // anchors in same page should not be requested with turbolinks
   if (e.target.getAttribute("href").charAt(0) === '#') {
-    console.log("wvy.navigation: Cancelling turbolinks navigation");
+    console.log("Cancelling turbolinks navigation");
     return e.preventDefault();
   }
 });
@@ -274,7 +277,7 @@ document.addEventListener("turbo:click", function (e) {
 document.addEventListener("turbo:before-visit", function (e) {
   // Clicked external links will never reach this, but Turbolinks.visit() will
   // Including overlays here will cause a navigation loop
-  console.log("wvy.navigation: turbo:before-visit checking external and download")
+  console.log("turbo:before-visit checking external and download")
   if (openExternal(e.detail.url) || openDownload(e.detail.url)) {
     e.preventDefault();
   }
@@ -291,7 +294,7 @@ document.addEventListener("turbo:submit-end", (e) => {
         if (visit.detail.url === redirectLocation) {
           visit.preventDefault();
 
-          console.log("wvy.navigation: turbo modal form overlay redirect", redirectLocation);
+          console.log("turbo modal form overlay redirect", redirectLocation);
           postal.postToParent({ name: "navigation-open", route: redirectLocation });
         }
       }, { once: true })

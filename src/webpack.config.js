@@ -1,6 +1,7 @@
 /* eslint-env node */
 
 const path = require('path');
+const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
@@ -46,9 +47,15 @@ module.exports = (env, argv) => {
       filename: '[name].js',
       path: path.resolve(__dirname, 'wwwroot/js')
     },
-    plugins: [new ESLintPlugin()],
+    plugins: [
+      new ESLintPlugin(),
+      new webpack.DefinePlugin({
+        WEAVY_DEVELOPMENT: JSON.stringify(argv.mode === "development" ? true : false),
+        WEAVY_PRODUCTION: JSON.stringify(argv.mode === "production" ? true : false),
+      })
+    ],
     module: {
-      noParse: /pdfjs-dist\/build\/pdf\.worker/,
+      noParse: /pdfjs-dist[\\/]build[\\/]pdf\.worker/,
       rules: [
         {
           test: /\.js$/,

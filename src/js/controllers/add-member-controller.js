@@ -1,11 +1,14 @@
 import { Controller } from "@hotwired/stimulus";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("add-member");
 
 export default class extends Controller {
   
   static targets = ["form", "button", "input"];
 
   connect() {
-    console.debug("add-member:connected");
+    console.debug("connected");
 
     this.inputTarget.addEventListener("keyup", () => {
       this.buttonTarget.click();

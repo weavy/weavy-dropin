@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import { delay } from "../helpers/timing-helpers"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("scroll");
 
 export default class extends Controller {
 
@@ -8,7 +11,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.debug("scroll:connected");
+    console.debug("connected");
     if (!this.deferredValue) {
       this.toBottom();
     }
@@ -24,6 +27,6 @@ export default class extends Controller {
   }
 
   disconnect() {
-    console.debug("scroll:disconnected");    
+    console.debug("disconnected");    
   }
 }

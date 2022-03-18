@@ -1,9 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("sort");
 
 export default class extends Controller {
 
   connect() {
-    console.debug("sort:connected");
+    console.debug("connected");
 
     // remove data-controller attribute to prevent subsequent sorts when elements are added back to the DOM.
     this.element.removeAttribute("data-controller");
@@ -22,6 +25,6 @@ export default class extends Controller {
   }
 
   disconnect() {
-    console.debug("sort:disconnected");
+    console.debug("disconnected");
   }
 }

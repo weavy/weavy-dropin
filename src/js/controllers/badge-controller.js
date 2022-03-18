@@ -1,6 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import { subscribe, unsubscribe } from "../helpers/connection-helpers.js"
 import postal from "@weavy/dropin-js/src/common/postal";
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("badge");
 
 export default class extends Controller {
 
@@ -13,7 +16,7 @@ export default class extends Controller {
   }
 
   async connect() {
-    console.debug("badge:connected:", this.appsValue.length);
+    console.debug("connected:", this.appsValue.length);
     
     for (var i = 0; i < this.appsValue.length; i++) {            
       let id = this.appsValue[i];
@@ -31,7 +34,7 @@ export default class extends Controller {
   }
 
   disconnect() {
-    console.debug("badge:disconnected:", this.appValue);
+    console.debug("disconnected:", this.appValue);
     for (var i = 0; i < this.appsValue.length; i++) {
       unsubscribe(this.appsValue[i] + ":badge", "badge", this.badgeHandler);
     }

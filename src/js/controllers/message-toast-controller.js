@@ -1,5 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import { delay } from "../helpers/timing-helpers"
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("message-toast");
 
 export default class extends Controller {
 
@@ -8,7 +11,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.debug("message-toast:connected:" + this.idValue);
+    console.debug("connected:" + this.idValue);
 
     let modifier = 28;
     let toasterId = "message_toaster";

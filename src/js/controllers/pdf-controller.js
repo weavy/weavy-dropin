@@ -1,7 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
 
+const console = new WeavyConsole("pdf");
 
 export default class extends Controller {
 
@@ -19,7 +21,7 @@ export default class extends Controller {
   static targets = ["zoomLevel", "pageNumber", "totalPages"]
 
   initialize() {
-    console.debug("pdf:connected");
+    console.debug("connected");
 
     const pdfPath = this.urlValue;
     const SEARCH_FOR = "";
@@ -59,12 +61,12 @@ export default class extends Controller {
     pdfLinkService.setViewer(this.pdfViewer);
 
     this.eventBus.on("scalechanging", function (e) {
-      console.debug("pdf:scalechanging")
+      console.debug("scalechanging")
       self.zoomLevelTarget.value = (Math.round(self.pdfViewer.currentScale * 100)).toFixed(0) + "%";
     });
 
     this.eventBus.on("pagechanging", function (e) {
-      console.debug("pdf:pagechanging")      
+      console.debug("pagechanging")      
       self.pageNumberTarget.value = self.pdfViewer.currentPageNumber;
     });
 
@@ -102,7 +104,7 @@ export default class extends Controller {
   }
 
   zoomIn() {
-    console.debug("pdf:zoomIn");
+    console.debug("zoomIn");
 
     let newScale = this.pdfViewer.currentScale;
     let steps = 1;
@@ -116,7 +118,7 @@ export default class extends Controller {
   }
 
   zoomOut() {
-    console.debug("pdf:zoomOut");
+    console.debug("zoomOut");
 
     let newScale = this.pdfViewer.currentScale;
     let steps = 1;
@@ -130,7 +132,7 @@ export default class extends Controller {
   }
 
   updateZoom() {
-    console.debug("pdf:updateZoom");
+    console.debug("updateZoom");
     let zoomValue = this.zoomLevelTarget.value.replace("%", "");
     if (isNaN(zoomValue)) {
       this.setScale((this.pdfViewer.currentScale+0.0001));
@@ -140,7 +142,7 @@ export default class extends Controller {
   }
 
   updatePage() {
-    console.debug("pdf:updatePage");
+    console.debug("updatePage");
     let pageNumber = this.pageNumberTarget.value;
     
     if (isNaN(pageNumber)) {
@@ -155,7 +157,7 @@ export default class extends Controller {
   }
 
   select(e) {
-    console.debug("pdf:select");
+    console.debug("select");
     e.target.setSelectionRange(0, e.target.value.length);        
   }
 
@@ -168,17 +170,17 @@ export default class extends Controller {
   }
 
   setScale(scale) {
-    console.debug("pdf:setScale:", scale)
+    console.debug("setScale:", scale)
     this.pdfViewer.currentScaleValue = scale;
   }
 
   setPage(pageNumber) {
-    console.debug("pdf:setPage:", pageNumber)
+    console.debug("setPage:", pageNumber)
     this.pdfViewer.currentPageNumber = pageNumber;
   }
 
   disconnect() {
-    console.debug("pdf:disconnected");
+    console.debug("disconnected");
     //if (!this.pdfDocument) {
     //  return; // run cleanup when document is loaded 
     //}

@@ -2,6 +2,9 @@ import * as Turbo from "@hotwired/turbo";
 import postal from '@weavy/dropin-js/src/common/postal';
 import navigation from './navigation';
 import browser from './browser';
+import WeavyConsole from '@weavy/dropin-js/src/common/console';
+
+const console = new WeavyConsole("turbo");
 
 var restorationVisit;
 var isLoaded = false;
@@ -54,7 +57,7 @@ function sendData(url, action) {
   var turbolinksAction;
 
   if (action) {
-    console.debug("turbolinks: visit using action:", action);
+    console.debug("visit using action:", action);
     turbolinksAction = { action: action };
   }
 
@@ -95,7 +98,7 @@ postal.on("turbo-visit", function (e) {
   if (!restorationVisit || restorationVisit && !sameUrl) {
     sendData(e.data.url, e.data.action);
   } else {
-    console.debug("turbolinks: performing restoration, ignoring visit-request")
+    console.debug("performing restoration, ignoring visit-request")
   }
 })
 
