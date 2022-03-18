@@ -157,10 +157,14 @@ public class ClientController : AreaController {
 
             // init app of specified type
             app = AppService.New(model.Type);
+
             if (app == null) {
                 return Problem($"Could not resolve type {model.Type}");
+            } else if (app is not Messenger) {
+                // HACK: disable all apps except messenger for now...
+                return Problem($"Unable to init app {app.GetType().Name} ({app.GetType().GUID})");
             } else if (app is not IContextual) {
-                return Problem($"Unable to init non contextual app {model.GetType().Name} ({model.GetType().GUID})");
+                return Problem($"Unable to init non contextual app {app.GetType().Name} ({app.GetType().GUID})");
             }
 
             // set well-known app properties
