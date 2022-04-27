@@ -43,7 +43,7 @@
     <div class="message-editor">
 
       <div class="me-2 flex-shrink-0">
-        <input class="form-control" type="file" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
+        <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
 
         <div class="btn-group dropup d-inline-block">
           <button class="btn btn-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown"><icon name="attachment" /><span class="spinner-container">@Svg.Spinner(size: 20, spin: true) </span></button>

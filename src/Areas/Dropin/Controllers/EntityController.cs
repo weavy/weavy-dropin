@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Weavy.Core;
 using Weavy.Core.Http;
@@ -26,7 +27,12 @@ public class EntityController : AreaController {
     [HttpPost("attachments")]
     public async Task<IActionResult> Upload() {
         var blobs = await Request.SaveBlobsAsync();
-        return PartialView("_Blobs", blobs);
+        if (blobs.Any()) {
+            return PartialView("_Blobs", blobs);
+        } else {
+            // most likely file type was not allowed...
+            return StatusCode(StatusCodes.Status415UnsupportedMediaType);
+        }
     }
 
     /// <summary>
