@@ -3,6 +3,7 @@
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Description>Razor class library containing the Weavy drop-in UI.</Description>
+    <PackageIcon>weavy-128.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <StaticWebAssetBasePath>/</StaticWebAssetBasePath>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -13,10 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Weavy.Core" Version="10.0.4" />
+    <PackageReference Include="Weavy.Core" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Files for nuget package -->
+    <None Include="..\..\..\assets\weavy-128.png" Pack="true" PackagePath="" />
     <!-- Do not copy these to output -->
     <Content Remove="package.json" />
     <Content Remove="package-lock.json" />
