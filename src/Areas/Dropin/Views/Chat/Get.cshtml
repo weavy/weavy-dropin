@@ -1,8 +1,9 @@
 @model Chat
 @{
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
   BodyAttributes.Add("data-app-uid", Model.Uid());
   BodyAttributes.Add("data-app-id", Model.Id.ToString());
-    BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
+  BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
 }
 <!DOCTYPE html>
 <html data-controller="turbo-stream" data-turbo-stream-app-value="@Model.Id">

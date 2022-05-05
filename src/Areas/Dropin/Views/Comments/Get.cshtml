@@ -1,4 +1,7 @@
 @model Comments
+@{
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+}
 <!DOCTYPE html>
 <html data-controller="turbo-stream" data-turbo-stream-app-value="@Model.Id">
 <head>

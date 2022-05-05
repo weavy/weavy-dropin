@@ -1,4 +1,7 @@
 @model PreviewModel
+@{
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+}
 <!DOCTYPE html>
 <html>
 <head>

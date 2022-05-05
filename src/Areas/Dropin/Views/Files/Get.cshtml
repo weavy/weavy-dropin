@@ -1,4 +1,7 @@
 @model Files
+@{
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+}
 <!DOCTYPE html>
 <html>
 <head>

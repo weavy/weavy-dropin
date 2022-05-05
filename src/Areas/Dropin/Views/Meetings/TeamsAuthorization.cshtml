@@ -1,4 +1,7 @@
 @model MeetingAuthentication
+@{
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+}
 <div class="container text-center py-3">
   @Svg.Icon("microsoft-teams", color: "native", size: 48)
   @if (Model.Authenticated) {
