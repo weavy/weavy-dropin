@@ -2,27 +2,22 @@
 @{
     Layout = "_Layout";
     BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
+    var wy = ConfigurationService.ThemePrefix;
 }
 
-<main role="main" class="pane" data-controller="turbo-stream badge" data-badge-apps-value="[@Model.Id]" data-turbo-stream-app-value="@Model.Id">
-  <header class="appbars sticky-top" data-adjust-scrollbar-top>
-    <nav class="appbar appbar-light">
-      <div class="appbar-left">
-        <avatar for="WeavyContext.Current.User" class="m-1" size="24" />
-      </div>
-      <div class="appbar-middle">
-        <div class="appbar-text"><a class="btn-link" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Index)" asp-route-id="@Model.Id">@T["Messenger"]</a></div>
-      </div>
-      <div class="appbar-right">
-        <a class="btn btn-icon btn-color btn-primary" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.New)" asp-route-id="@Model.Id" data-target="modal" title="@T["New message"]"><icon name="message-plus" /></a>
-      </div>
+<main role="main" class="@wy-pane" data-controller="badge messenger" data-messenger-events-value="[&quot;member-added&quot;,&quot;app-inserted&quot;]"> 
+  <header class="@wy-appbars" data-adjust-scrollbar-top>
+    <nav class="@wy-appbar">
+      <avatar for="WeavyContext.Current.User" size="24" />
+      <div class="@wy-appbar-text"><a class="@wy-button" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Index)">@T["Messenger"]</a></div>
+      <a class="@wy-button @wy-button-icon @wy-button-primary" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.New)" data-target="modal" title="@T["New message"]"><icon name="message-plus" /></a>
     </nav>
   </header>
-  <div class="pane-body" data-controller="pagination">
-    <form class="search-form" role="search" data-controller="search" data-turbo-frame="conversations" data-search-searching-class="searching">
-      <button type="reset" class="btn btn-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close" size="20" /></button>
-      <button type="submit" class="btn btn-icon" title="@T["Search"]" data-search-target="submit"><icon name="magnify" size="20" /></button>
-      <input type="search" class="form-control form-control-sm" name="text" value="@Model.Conversations.Query.Text"  placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
+  <div class="@wy-pane-body" data-controller="pagination">
+    <form class="@wy-search-form @wy-pane-group" role="search" data-controller="search" data-turbo-frame="conversations" data-search-searching-class="@wy-searching">
+        <button type="reset" class="@wy-button @wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
+        <button type="submit" class="@wy-button @wy-button-icon" title="@T["Search"]" data-search-target="submit"><icon name="magnify" size="20" /></button>
+        <input type="search" class="@wy-search-input" name="text" value="@Model.Conversations.Query.Text"  placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
     </form>
     <partial name="_Conversations" model="Model.Conversations" />
   </div>

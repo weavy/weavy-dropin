@@ -1,7 +1,7 @@
 @model Message
 @{
     var user = Model.CreatedBy();
-    var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbPlaceholderUrl() != null);
+    var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null,null) != null);
     var files = Model.Attachments().Except(images);
 }
 <turbo-frame id="@DomId(Model)">
@@ -12,7 +12,7 @@
     } else {
         <div class="card mb-2">
             <div class="card-header pe-1 d-flex align-items-center">
-                <div class="flex-grow-1"><avatar for="@user" /> @user.GetTitle()</div>
+                <div class="flex-grow-1"><avatar for="@user" /> @user.GetDisplayName()</div>
                 @if(Model.HasPermission(Permission.Update)){
                    <div>
                     <div class="dropdown">

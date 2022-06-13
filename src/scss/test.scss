@@ -1,13 +1,16 @@
+@use "../node_modules/@weavy/themes/scss/default/fonts";
+
 // core bootstrap functionality and custom variables
-@import "core";
+@use "../node_modules/@weavy/themes/scss/default/bootstrap" as *;
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/root";
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/reboot" as *;
 
 // optional bootstrap components
-@import "../node_modules/bootstrap/scss/root";
-@import "../node_modules/bootstrap/scss/reboot";
 @import "../node_modules/bootstrap/scss/type";
 @import "../node_modules/bootstrap/scss/containers";
 @import "../node_modules/bootstrap/scss/grid";
 
+// THE FOLLOWING TWO SHOULD BE AVOIDED IN PRODUCTION, SINCE THEY ARE NON-SEMANTIC
 @import "../node_modules/bootstrap/scss/helpers";
 @import "../node_modules/bootstrap/scss/utilities/api";
 

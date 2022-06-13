@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import { delay } from "../helpers/timing-helpers"
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import { delay } from "../utils/timing-helpers"
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("scroll");
 
@@ -22,8 +22,8 @@ export default class extends Controller {
     await delay();
     document.scrollingElement.scrollTop = 99999999999;
     
-    // show inital messages after scrolling to bottom
-    document.getElementById("messages").classList.remove("invisible");
+    // show initial messages after scrolling to bottom
+    document.getElementById("messages").style.visibility = null;
   }
 
   disconnect() {

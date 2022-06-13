@@ -1,9 +1,23 @@
 @model IReactable
+@{
+  var total = Model.Reactions.Count();
 
-<div class="reactions">
-    <partial name="_ReactionMenu" />
-    <partial name="_ReactionList" />
-</div>
+  var wy = ConfigurationService.ThemePrefix;
+}
 
+@if (total > 0) {
+  <turbo-frame id="@DomId(Model)">
+    <a class="@wy-reactions" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ReactionsModal)" asp-route-id="@Model.Uid()" data-turbo-frame="modal">
+      @foreach (var emoji in Model.Reactions.Select(x => x.Content).Distinct()) {
+        <emoji name="@emoji" />
+      }
+      @if (total > 1) {
+        <small class="@wy-reaction-count">@total</small>
+      }
+    </a>
+  </turbo-frame>
+} else {
+  <turbo-frame id="@DomId(Model)"></turbo-frame>
+}
 
 

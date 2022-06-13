@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Weavy.Core;
@@ -19,24 +18,23 @@ namespace Weavy.Dropin.Controllers;
 public class MessengerController : AreaController {
 
     /// <summary>
-    /// Display specified messenger app.
+    /// Display messenger app.
     /// </summary>
-    /// <param name="id">Id of messenger app.</param>
     /// <param name="query"></param>
     /// <returns></returns>
-    [HttpGet("{id:int}")]
-    public IActionResult Index(int id, ConversationQuery query) {
-        var model = AppService.Get<Messenger>(id);
+    [HttpGet("")]
+    public IActionResult Index(ConversationQuery query) {
+        var model = new Messenger();
         if (model == null) {
             return NotFound();
         }
 
-        // find chat rooms and private chats
+        // find chat rooms and private chats for current user
+        query.MemberId = WeavyContext.Current.User.Id;
         query.Contextual = false;
 
         // limit page size to [1,25}
         query.Top = Math.Clamp(query.Top ?? PageSizeMedium, 1, PageSizeMedium);
-
         query.OrderBy = "PinnedAt DESC, LastMessageAt DESC, CreatedAt DESC";
         var result = ConversationService.Search(query);
 
@@ -52,12 +50,11 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Display the specified conversation.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation.</param>
+    /// <param name="id">Id of the conversation.</param>
     /// <param name="query">Query options for paging etc.</param>
-    [HttpGet("{id:int}/{conversationId:int}")]
-    public IActionResult Get(int id, int conversationId, MessageQuery query) {
-        var model = ConversationService.Get(conversationId);
+    [HttpGet("{id:int}")]
+    public IActionResult Get(int id, MessageQuery query) {
+        var model = ConversationService.Get(id);
         if (model == null) {
             return NotFound();
         }
@@ -83,6 +80,7 @@ public class MessengerController : AreaController {
         // get first page of messages (and reverse them for easier rendering in correct order)
         model.Messages = ConversationService.GetMessages(model.Id, query);
         model.Messages.Reverse();
+        ViewData["Badge"] = ConversationService.GetBadge(model.Member.Id);
 
         return View(model);
     }
@@ -94,7 +92,7 @@ public class MessengerController : AreaController {
     /// <returns></returns>
     [HttpGet("add/{id:int}")]
     public IActionResult GetConversation(int id) {
-        // REVIEW: Merge with TurboStreamInsertConversation(id, conversationId)?
+        // REVIEW: Merge with TurboStreamInsertConversation(id)?
         var conversation = AppService.Get(id);
         if (conversation == null) {
             return NotFound();
@@ -103,16 +101,14 @@ public class MessengerController : AreaController {
     }
 
     /// <summary>
-    /// 
+    ///  Called by messenger-controller to update ui after conversation was inserted.
     /// </summary>
-    /// <param name="id">The id of the messenger app.</param>
-    /// <param name="conversationId">The id of the <see cref="Conversation"/>.</param>
+    /// <param name="id">Id of the <see cref="Conversation"/>.</param>
     /// <returns></returns>
-    [HttpGet("turbostream-insert-conversation/{id:int}/{conversationId:int}")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult TurboStreamInsertConversation(int id, int conversationId) {
+    [HttpGet("turbostream-insert-conversation/{id:int}")]
+    public IActionResult TurboStreamInsertConversation(int id) {
         // REVIEW: Merge with GetConversation(id)?
-        var conversation = ConversationService.Get(conversationId);
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
@@ -120,25 +116,48 @@ public class MessengerController : AreaController {
     }
 
     /// <summary>
-    /// Called by turbo-stream-controller to update ui after message was inserted.
+    ///  Called by messenger-controller to update ui after conversation was inserted.
     /// </summary>
-    /// <param name="id">The id of the messenger app.</param>
-    /// <param name="messageId">The id of the inserted <see cref="Message"/>.</param>
+    /// <param name="id">Id of the <see cref="Conversation"/>.</param>
     /// <returns></returns>
-    [HttpGet("turbostream-insert-message/{id:int}/{messageId:int}")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult TurboStreamInsertMessage(int id, int messageId) {
-        var message = MessageService.Get(messageId);
+    [HttpGet("turbostream-remove-conversation/{id:int}")]
+    public IActionResult TurboStreamRemoveConversation(int id) {
+        return TurboStream.Remove("_Conversation", "a" + id.ToString());
+    }
+
+    /// <summary>
+    /// Called by messenger-controller to update ui after message was inserted.
+    /// </summary>
+    /// <param name="id">Id of the inserted <see cref="Message"/>.</param>
+    /// <returns></returns>
+    [HttpGet("turbostream-insert-message/{id:int}")]
+    public IActionResult TurboStreamInsertMessage(int id) {
+        var message = MessageService.Get(id);
         if (message == null) {
             return BadRequest();
         }
 
-        var result = new TurboStreamsResult();        
+        var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Append("messages", "_Message", message));
         result.Streams.Add(TurboStream.Append("messages", "_MessageToast", message));
         return result;
     }
-    
+
+    /// <summary>
+    /// Called by messenger-controller to update ui after message was updated.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("turbostream-update-message/{id:int}")]
+    public IActionResult TurboStreamUpdateMessage(int id) {
+        var message = MessageService.Get(id);
+        if (message == null) {
+            return BadRequest();
+        }
+
+        return TurboStream.Replace("_Message", message);
+    }
+
     /// <summary>
     /// Get a message as a partial.
     /// </summary>
@@ -160,9 +179,8 @@ public class MessengerController : AreaController {
     /// </summary>
     /// <param name="id">Id of the messenger app.</param>
     /// <returns></returns>
-    [HttpGet("{id:int}/new")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult New(int id) {
+    [HttpGet("new")]
+    public IActionResult New() {
         // perform initial search
         // TODO: a "smart" algoritm for default users? maybe most recently contacted?
         var query = new UserQuery() {
@@ -178,15 +196,14 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Create a new conversation with the selected users.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
     /// <param name="users"></param>
     /// <returns></returns>
-    [HttpPost("{id:int}/new")] 
-    public IActionResult Create(int id, List<int> users) {
+    [HttpPost("new")]
+    public IActionResult Create(List<int> users) {
         Conversation conversation = null;
         if (users?.Count == 1) {
             conversation = ConversationService.CreatePrivateChat(WeavyContext.Current.User.Id, users[0]);
-        } else if (users?.Count > 1 ){
+        } else if (users?.Count > 1) {
             users.Add(WeavyContext.Current.User.Id);
             conversation = ConversationService.CreateRoom(null, users);
         }
@@ -195,31 +212,25 @@ public class MessengerController : AreaController {
             return BadRequest();
         }
 
-        return SeeOtherAction(nameof(Get), new { id, conversationId = conversation.Id });
+        return SeeOtherAction(nameof(Get), new { conversation.Id });
     }
 
     /// <summary>
     /// Insert a new message into the specified conversation.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation to add the message to.</param>
+    /// <param name="id">Id of the conversation.</param>
     /// <param name="model">The message to insert.</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}")]
-    public IActionResult InsertMessage(int id, int conversationId, MessageModel model) {
-        var conversation = ConversationService.Get(conversationId);
+    [HttpPost("{id:int}")]
+    public IActionResult InsertMessage(int id, MessageModel model) {
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
 
         if (ModelState.IsValid) {
-            // HACK: pass in the Messenger app as Context, should ideally be implemented in a cleaner way but UIHook needs to know the id of the messenger app for the partial to render correctly...
-            var messenger = AppService.Get(id);
-
-            var message = new Message();
-            message.Text = model.Text;
-            message.MeetingId = model.MeetingId;
-            message = MessageService.Insert(message, conversation, context: messenger, blobs: model.Blobs);
+            var message = new Message { Text = model.Text, MeetingId = model.MeetingId };
+            message = MessageService.Insert(message, conversation, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 // clear form and append message
@@ -232,7 +243,7 @@ public class MessengerController : AreaController {
                 result.Streams.Add(TurboStream.Replace("message-ph", "_Message", message));
                 return result;
             }
-            return SeeOtherAction("Get", null, new { id, conversationId });
+            return SeeOtherAction(nameof(Get), new { id });
         }
 
         // validation error, display form again
@@ -266,12 +277,11 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Display details about the conversation.
     /// </summary>
-    /// <param name="conversationId">The id of the conversation to get details for.</param>
+    /// <param name="id">The id of the conversation to get details for.</param>
     /// <returns></returns>
-    [HttpGet("{id:int}/{conversationId:int}/details")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult Details(int id, int conversationId) {
-        var conversation = ConversationService.Get(conversationId);
+    [HttpGet("{id:int}/details")]
+    public IActionResult Details(int id) {
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
@@ -280,7 +290,7 @@ public class MessengerController : AreaController {
 
         var model = new UpdateConversationModel() {
             Conversation = conversation,
-            Name = conversation.GetTitle()
+            Name = conversation.GetDisplayName()
         };
 
         // edit name field should be empty when name has not been explicitly set
@@ -294,14 +304,13 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Updates the conversation details.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation to update.</param>
+    /// <param name="id">Id of the conversation to update.</param>
     /// <param name="model">The updated members and the name of the room.</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}/details")]
-    public IActionResult Update(int id, int conversationId, UpdateConversationModel model) {
+    [HttpPost("{id:int}/details")]
+    public IActionResult Update(int id, UpdateConversationModel model) {
         // NOTE: only rooms can be updated 
-        var room = ConversationService.Get<ChatRoom>(conversationId);
+        var room = ConversationService.Get<ChatRoom>(id);
         if (room == null) {
             return NotFound();
         }
@@ -320,7 +329,7 @@ public class MessengerController : AreaController {
             foreach (var userid in remove) {
                 AppService.RemoveMember(room.Id, userid);
             }
-            return SeeOtherAction(nameof(Get), null, new { id, conversationId });
+            return SeeOtherAction(nameof(Get), new { id });
         }
 
         ViewBag.Selected = model.Users;
@@ -331,13 +340,11 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Pin the specified conversation.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation to pin.</param>
+    /// <param name="id">Id of the conversation to pin.</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}/pin")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult Pin(int id, int conversationId) {
-        var conversation = ConversationService.Get(conversationId);
+    [HttpPost("{id:int}/pin")]
+    public IActionResult Pin(int id) {
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
@@ -349,13 +356,11 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Unpin the specified conversation.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation to unpin.</param>
+    /// <param name="id">Id of the conversation to unpin.</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}/unpin")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult Unpin(int id, int conversationId) {
-        var conversation = ConversationService.Get(conversationId);
+    [HttpPost("{id:int}/unpin")]
+    public IActionResult Unpin(int id) {
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
@@ -367,66 +372,33 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Mark the specified conversation as read.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation.</param>
-    /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}/read")]
-    [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Needed for routing.")]
-    public IActionResult Read(int id, int conversationId) {
-        var conversation = ConversationService.Get(conversationId);
-        if (conversation == null) {
-            return NotFound();
-        }
-
-        conversation = ConversationService.SetRead(conversation.Id, WeavyContext.Current.User.Id, DateTime.UtcNow);
-
-        // REVIEW: merge with SetRead(id)?
-        //if (Request.IsTurboStream()) {
-        //    // post from menu item
-        //    return TurboStream.Replace("_Conversation", conversation);
-        //} else {
-        //    // api call from stimulus controller
-        //    return Ok();
-        //}
-        
-        return TurboStream.Replace("_Conversation", conversation);
-    }
-
-    /// <summary>
-    /// Mark the specified conversation as read.
-    /// </summary>
-    /// <param name="id">The id of the conversation.</param>
+    /// <param name="id">Id of the conversation.</param>
     /// <returns></returns>
     [HttpPost("{id:int}/read")]
-    public IActionResult SetRead(int id) {
+    public IActionResult Read(int id) {
         var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
-        
         conversation = ConversationService.SetRead(conversation.Id, WeavyContext.Current.User.Id, DateTime.UtcNow);
 
-        // REVIEW: merge with SetRead(id)?
-        //if (Request.IsTurboStream()) {
-        //    // post from menu item
-        //    return TurboStream.Replace("_Conversation", conversation);
-        //} else {
-        //    // api call from stimulus controller
-        //    return Ok();
-        //}
-
-        return Ok();
+        if (Request.IsTurboStream()) {
+            // post from menu item
+            return TurboStream.Replace("_Conversation", conversation);
+        } else {
+            // api call from stimulus controller
+            return NoContent();
+        }
     }
 
     /// <summary>
     /// Mark the specified conversation as unread.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation.</param>
+    /// <param name="id">Id of the conversation.</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}/unread")]
-    public IActionResult Unread(int conversationId) {
-        var conversation = ConversationService.Get(conversationId);
+    [HttpPost("{id:int}/unread")]
+    public IActionResult Unread(int id) {
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
@@ -438,18 +410,17 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Leave the specified conversation.
     /// </summary>
-    /// <param name="id">Id of the messenger app.</param>
-    /// <param name="conversationId">Id of the conversation.</param>
+    /// <param name="id">Id of the conversation.</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/{conversationId:int}/leave")]
-    public IActionResult Leave(int id, int conversationId) {
-        var conversation = ConversationService.Get(conversationId);
+    [HttpPost("{id:int}/leave")]
+    public IActionResult Leave(int id) {
+        var conversation = ConversationService.Get(id);
         if (conversation == null) {
             return NotFound();
         }
 
         AppService.RemoveMember(conversation.Id, WeavyContext.Current.User.Id);
-        return SeeOtherAction(nameof(Index), new { id });
+        return SeeOtherAction(nameof(Index));
     }
 
     /// <summary>
@@ -460,14 +431,8 @@ public class MessengerController : AreaController {
     [HttpPost]
     [Route("{id:int}/typing")]
     public IActionResult Typing(int id) {
-        // push typing event to other conversation members
-        // NOTE: instead of sending the entire user object we extract the minimal data needed to update the ui
-        var user = new { WeavyContext.Current.User.Id, Name = WeavyContext.Current.User.GetTitle() };
-        var data = new { AppId = id, User = user };
-        PushService.PushToGroup($"a{id}:{PushService.EVENT_TYPING}", PushService.EVENT_TYPING, data);
+        ConversationService.Typing(id, WeavyContext.Current.User.Id);
         return Ok(id);
     }
-
-
 }
 

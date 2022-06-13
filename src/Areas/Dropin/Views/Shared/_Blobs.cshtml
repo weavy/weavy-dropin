@@ -1,11 +1,14 @@
 @model IEnumerable<Blob>
+@{
+  var wy = ConfigurationService.ThemePrefix;
+}
 @foreach (var blob in Model) {
     var icon = FileUtils.GetIcon(blob);
-    <div class="attachment">
-        <icon name="@icon.Name" color="@icon.Color" class="mx-1 flex-shrink-0" />
-        <div class="text-truncate">@blob.Name</div>
+    <div class="@wy-picker-list-item">
+        <icon name="@icon.Name" color="@icon.Color" />
+        <div class="@wy-picker-list-item-title">@blob.Name</div>
         <input type="hidden" name="blobs" value="@blob.Id" />
-        <button type="button" class="btn btn-icon" data-action="attachments#remove" data-attachments-id-param="@blob.Id"><icon name="close-circle" /></button>
+        <button type="button" class="@wy-button @wy-button-icon" data-action="attachments#remove" data-attachments-id-param="@blob.Id"><icon name="close-circle" /></button>
     </div>
 }
 

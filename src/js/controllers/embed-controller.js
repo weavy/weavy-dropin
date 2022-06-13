@@ -1,12 +1,13 @@
 import { Controller } from "@hotwired/stimulus";
-import WeavyConsole from "@weavy/dropin-js/src/common/console";
+import WeavyConsole from "../utils/console";
+import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("embed-controller");
 
 export default class extends Controller {
 
   initialize() {
-    this.element.classList.add("loading");
+    this.element.classList.add(prefix("loading"));
   }
 
   connect() {
@@ -17,15 +18,15 @@ export default class extends Controller {
 
     this.fallbackTimeout = setTimeout(function () {
       console.log("fallback");
-      el.classList.add("fallback");
+      el.classList.add(prefix("fallback"));
     }, 2500)
   }
 
   embedLoaded(event) {
     var obj = event.target;
-    if (obj.tagName === 'OBJECT' && obj.classList.contains("loading") && !obj.classList.contains("loaded")) {
+    if (obj.tagName === 'OBJECT' && obj.classList.contains(prefix("loading")) && !obj.classList.contains(prefix("loaded"))) {
       console.log("loaded");
-      obj.classList.add("loaded");
+      obj.classList.add(prefix("loaded"));
       clearTimeout(this.fallbackTimeout);
     }
   }

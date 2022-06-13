@@ -1,8 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { subscribe, unsubscribe } from "../helpers/connection-helpers.js"
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
-
-const console = new WeavyConsole("typing");
+import { subscribe, unsubscribe } from "../utils/connection-helpers.js"
 
 export default class extends Controller {
 
@@ -10,43 +7,45 @@ export default class extends Controller {
   static targets = ["element", "indicator"]
   static classes = ["isTyping"]
 
+  typingHandler = this.typing.bind(this);
+  stopTypingHandler = this.stopTyping.bind(this)
+
   activeTypers = [];
   typingTimeout = null;
-  typingHandler = this.typing.bind(this);
-  stopTypingHandler = this.stopTyping.bind(this);
 
   typing(data) {
-    
-    if (data.appId === this.appValue && data.user.id.toString() !== document.querySelector('body').dataset.userId) {      
+
+    if (data.conversation.id === this.appValue && data.member.id.toString() !== document.querySelector("body").dataset.userId) {
       let typers = this.activeTypers;
       // remove existing typing events by this user (can only type in one conversation at a time)
       typers.forEach(function (item, index) {
-        if (item.user.id === data.user.id) {
+        if (item.member.id === data.member.id) {
           typers.splice(index, 1);
         }
       });
+     
+      let typingEvent = { member: data.member };
 
       // track time when we received this event
-      data.time = Date.now();
-      typers.push(data);
+      typingEvent.time = Date.now();
+      typers.push(typingEvent);
 
       this.updateTyping();
     }
   }
 
-  stopTyping(msg) {
-    
-    if (msg.parent.id === this.appValue) {
-      console.debug("stop");
+  stopTyping(data) {
+
+    if (data.app_id === this.appValue) {
       let typers = this.activeTypers;
-      
+
       // remove typing indicator for message sender
       typers.forEach(function (item, index) {
-        if (item.user.id === msg.createdById) {
+        if (item.member.id === data.created_by.id) {
           typers.splice(index, 1);
         }
       });
-            
+
       this.updateTyping();
     }
   }
@@ -67,16 +66,17 @@ export default class extends Controller {
         typers.splice(index, 1);
       }
     });
+
     // remove old typing indicators
     this.elementTarget.classList.remove(this.isTypingClass);
     
     if (typers.length) {
       // use age of typing event to animate ellipsis...
       var dots = (Math.round((now - Math.max.apply(null, typers.map(function (x) { return x.time; }))) / 1000) % 3) + 1;
-      var ellipsis = (".").repeat(dots) + "<span class=invisible>" + (".").repeat(3 - dots) + "</span>";
+      var ellipsis = (".").repeat(dots) + "<span style=\"visibility: hidden;\">" + (".").repeat(3 - dots) + "</span>";
 
       // merge names of people typing
-      var names = typers.map((item) => item.user.name).sort();
+      var names = typers.map((item) => item.member.display_name).sort();
 
       var text = "";
       for (var i = 0; i < names.length; i++) {
@@ -106,13 +106,13 @@ export default class extends Controller {
 
   async connect() {
     //console.debug("typing:connected:", this.appValue);
-    subscribe(this.appValue + ":typing", "typing", this.typingHandler);
-    subscribe(this.appValue + ":message-inserted", "message-inserted", this.stopTypingHandler);
+    subscribe("a" + this.appValue, "typing", this.typingHandler);
+    subscribe("a" + this.appValue, "message-inserted", this.stopTypingHandler);
   }
 
   disconnect() {
     //console.debug("typing:disconnected:", this.appValue);
-    unsubscribe(this.appValue + ":typing", "typing", this.typingHandler);
-    unsubscribe(this.appValue + ":message-inserted", "message-inserted", this.stopTypingHandler);
+    unsubscribe("a" + this.appValue, "typing", this.typingHandler);
+    unsubscribe("a" + this.appValue, "message-inserted", this.stopTypingHandler);
   }
 }

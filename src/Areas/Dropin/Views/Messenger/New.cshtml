@@ -1,31 +1,31 @@
 @model UserSearchResult
 @{
   Layout = "_Layout";
+  var wy = ConfigurationService.ThemePrefix;
 }
-<header class="appbars sticky-top" data-adjust-scrollbar-top>
-  <nav class="appbar appbar-light">
-    <div class="appbar-left">
-      <button class="btn btn-icon close-back">@Svg.Icon("close")</button>
-    </div>
-    <div class="appbar-middle">
-      <div class="appbar-text">@T["New message"]</div>
-    </div>
-    <div class="appbar-right">
-    </div>
+<header class="@wy-appbars" data-adjust-scrollbar-top>
+  <nav class="@wy-appbar">
+    <button class="@wy-button @wy-button-icon close-back">@Svg.Icon("close")</button>
+    <div class="@wy-appbar-text">@T["New message"]</div>
+    <button class="@wy-button invisible"></button>
   </nav>
 </header>
 
-<main class="px-3 py-1">
-  <form id="newform" asp-action="@nameof(MessengerController.Create)" asp-route-id="@GetRouteValue("id")" data-controller="form search" data-form-key-value="users" data-turbo-frame="searchresult" data-search-searching-class="searching">
-    <div class="search-form px-0">
-      <button type="reset" class="btn btn-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close" size="20" /></button>
-      <button class="btn btn-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
-      <input type="search" value="@Model.Query.Text" name="text" class="form-control form-control-sm" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
+<main class="@wy-search">
+  <form id="newform" asp-action="@nameof(MessengerController.Create)" data-controller="form search" data-form-key-value="users" data-turbo-frame="searchresult" data-search-searching-class="@wy-searching">
+    <div class="@wy-search-form @wy-pane-group">
+      <button type="reset" class="@wy-button @wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
+      <button class="@wy-button @wy-button-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
+      <input type="search" value="@Model.Query.Text" name="text" class="@wy-search-input" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
     </div>
-    <partial name="_SearchUsersResult" />
-    <div class="form-group-bottom" data-adjust-scrollbar-bottom>
-        <div class="form-buttons">
-          <button type="submit" class="btn btn-primary" title="@T["New message"]" form="newform" formaction="@Url.Action(nameof(MessengerController.Create))" data-turbo-frame="_top" disabled>@T["Create message"]</button>
+    <div class="@wy-pane-group">
+      <partial name="_SearchUsersResult" />
+    </div>
+    <div class="@wy-footerbars @wy-footerbars-fixed" data-adjust-scrollbar-bottom>
+        <div class="@wy-footerbar">
+          <div class="@wy-pane-group @wy-buttons">
+            <button type="submit" class="@wy-button @wy-button-primary" title="@T["Next"]" form="newform" formaction="@Url.Action(nameof(MessengerController.Create))" data-turbo-frame="_top" disabled>@T["Next"]</button>
+          </div>
         </div>
     </div>
   </form>

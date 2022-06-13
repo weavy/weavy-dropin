@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import { delay, nextFrame } from "../helpers/timing-helpers"
-import { request } from "../helpers/request-helpers"
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import { delay, nextFrame } from "../utils/timing-helpers"
+import { request } from "../utils/request-helpers"
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("pagination");
 
@@ -27,7 +27,7 @@ export default class extends Controller {
 
     // keep scroll position by scrolling one vertical pixel before appending html
     if (window.scrollY === 0) {
-      window.scroll(window.screenX, 1);
+      window.scroll(0, 1);
     }
 
     this.pager.outerHTML = html;    

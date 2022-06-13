@@ -9,36 +9,32 @@ using Weavy.Core.Services;
 namespace Weavy.Dropin.Controllers;
 
 /// <summary>
-/// Controller for the <see cref="Notifications"/> app.
+/// Controller for <see cref="Notifications"/>.
 /// </summary>
 public class NotificationsController : AreaController { 
 
     /// <summary>
     /// Display notifications.
     /// </summary>
-    /// <param name="id">App id.</param>
     /// <param name="query">Query options for paging etc.</param>
     /// <returns></returns>
-    [HttpGet("{id:int}")]
-    public IActionResult Get(int id, NotificationQuery query) {
-        var app = AppService.Get<Notifications>(id);
-        if (app == null) {
-            return BadRequest();
-        }
+    [HttpGet("")]
+    public IActionResult Get(NotificationQuery query) {
+        var model = new Notifications();
 
+        // find notifications for current user
         query.UserId = WeavyContext.Current.User.Id;
         query.Top = Math.Clamp(query.Top ?? PageSizeMedium, 1, PageSizeMedium);
         query.Trashed = false;
         query.OrderBy = "Id DESC";
-
-        app.Items = NotificationService.Search(query);
+        model.Items = NotificationService.Search(query);
 
         if (Request.IsAjaxRequest()) {
             // infinite scroll, return partial view                
-            return PartialView("_Notifications", app.Items);
+            return PartialView("_Notifications", model.Items);
         }
 
-        return View(app);
+        return View(model);
     }
 
 
@@ -48,10 +44,9 @@ public class NotificationsController : AreaController {
     /// <returns></returns>
     [HttpPost("read")]
     public IActionResult ReadAll() {
-        return BadRequest();
+        throw new NotImplementedException();
         //NotificationService.Read();
     }
-
 
     /// <summary>
     /// Marks notification as read. 

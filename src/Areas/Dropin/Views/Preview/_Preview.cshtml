@@ -1,20 +1,22 @@
 @model File
 @{
   var fmt = Model.Blob == null ? PreviewFormat.None : (Model.Blob.Link != null ? PreviewFormat.Icon : FileUtils.GetPreviewFormat(Model.Blob.Name));
-  if (fmt == PreviewFormat.Image && Model.ThumbPlaceholderUrl() == null) {
+  if (fmt == PreviewFormat.Image && Model.ThumbUrl(null, null) == null) {
     // image metadata not available yet? display icon for now
     fmt = PreviewFormat.Icon;
   }
+
+  var wy = ConfigurationService.ThemePrefix;
 }
 
-<article class="content-area scroll-y" data-turbo-permanent id="content-@Model.Id" data-type="content" data-id="@Model.Id" data-content-id="@Model.Id">
-  <section class="content-viewer">
+<article class="@wy-content-area @wy-scroll-y" data-turbo-permanent id="content-@Model.Id" data-type="content" data-id="@Model.Id" data-content-id="@Model.Id">
+  <section class="@wy-content-viewer">
 
     @if (fmt == PreviewFormat.Text) {
 
       // TODO: Replace highlight.js with server-side highlighting
-      var lang = FileUtils.SyntaxHighlight(Model.GetTitle());
-      <div class="content-text@(lang != null ? " content-code" : "")">
+      var lang = FileUtils.SyntaxHighlight(Model.GetDisplayName());
+      <div class="@wy-content-text@(lang != null ? $" {wy}-content-code" : "")">
         @if (lang != null) {
           <pre data-controller="highlight" class="language-@lang line-numbers"><code class="language-@lang">@System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob).FullName)</code></pre>
         } else {
@@ -29,12 +31,12 @@
       var src = (ext == ".gif" || ext == ".svg") ? Model.Url() : Model.ThumbUrl(1920, 1920);
 
       if (Model.Blob.Width != null && Model.Blob.Height != null) {
-        <div class="content-image responsive-image" style="--width: @Model.Blob.Width; --height: @Model.Blob.Height">
+        <div class="@wy-content-image @wy-responsive-image" style="--width: @Model.Blob.Width; --height: @Model.Blob.Height">
           <img data-controller="image" src="@src" width="@Model.Blob.Width" height="@Model.Blob.Height" decoding="async" />
-          @Svg.Spinner(spin: true)
+          @Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)
         </div>
       } else {
-        <div class="content-image responsive-image intrinsic-image">
+        <div class="@wy-content-image @wy-responsive-image @wy-intrinsic-image">
           <img data-controller="image" src="@src" decoding="async" />
         </div>
       }
@@ -50,12 +52,12 @@
               <span data-pdf-target="totalPages" style="min-width:.75rem; display:inline-block"></span>
             </div>
             <span class="vertical-separator d-none d-sm-block"></span>
-            <button class="btn btn-icon btn-zoom-out" data-action="click->pdf#zoomOut" title="@T["Zoom out"]"><icon name="minus" color="white" /></button>
+            <button class="@wy-button @wy-button-icon btn-zoom-out" data-action="click->pdf#zoomOut" title="@T["Zoom out"]"><icon name="minus" color="white" /></button>
             <input type="text" data-action="change->pdf#updateZoom click->pdf#select" data-pdf-target="zoomLevel" />
-            <button class="btn btn-icon btn-zoom-in" data-action="click->pdf#zoomIn" title="@T["Zoom in"]"><icon name="plus" color="white" /></button>
+            <button class="@wy-button @wy-button-icon btn-zoom-in" data-action="click->pdf#zoomIn" title="@T["Zoom in"]"><icon name="plus" color="white" /></button>
             <span class="vertical-separator"></span>
-            <button class="btn btn-icon btn-fit-page" data-action="click->pdf#fitToWidth" title="@T["Fit to width"]"><icon name="fit-width" color="white" /></button>
-            <button class="btn btn-icon" data-action="click->pdf#fitToPage" title="@T["Fit to screen"]"><icon name="fit-screen" color="white" /></button>
+            <button class="@wy-button @wy-button-icon btn-fit-page" data-action="click->pdf#fitToWidth" title="@T["Fit to width"]"><icon name="fit-width" color="white" /></button>
+            <button class="@wy-button @wy-button-icon" data-action="click->pdf#fitToPage" title="@T["Fit to screen"]"><icon name="fit-screen" color="white" /></button>
           </nav>
         </div>
         <div class="pdf-viewerContainer">
@@ -64,66 +66,66 @@
       </div>
 
     } else if (fmt == PreviewFormat.Video) {
-      <video id="content-video" data-controller="media" class="content-video" controls crossorigin="use-credentials" autoplay>
+      <video id="content-video" data-controller="media" class="@wy-content-video" controls crossorigin="use-credentials" autoplay>
         <source src="@Model.Url()" type="@Model.Blob.MediaType" />
-        <div class="content-media">
-          <div class="content-icon">
+        <div class="@wy-content-media">
+          <div class="@wy-content-icon">
             @Svg.Icon(Model.GetIcon())
           </div>
-          <div class="content-name">
-            <a href="@Model.Url()" download>@Model.GetTitle()</a>
+          <div class="@wy-content-name">
+            <a href="@Model.Url()" download>@Model.GetDisplayName()</a>
           </div>
         </div>
       </video>
-      @Svg.Spinner(spin: true)
+      @Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)
 
     } else if (fmt == PreviewFormat.Audio) {
 
-      <div class="content-media">
-        <div class="content-icon">
+      <div class="@wy-content-media">
+        <div class="@wy-content-icon">
           @Svg.Icon(Model.GetIcon())
         </div>
-        <div class="content-name">
-          <a href="@Model.Url()" download>@Model.GetTitle()</a>
+        <div class="@wy-content-name">
+          <a href="@Model.Url()" download>@Model.GetDisplayName()</a>
         </div>
-        <audio id="content-audio" data-controller="media" class="content-audio mt-3" controls crossorigin="use-credentials" autoplay>
+        <audio id="content-audio" data-controller="media" class="@wy-content-audio mt-3" controls crossorigin="use-credentials" autoplay>
           <source src="@Model.Url()" type="@Model.Blob.MediaType" />
         </audio>
       </div>
     } else if (Model.Blob?.Embed != null && WeavyContext.Current.Browser.Platform != "iOS") {
       @* iframe needs to be object to not render error pages when content is blocked *@
-      <object data-controller="embed" class="content-iframe" data="@Model.Blob.Embed"></object>
+      <object data-controller="embed" class="@wy-content-iframe" data="@Model.Blob.Embed"></object>
 
-      @Svg.Spinner(spin: true)
+      @Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)
 
-      <div class="content-media content-iframe-fallback">
-        <div class="content-icon">
+      <div class="@wy-content-media @wy-content-iframe-fallback">
+        <div class="@wy-content-icon">
           @Svg.Icon(Model.GetIcon())
         </div>
-        <div class="content-name">
-          <a href="@Model.Blob.Link" target="_blank" title="@T["Open in {0}", Model.Blob.Provider]">@Model.GetTitle() @Svg.Icon("open-in-new", null, 18)</a>
+        <div class="@wy-content-name">
+          <a href="@Model.Blob.Link" target="_blank" title="@T["Open in {0}", Model.Blob.Provider]">@Model.GetDisplayName() <icon name="open-in-new" size="18" /></a>
         </div>
       </div>
 
     } else if (Model.Blob?.Link != null) {
 
-      <div class="content-media">
-        <div class="content-icon">
+      <div class="@wy-content-media">
+        <div class="@wy-content-icon">
           @Svg.Icon(Model.GetIcon())
         </div>
-        <div class="content-name">
-          <a href="@Model.Blob.Link" target="_blank" title="@T["Open in {0}", Model.Blob.Provider]">@Model.GetTitle() @Svg.Icon("open-in-new", null, size: 18)</a>
+        <div class="@wy-content-name">
+          <a href="@Model.Blob.Link" target="_blank" title="@T["Open in {0}", Model.Blob.Provider]">@Model.GetDisplayName() <icon name="open-in-new" size="18" /></a>
         </div>
       </div>
 
     } else if (fmt != PreviewFormat.None) {
 
-      <div class="content-media">
-        <div class="content-icon">
+      <div class="@wy-content-media">
+        <div class="@wy-content-icon">
           @Svg.Icon(Model.GetIcon())
         </div>
-        <div class="content-name">
-          <a href="@Model.Url()" download>@Model.GetTitle()</a>
+        <div class="@wy-content-name">
+          <a href="@Model.Url()" download>@Model.GetDisplayName()</a>
         </div>
       </div>
 

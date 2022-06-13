@@ -1,14 +1,15 @@
-import utils from '@weavy/dropin-js/src/common/utils';
-import postal from '@weavy/dropin-js/src/common/postal';
+/* global WEAVY_DEVELOPMENT */
+import { delegate } from '../utils/utils';
+import postal from '../utils/postal';
 import turbo from './turbo';
-import browser from './browser';
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import browser from '../utils/browser';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("overlay");
 
 const _overlays = new Map();
 
-document.addEventListener("click", utils.delegate("a[href].close-back, button.close-back", closeOverlay), true);
+document.addEventListener("click", delegate("a[href].close-back, button.close-back", closeOverlay), true);
 
 function closeOverlay(e) {
   if (!isOpenedWindow() && !postal.isLeader) {
@@ -145,13 +146,13 @@ function navNext() {
 }
 
 function overlayNavigation(href, target) {
-  //console.log("wvy.overlay: overlay navigation");
+  //console.log("overlay navigation");
   var iOS = browser.platform === "iOS";
-  if (browser.mobile || browser.desktop /*|| document.body.classList.contains('controller-messenger')*/) {
+  if (browser.mobile || browser.desktop) {
     var overlayWindow = _overlays.get(target);
 
     if (overlayWindow && overlayWindow.closed) {
-      //console.debug("wvy.navigation: removing previous closed window");
+      //console.debug("removing previous closed window");
       try {
         postal.unregisterContentWindow(overlayWindow.name, true);
       } catch (e) { /* unable to unregister, no worries */ }
@@ -164,10 +165,10 @@ function overlayNavigation(href, target) {
       postal.postToFrame(overlayWindow.name, true, { name: "turbo-visit", url: href });
       overlayWindow.focus();
     } else {
-      if (!browser.webView && !iOS) {
-        //console.debug("wvy.overlay: open overlay window", target)
+      if (WEAVY_DEVELOPMENT && !browser.webView && !iOS) {
+        console.debug("WEAVY_DEVELOPMENT", "open overlay window", target)
         try {
-          //overlayWindow = window.open(href, "panel-overlay:" + target);
+          overlayWindow = window.open(href, "panel-overlay:" + target);
         } catch (e) { /* can't open window */ }
       }
 
@@ -215,7 +216,7 @@ function overlayLinkOpen(href, target, title) {
 postal.on("overlay-open", (overlayOpen) => {
   postal.whenLeader().then((isLeader) => {
     if (isLeader) {
-      //console.debug("wvy.overlay: overlay-open received", overlayOpen.data);
+      //console.debug("overlay-open received", overlayOpen.data);
       overlayNavigation(overlayOpen.data.url, overlayOpen.data.type);
     }
   })

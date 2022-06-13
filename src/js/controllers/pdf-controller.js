@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("pdf");
 

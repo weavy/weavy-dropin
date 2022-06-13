@@ -1,7 +1,7 @@
 @model Message
 @{
   var user = Model.CreatedBy();
-  var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbPlaceholderUrl() != null);
+  var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
   var files = Model.Attachments().Except(images);
 }
 
@@ -18,7 +18,7 @@
         <div class="d-flex align-items-center mb-2">
           <div class="me-auto">
             <avatar for="@user" size="24" class="me-1 d-sm-none" />
-            <strong>@user.GetTitle()</strong>
+            <strong>@user.GetDisplayName()</strong>
             <small class="text-lowercase text-muted">
               @if (user.Username != null) {
                 <text>@@@user.Username ·</text>

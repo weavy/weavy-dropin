@@ -1,8 +1,8 @@
 import * as Turbo from "@hotwired/turbo";
-import postal from '@weavy/dropin-js/src/common/postal';
+import postal from '../utils/postal';
 import navigation from './navigation';
-import browser from './browser';
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import browser from '../utils/browser';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("turbo");
 

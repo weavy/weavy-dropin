@@ -1,73 +1,76 @@
 @model MessageModel
+@{
+  var wy = ConfigurationService.ThemePrefix;
+}
 
-<turbo-frame id="message-form" data-adjust-scrollbar-bottom>
-  <form asp-action="@nameof(ChatController.InsertMessage)" method="post" autocomplete="off" novalidate
+<turbo-frame id="message-form" class="@wy-message-editor" data-adjust-scrollbar-bottom>
+  <form asp-action="@nameof(ChatController.InsertMessage)" class="@wy-message-form" method="post" autocomplete="off" novalidate
         data-controller="editor attachments meetings file-picker"
         data-editor-target="form"
         data-editor-typing-value="true"
-        data-attachments-uploading-class="uploading"
+        data-attachments-uploading-class="@wy-uploading"
         data-meetings-zoom-authentication-url-value="@ConfigurationService.ZoomAuthenticationUrl"
-        data-meetings-teams-authentication-url-value="@ConfigurationService.TeamsAuthenticationUrl" data-action="submit->editor#prepare imagePasted@window->attachments#pasteImage">
+        data-meetings-teams-authentication-url-value="@ConfigurationService.TeamsAuthenticationUrl"
+        data-action="submit->editor#prepare imagePasted@window->attachments#pasteImage">
 
     @* attachments *@
-    <div class="attachments" data-attachments-target="list" data-file-picker-target="list">@{
+    <div class="@wy-picker-list" data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list">@{
       if (Model != null && Model.Message != null) {
         @foreach (var attachment in Model.Message.Attachments()) {
           var icon = attachment.GetIcon();
-          <div class="attachment">
+          <div class="@wy-picker-list-item">
             <icon name="@icon.Name" color="@icon.Color" />
-            @attachment.GetTitle()
+            <span class="@wy-picker-list-item-title">@attachment.GetDisplayName()</span>
             <input type="hidden" name="attachments" value="@attachment.Id" />
-            <button type="button" class="btn btn-icon ms-auto" data-action="attachments#remove"><icon name="close" /></button>
+            <button type="button" class="@wy-button @wy-button-icon" data-action="attachments#remove"><icon name="close-circle" /></button>
           </div>
         }
       }
     }</div>
 
     @* meetings *@
-    <div class="meetings" data-meetings-target="list">@{
+    <div class="@wy-picker-list" data-editor-target="meetings" data-meetings-target="list">@{
       if (Model != null && Model.Message != null && Model.Message.Meeting != null) {
         var icon = Model.Message.Meeting.Icon;
         <turbo-frame id="@DomId($"meeting{Model.Message.MeetingId}")">
-          <div class="meeting">
-            <icon name="@icon" color="native" class="mx-1" />
-            @Model.Message.Meeting.Title
+          <div class="@wy-picker-list-item">
+            <icon name="@icon" color="native" />
+            <span class="@wy-picker-list-item-title">@Model.Message.Meeting.Title</span>
             <input type="hidden" name="MeetingId" value="@Model.Message.MeetingId" />
-            <button type="button" class="btn btn-icon ms-auto" data-action="meetings#remove" data-meetings-id-param="@Model.Message.MeetingId"><icon name="close" /></button>
+            <button type="button" class="@wy-button @wy-button-icon" data-action="meetings#remove" data-meetings-id-param="@Model.Message.MeetingId"><icon name="close-circle" /></button>
           </div>
         </turbo-frame>
       }
     }</div>
 
     @* editor *@
-    <div class="message-editor">
+    <div class="@wy-message-editor-inputs">
 
-      <div class="me-2 flex-shrink-0">
+      <div class="@wy-message-editor-buttons">
         <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
 
-        <div class="btn-group dropup d-inline-block">
-          <button class="btn btn-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown"><icon name="attachment" /><span class="spinner-container">@Svg.Spinner(size: 20, spin: true) </span></button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" data-action="click->file-picker#open" href="#"><icon name="cloud" /> Cloud </a></li>
+        <div class="@wy-dropup dropup">
+          <button class="@wy-button @wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown"><icon name="attachment" />@Svg.Spinner(size: 20, spin: true, prefix: wy)</button>
+          <ul class="@wy-dropdown-menu dropdown-menu">
+            <li><a class="@wy-dropdown-item" data-action="click->file-picker#open" href="#"><icon name="cloud" /> Cloud </a></li>
             <li>
-              <a class="dropdown-item" href="#" data-action="attachments#select"><icon name="laptop" />@T["Your computer"]</a>
+              <a class="@wy-dropdown-item" href="#" data-action="attachments#select"><icon name="laptop" />@T["Your computer"]</a>
               <input class="form-control" type="file" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
             </li>
-            
           </ul>
         </div>
         @if (@ConfigurationService.ZoomMeetings) {
-          <button type="button" class="btn btn-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" />@Svg.Spinner(size: 20, spin: false)</button>
+          <button type="button" class="@wy-button @wy-button-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" />@Svg.Spinner(size: 20, spin: false, prefix: wy)</button>
         }
         @if (@ConfigurationService.TeamsMeetings) {
-          <button type="button" class="btn btn-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" />@Svg.Spinner(size: 20, spin: false)</button>
+          <button type="button" class="@wy-button @wy-button-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" />@Svg.Spinner(size: 20, spin: false, prefix: wy)</button>
         }
       </div>
-      <div class="flex-grow-1">
-        <textarea asp-for="Text" class="form-control mb-2 d-none" data-editor-target="control" placeholder="@T["Type a message..."]"></textarea>
-        <div id="editor-container" data-editor-target="container"></div>
+      <div class="@wy-message-editor-text">
+        <input type="hidden" asp-for="Text" data-editor-target="control" placeholder="@T["Type a message..."]" />
+        <div id="editor-container" class="@wy-message-editor-container" data-editor-target="container"></div>
       </div>
-      <div class="ms-2"><button type="submit" class="btn btn-icon btn-primary" data-editor-target="button"><icon name="send" /></button></div>
+      <div class="@wy-message-editor-buttons"><button type="submit" class="@wy-button @wy-button-icon @wy-button-primary" data-editor-target="button"><icon name="send" /></button></div>
     </div>
   </form>
 

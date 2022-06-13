@@ -1,13 +1,14 @@
 @model Files
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+  HtmlAttributes.Add("data-theme-prefix", ConfigurationService.ThemePrefix);
 }
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>@Model.GetTitle()</title>
+  <title>@Model.GetDisplayName()</title>
   <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
   <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
   <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
-import WeavyConsole from "@weavy/dropin-js/src/common/console";
+import WeavyConsole from "../utils/console";
+import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("image-controller");
 
@@ -22,27 +23,27 @@ export default class extends Controller {
   checkImageLoad(img) {
     var isLoaded = img.complete && img.naturalHeight !== 0;
     if (isLoaded) {
-      if (!img.classList.contains("loading")) {
+      if (!img.classList.contains(prefix("loading"))) {
         console.debug("image is instantly loaded")
-        img.classList.add("loading", "loaded");
+        img.classList.add(...prefix("loading", "loaded"));
       } else {
         img.decode().then(() => {
           console.debug("image is loaded after delay")
-          img.classList.add("loaded");
+          img.classList.add(prefix("loaded"));
         })
       }
 
       
     } else {
       console.debug("image is loading")
-      img.classList.add("loading");
+      img.classList.add(prefix("loading"));
     }
   }
 
   imageLoaded(event) {
-      var img = event.target;
-    if (img.tagName === 'IMG' && img.classList.contains("loading") && !img.classList.contains("loaded")) {
-      console.debug("load event"); img.classList.add("loaded")
+    var img = event.target;
+    if (img.tagName === 'IMG' && img.classList.contains(prefix("loading")) && !img.classList.contains(prefix("loaded"))) {
+      console.debug("load event"); img.classList.add(prefix("loaded"))
       }
   }
 

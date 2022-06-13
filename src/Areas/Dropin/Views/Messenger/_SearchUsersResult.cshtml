@@ -1,19 +1,19 @@
 @model UserSearchResult
 @{
   var selected = ViewData["Selected"] as IEnumerable<User>;
+  var wy = ConfigurationService.ThemePrefix;
 }
+<turbo-frame id="searchresult" class="@wy-search-result">
 
-<turbo-frame id="searchresult">
-
-  <table class="table table-icons" data-controller="checkbox" >
+  <table class="@wy-search-result-table" data-controller="checkbox" >
     @if (selected != null) {
       @foreach (var user in selected) {
-        <tr class="table-checkbox" data-action="click->checkbox#toggle">
-          <td class="table-icon"><avatar for="user" presence="true" /></td>
-          <td>@user.GetTitle()</td>
-          <td class="table-icon">
-            <input type="checkbox" class="btn-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable" checked />
-            <label class="btn btn-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
+        <tr class="@wy-search-result-table-checkbox" data-action="click->checkbox#toggle">
+          <td><avatar for="user" presence="true" size="32" /></td>
+          <td>@user.GetDisplayName()</td>
+          <td>
+            <input type="checkbox" class="@wy-button-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable" checked />
+            <label class="@wy-button @wy-button-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
           </td>
         </tr>
       }
@@ -25,12 +25,12 @@
           continue;
         }
 
-        <tr class="table-checkbox" data-action="click->checkbox#toggle">
-          <td class="table-icon"><avatar for="user" presence="true" /></td>
-          <td>@user.GetTitle()</td>
-          <td class="table-icon">
-            <input type="checkbox" class="btn-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable"  />
-            <label class="btn btn-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
+        <tr data-action="click->checkbox#toggle">
+          <td><avatar for="user" presence="true" size="32" /></td>
+          <td>@user.GetDisplayName()</td>
+          <td>
+            <input type="checkbox" class="@wy-button-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable"  />
+            <label class="@wy-button @wy-button-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
           </td>
         </tr>
       }

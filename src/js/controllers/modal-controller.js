@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import Modal from 'bootstrap/js/dist/modal';
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("modal");
 

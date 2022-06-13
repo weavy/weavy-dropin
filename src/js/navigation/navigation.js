@@ -1,9 +1,9 @@
-import utils from '@weavy/dropin-js/src/common/utils';
-import postal from '@weavy/dropin-js/src/common/postal';
+import { delegate } from '../utils/utils';
+import postal from '../utils/postal';
 import turbo from './turbo';
 import overlay from './overlay';
-import browser from './browser';
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import browser from '../utils/browser';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("navigation");
 
@@ -100,7 +100,7 @@ function openOverlay(href, linkOrTarget) {
       let overlayLink = getTransformedLink(href);
       console.log("no target, checking link", overlayLink)
       if (overlayLink) {
-        //console.log("wvy.navigation: open file overlay based on href");
+        //console.log("open file overlay based on href");
         overlay.open(overlayLink.href, overlayLink.target);
         return true;
       }
@@ -133,68 +133,9 @@ function getTransformedLink(url) {
         console.log("matching file")
         return { href: "/dropin/preview/" + match[1], target: "preview" };
       }
-
-      //// /files/id
-      //match = link.pathname.match("files/(\\d+)");
-      //if (match) {
-      //  // return /content/id
-      //  return { href: match[0].replace("files", "content"), target: "overlay" };
-      //}
     }
   }
 }
-
-
-
-function getAppByUrl(url) {
-  var checkUrl, appType, appId, appSegment;
-
-  try {
-    checkUrl = new URL(url || document.location, document.location.origin)
-    let pathSegments = checkUrl.pathname.split("/").filter((x) => x);
-
-    // TODO: replace this with detectable generic app url instead
-    let validApps = [
-      "chat",
-      "comments",
-      "files",
-      "messenger",
-      "notifications",
-      "posts"
-    ]
-
-    if (pathSegments[0].toLowerCase() === "dropin" && validApps.includes(pathSegments[1].toLowerCase())) {
-      [appType, appId, appSegment] = pathSegments.slice(1);
-
-      appId = parseInt(appId);
-    }
-  } catch (e) {
-    console.error("Could not parse app check url");
-  }
-
-  return { appType, appId, appSegment };
-}
-
-postal.whenLeader().then(function (isLeader) {
-  if (!isLeader && !(overlay && overlay.isOpenedWindow())) {
-    document.addEventListener("turbo:before-visit", function (e) {
-      var url = e.detail.url;
-      console.log("turbo:before-visit checking if visit link should open in other app (via navigation-open)")
-
-      // cancel event to prevent navigation
-      let currentApp = getAppByUrl();
-      let nextApp = getAppByUrl(url);
-
-      if (nextApp.appId && currentApp.appId !== nextApp.appId) {
-        e.preventDefault();
-
-        console.log("requested url is the not same app, sending request to client ");
-        
-        postal.postToParent({ name: "navigation-open", route: { url: url, app: { appId: nextApp.appId } } });
-      }
-    })
-  }
-});
 
 turbo.on("turbo:load", function (e) {
   if (postal) {
@@ -217,7 +158,7 @@ turbo.on("turbo:load", function (e) {
 
 // Catch navigating links before turbolinks:click
 // TODO: remove this?
-document.addEventListener("click", utils.delegate("a[href], [data-href]", function (e) {
+document.addEventListener("click", delegate("a[href], [data-href]", function (e) {
   var nearestClickable = e.target.closest("A[href], BUTTON, .btn, input[type='button'], [data-href]");
 
   if (!e.defaultPrevented && (!nearestClickable || nearestClickable === this)) {
@@ -288,7 +229,7 @@ document.addEventListener("turbo:before-visit", function (e) {
 document.addEventListener("turbo:submit-end", (e) => {
   let response = e.detail.fetchResponse.response;
   if (response.redirected) {
-    var redirectLocation = /*!wvy.url.equal(response.url, url) &&*/ response.url;
+    var redirectLocation = response.url;
     if (redirectLocation && overlay.isOverlay()) {
       document.addEventListener("turbo:before-visit", (visit) => {
         if (visit.detail.url === redirectLocation) {

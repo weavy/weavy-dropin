@@ -1,28 +1,31 @@
 @model Meeting
+@{
+  var wy = ConfigurationService.ThemePrefix;
+}
 
-<div class="card mb-3 bg-white p-2 rounded-3">
-  <div class="row g-0">
-    <div class="col-md-4">
-      @Svg.Icon("zoom", color: "native", size: 64)
+<div class="mb-1 bg-white p-2 rounded-3">
+  <div class="d-flex">
+    <div>
+      <icon name="zoom" color="native" size="256"/>
     </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title text-black">@T["Zoom meeting"]</h5>
+    <div >
+      <div class="ms-2">
+        <strong class="card-title text-black">@T["Zoom meeting"]</strong>
         <p class="card-text">
           @if (Model.EndedAt != null) {
             <small class="text-muted">@T["Meeting ended"]: <time>@Model.EndedAt</time> </small>
           } else {
             <small class="text-muted">@T["Meeting ID"]: @(System.Text.RegularExpressions.Regex.Replace(Model.ProviderId, @"(\d{3})(\d{3})(\d{4})", "$1-$2-$3"))</small>
           }
-
+          <br/>
           @if (Model.EndedAt != null) {
             if (Model.RecordingUrl != null) {
-              <a href="@Model.RecordingUrl" target="_blank" class="btn btn-sm btn-primary mt-2">@Svg.Icon("play") @T["Play recording"]</a>
+              <a href="@Model.RecordingUrl" target="_blank" class="@wy-button @wy-button-primary  mt-2">@Svg.Icon("play") @T["Play recording"]</a>
             }
           } else if (Model.CreatedById == WeavyContext.Current.User.Id) {
-            <a href="@Model.JoinUrl" target="_blank" class="btn btn-sm btn-primary mt-2">@T["Start meeting"]</a>
+            <a href="@Model.JoinUrl" target="_blank" class="@wy-button @wy-button-primary mt-2">@T["Start"]</a>
           } else {
-            <a href="@Model.JoinUrl" target="_blank" class="btn btn-sm btn-primary mt-2">@T["Join meeting"]</a>
+            <a href="@Model.JoinUrl" target="_blank" class="@wy-button @wy-button-primary mt-2">@T["Join"]</a>
           }
         </p>
       </div>

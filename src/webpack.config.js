@@ -82,15 +82,18 @@ module.exports = (env, argv) => {
         })
       ],
     },
-    //externals: {
-    //  'highlight.js': { root: 'hljs' },
-    //},
     resolve: {
       alias: {
-        'highlight.js$': path.resolve(__dirname, "js/lib/highlight/md.js"),
-        '@weavy/dropin-js': path.resolve(__dirname, '../../../client/dropin-js/')
+        '@microsoft/signalr$': '@microsoft/signalr/dist/browser/signalr.min.js',
+        'highlight.js$': path.resolve(__dirname, "js/lib/highlight/md.js")
       },
     },
+    externals: {
+      // exclude signalR node imports
+      "eventsource": "var null",
+      "tough-cookie": "var null",
+      "fetch-cookie": "var null"
+    }
   };
 
   const devConfig = Object.assign({}, config, {

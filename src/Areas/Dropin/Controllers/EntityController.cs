@@ -42,14 +42,13 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpPost("externalblobs")]
     public IActionResult ExternalBlobs([FromBody] IEnumerable<ExternalBlob> external) {
-        List<Blob> blobs = new List<Blob>();
+        var blobs = new List<Blob>();
         foreach (var eb in external) {
             var blob = BlobService.Insert(eb);
             blobs.Add(blob);
         }
 
         var uploadedBlobs = BlobService.Get(blobs.Select(x => x.Id));
-
         return PartialView("_Blobs", uploadedBlobs);
     }
 
@@ -65,7 +64,6 @@ public class EntityController : AreaController {
         }
         return new JsonResult(null);
     }
-
 
     /// <summary>
     /// Creates a new meeting        
@@ -84,14 +82,8 @@ public class EntityController : AreaController {
     /// <returns>The uploaded meeting(s).</returns>
     [HttpPut("meeting")]
     public IActionResult UpdateMeeting(MeetingModel model) {
-
         var meeting = MeetingService.CreateMeeting(model.Provider);
-        var result = new TurboStreamsResult();
-        result.Streams.Add(TurboStream.Replace($"new_{model.Provider}_meeting", "_MeetingRow", meeting));
-
-        return result;
-
-
+        return TurboStream.Replace($"new_{model.Provider}_meeting", "_MeetingRow", meeting);
     }
 
     /// <summary>
@@ -111,15 +103,20 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:uid}/like")]
     public IActionResult Like(string id) {
-        var likeable = EntityService.Get(id).Value() as IReactable;
+        var likeable = EntityService.Get<IReactable>(id);
         if (likeable == null) {
             return BadRequest();
         }
-        likeable = EntityService.Like(likeable);
+
+        // like
+        ReactionService.Like(likeable);
+
+        // get updated entity
+        likeable = EntityService.Get<IReactable>(id);
 
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Likes", likeable));
-        result.Streams.Add(TurboStream.Replace("_ReactionList", likeable));
+        result.Streams.Add(TurboStream.Replace("_Reactions", likeable));
         result.Streams.Add(TurboStream.Replace("_ReactionForm", likeable));
         return result;
     }
@@ -131,47 +128,54 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:uid}/unlike")]
     public IActionResult Unlike(string id) {
-        var likeable = EntityService.Get(id).Value() as IReactable;
+        var likeable = EntityService.Get<IReactable>(id);
         if (likeable == null) {
             return BadRequest();
         }
-        likeable = EntityService.Unlike(likeable);
+        // unlike
+        ReactionService.Unlike(likeable);
 
-        // TODO: also push update over signalr
+        // get updated entity
+        likeable = EntityService.Get<IReactable>(id);
+
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Likes", likeable));
-        result.Streams.Add(TurboStream.Replace("_ReactionList", likeable));
+        result.Streams.Add(TurboStream.Replace("_Reactions", likeable));
         result.Streams.Add(TurboStream.Replace("_ReactionForm", likeable));
         return result;
     }
 
-
     /// <summary>
-    /// React to the specified entity.
+    /// Toggle reaction to the specified entity.
     /// </summary>
     /// <param name="id">Entity identifier.</param>
-    /// <param name="reaction"></param>
+    /// <param name="content"></param>
     /// <returns></returns>
     [HttpPost("{id:uid}/react")]
-    public IActionResult ToggleReaction(string id, string reaction) {
+    public IActionResult ToggleReaction(string id, string content) {
         var reactable = EntityService.Get<IReactable>(id);
         if (reactable == null) {
             return BadRequest();
         }
 
         // convert to unicode
-        reaction = Emojione.UnifyUnicode(reaction);
+        content = Emojione.UnifyUnicode(content);
 
-        if (reactable.HasReacted(reaction)) {
-            reactable = EntityService.Unreact(reactable);
+        // toggle reaction
+        var reaction = ReactionService.Get(reactable, WeavyContext.Current.User.Id);
+        if (reaction != null && reaction.Content == content) {
+            ReactionService.Unreact(reactable);
         } else {
-            reactable = EntityService.React(reactable, reaction);
+            ReactionService.React(reactable, content);
         }
 
+        // get updated entity
+        reactable = EntityService.Get<IReactable>(id);
+
         var result = new TurboStreamsResult();
-        result.Streams.Add(TurboStream.Replace("_ReactionList", reactable));
+        result.Streams.Add(TurboStream.Replace("_Reactions", reactable));
         result.Streams.Add(TurboStream.Replace("_ReactionForm", reactable));
-        if (reaction == "👍") {
+        if (content == "👍") {
             // also update likes 
             result.Streams.Add(TurboStream.Replace("_Likes", reactable));
         }
@@ -191,7 +195,7 @@ public class EntityController : AreaController {
             return BadRequest();
         }
 
-        return PartialView("_ReactionList", reactable);
+        return PartialView("_Reactions", reactable);
     }
 
     /// <summary>
@@ -223,7 +227,6 @@ public class EntityController : AreaController {
 
         return View("_ReactionForm", reactable);
     }
-
 
     /// <summary>
     /// Star the specified entity.
@@ -275,7 +278,7 @@ public class EntityController : AreaController {
         }
 
         var result = new TurboStreamsResult();
-        result.Streams.Add(TurboStream.Replace("_ReactionList", reactable));
+        result.Streams.Add(TurboStream.Replace("_Reactions", reactable));
         result.Streams.Add(TurboStream.Replace("_ReactionForm", reactable));
         if (reaction == "👍") {
             // also update likes 

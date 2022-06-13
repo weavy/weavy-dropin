@@ -1,42 +1,32 @@
 import { Controller } from "@hotwired/stimulus"
-import { subscribe, unsubscribe } from "../helpers/connection-helpers.js"
-import postal from "@weavy/dropin-js/src/common/postal";
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import { subscribe, unsubscribe } from "../utils/connection-helpers.js"
+import postal from "../utils/postal";
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("badge");
 
 export default class extends Controller {
 
-  static values = { apps: Array };  
+  static targets = ["element"];
 
   badgeHandler = this.badge.bind(this);
 
-  badge(count) {    
-    postal.postToParent({ name: "badge", count: count });   
+  badge(conversationsBadge) {
+    var count = conversationsBadge.private + conversationsBadge.rooms;
+
+    if (count > 0 && this.hasElementTarget) {
+      this.elementTarget.innerText = count.toString();
+    }
+    postal.postToParent({ name: "badge", count: count });
   }
 
-  async connect() {
-    console.debug("connected:", this.appsValue.length);
-    
-    for (var i = 0; i < this.appsValue.length; i++) {            
-      let id = this.appsValue[i];
-
-      // initial badge, needed??
-      //fetch("/dropin/badge/" + id, { method: "GET" })
-      //  .then(response => response.json())
-      //  .then(count => {          
-      //    this.badgeHandler(count, id);
-      //  });
-
-      // realtime
-      subscribe(id + ":badge", "badge", this.badgeHandler);    
-    }    
+  connect() {
+    console.debug("connected");
+    subscribe(null, "conversation-badge", this.badgeHandler);
   }
 
   disconnect() {
-    console.debug("disconnected:", this.appValue);
-    for (var i = 0; i < this.appsValue.length; i++) {
-      unsubscribe(this.appsValue[i] + ":badge", "badge", this.badgeHandler);
-    }
+    console.debug("disconnected");
+    unsubscribe(null, "conversation-badge", this.badgeHandler);
   }
 }

@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
-import WeavyConsole from "@weavy/dropin-js/src/common/console";
-import WeavyPostal from "@weavy/dropin-js/src/common/postal";
+import WeavyConsole from "../utils/console";
+import WeavyPostal from "../utils/postal";
+import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("media-controller");
 
@@ -9,17 +10,17 @@ const console = new WeavyConsole("media-controller");
  * @param {any} media
  */
 function mediaFallback(media) {
-  if (media.classList.contains("loading")) {
-    media.classList.add("loaded");
+  if (media.classList.contains(prefix("loading"))) {
+    media.classList.add(prefix("loaded"));
   }
-  media.classList.add("error");
+  media.classList.add(prefix("error"));
   media.outerHTML = media.outerHTML.replace(/<(video|audio)/, "<div").replace(/(video|audio)>/, "div>");
 }
 
 export default class extends Controller {
 
   initialize() {
-    this.element.classList.add("loading");
+    this.element.classList.add(prefix("loading"));
     this.pause = () => this.element.pause();
   }
 
@@ -36,9 +37,9 @@ export default class extends Controller {
   mediaLoaded(event) {
     var src = event.target;
     if (src.tagName === 'VIDEO' || src.tagName === 'AUDIO') {
-      if (src.classList.contains("loading")) {
+      if (src.classList.contains(prefix("loading"))) {
         console.log("loaded")
-        src.classList.add("loaded");
+        src.classList.add(prefix("loaded"));
       }
     }
   }

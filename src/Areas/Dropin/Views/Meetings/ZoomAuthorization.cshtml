@@ -1,13 +1,14 @@
 @model MeetingAuthentication
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+  HtmlAttributes.Add("data-theme-prefix", ConfigurationService.ThemePrefix);
 }
 <div class="container text-center py-3">
-  @Svg.Icon("zoom", color: "native", size: 48)
+  <icon name="zoom" size="48"/>
   @if (Model.Authenticated) {
     <h3>@T["Successfully authenticated with Zoom"]</h3>
     <p>@T["Please wait, redirecting..."]</p>
-    @Svg.Spinner(spin: true)
+    @Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)
   } else {
     <div class="alert alert-danger my-2">@T["Zoom authentication failed. Please make sure the Zoom settings are correct."]</div>
   }
@@ -18,12 +19,12 @@
   @if (Model.Authenticated) {
     <text>
       if (window.opener !== null ) {
-          window.opener.postMessage({ name: "zoom-signed-in", guid: "@Model.State" });
+          window.opener.postMessage({ name: "zoom-signed-in" }, "*");
           window.close();
       } else {
           location.href = "@Model.State";
       }
     </text>
   }
-    })();
+    })(); 
 </script>

@@ -1,26 +1,34 @@
+@use "../node_modules/@weavy/themes/scss/default/fonts";
+@use "../node_modules/@weavy/themes/scss/default/utils/position";
+@use "../node_modules/@weavy/themes/scss/default/utils/scroll";
+
+@use "../node_modules/@weavy/themes/scss/default/namespace";
+
+@use "../node_modules/@weavy/themes/scss/default/components/scrollbars";
+@use "../node_modules/@weavy/themes/scss/default/components/avatar";
+@use "../node_modules/@weavy/themes/scss/default/components/icons";
+@use "../node_modules/@weavy/themes/scss/default/components/appbar";
+@use "../node_modules/@weavy/themes/scss/default/components/spinner";
+@use "../node_modules/@weavy/themes/scss/default/components/buttons";
+
+//@use "../node_modules/@weavy/themes/scss/default/components/preview";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-pdf";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-image";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-media";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-embed";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-text";
+
 // core bootstrap functionality and custom variables
-@import "core";
-@import "../node_modules/bootstrap/scss/root";
-@import "../node_modules/bootstrap/scss/reboot";
-@import "../node_modules/bootstrap/scss/buttons";
+@use "../node_modules/@weavy/themes/scss/default/bootstrap" as *;
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/root";
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/reboot" as *;
+
+//@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/buttons";
+
+// THE FOLLOWING SHOULD BE AVOIDED IN PRODUCTION, SINCE IT'S NON-SEMANTIC
 @import "../node_modules/bootstrap/scss/utilities/api";
 
-@import "scroll";
-@import "buttons";
-@import "icons";
-@import "appbar";
-@import "spinner";
-
-$content-page-width: 50rem; // 816px ~216 mm US Letter, 794px ~210mm A4
-$content-page-height: 70rem; // 794px * 1.4142 (A4)
-$content-page-padding-x: 6rem; // 96px = 1 inch (25.4 mm)
-$content-page-padding-y: 7.5rem; // 120px = 1.25 in (31.7 mm)
-
-@import "./preview/pdf";
-@import "./preview/image";
-@import "./preview/media";
-@import "./preview/embed";
-@import "./preview/text";
+$wy: namespace.$prefix;
 
 html {
   font-family: $font-family-base;
@@ -29,7 +37,7 @@ html {
 }
 
 body {
-    height: 100%;
+  height: 100%;
   background-color: transparent;
   margin: 0;
   padding: 0;
@@ -41,7 +49,11 @@ main {
     position: relative;
 }
 
-.content-area {
+.#{$wy}-appbars {
+    @include position.fixed-top;
+}
+
+.#{$wy}-content-area {
   //display: flex;
   height: 100%;
   max-height: 100%;
@@ -50,30 +62,30 @@ main {
   //flex-direction: row-reverse;
 
   html.scrollbars &.scroll-y {
-    @include scrollbar-top-padding($navbar-height);
+    @include scroll.scrollbar-top-padding($navbar-height);
   }
 }
 
-.content-viewer {
-    padding-top: $navbar-height;
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
+.#{$wy}-content-viewer {
+  padding-top: $navbar-height;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 
-.preview-nav {
+.#{$wy}-preview-nav {
   position: fixed;
   z-index: $zindex-dropdown;
   top: 50%;
   padding: .75rem;
   margin-top: -1rem;
 
-  &.nav-prev {
+  &.#{$wy}-nav-prev {
     left: 0;
   }
 
-  &.nav-next {
+  &.#{$wy}-nav-next {
     right: 0;
     /*body.controller-content & {
       @include media-breakpoint-up(lg) {
@@ -81,39 +93,40 @@ main {
       }
     }*/
   }
-
-  .btn {
-    @extend .btn-circle, .btn-sm;
-    @include button-variant(#000, #000);
-    box-shadow: none !important;
-  }
 }
 
-// Generic link with big icon and filename
-.content-media {
-  text-align: center;
-  max-width: $content-page-width;
-  padding: 0 $content-page-padding-x;
-  margin: auto;
-
-  .content-icon svg {
-    width: 8rem;
-    height: 8rem
-  }
-
-  .content-icon .i {
-    width: 8rem;
-    height: 8rem;
-
-    &.i-stack {
-      .i:last-child {
-        width: 4rem;
-        height: 4rem;
-      }
+.#{$wy}-dark {
+  .#{$wy}-preview-nav {
+    .#{$wy}-icon {
+      color: $navbar-dark-color;
     }
   }
-
-  .content-name {
-    //@extend .h5;
-  }
 }
+  // Generic link with big icon and filename
+  .#{$wy}-content-media {
+    text-align: center;
+    max-width: preview-text.$content-page-width;
+    padding: 0 preview-text.$content-page-padding-x;
+    margin: auto;
+
+    .#{$wy}-content-icon svg {
+      width: 8rem;
+      height: 8rem
+    }
+
+    .#{$wy}-content-icon .#{$wy}-icon {
+      width: 8rem;
+      height: 8rem;
+
+      &.#{$wy}-icon-stack {
+        .#{$wy}-icon:last-child {
+          width: 4rem;
+          height: 4rem;
+        }
+      }
+    }
+
+    .#{$wy}-content-name {
+      //@extend .h5;
+    }
+  }

@@ -1,51 +1,48 @@
 @model UpdateConversationModel
 @{
   Layout = "_Layout";
+  var wy = ConfigurationService.ThemePrefix;
 }
-
-<main class="pane">
-  <header class="appbars sticky-top" data-adjust-scrollbar-top>
-    <nav class="appbar appbar-light">
-      <div class="appbar-left">
-        <button class="btn btn-icon close-back">@Svg.Icon("close")</button>
-      </div>
-      <div class="appbar-middle">
-        <div class="appbar-text">@T["Details"]</div>
-      </div>
-      <div class="appbar-right">
-      </div>
+<main class="@wy-pane">
+  <header class="@wy-appbars" data-adjust-scrollbar-top>
+    <nav class="@wy-appbar">
+      <button class="@wy-button @wy-button-icon close-back">@Svg.Icon("close")</button>
+      <div class="@wy-appbar-text">@T["Details"]</div>
+      <button class="@wy-button invisible"></button>
     </nav>
   </header>
-  <div class="pane-body">
-    <div class="p-4 mx-auto">
+  <div class="@wy-pane-body">
+    <div class="@wy-avatar-header">
       <avatar for="Model.Conversation" size="128" />
     </div>
 
     @if (Model.Conversation is PrivateChat) {
-      <h1 class="display-6 text-center">@Model.Name</h1>
+      <h4 class="@wy-avatar-display-name">@Model.Name</h4>
       @* REVIEW: display profile details and, contact information? *@
     } else {
-      <div class="px-3">
-        <form asp-action="@nameof(MessengerController.Update)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Conversation.Id" data-turbo-frame="searchresult" class="pb-2">
-          <label asp-for="Name" class="form-label"></label>
-          <input asp-for="Name" type="text" class="form-control">
-          <div asp-description-for="Name" class="form-text"></div>
-          <div class="mt-3" data-controller="search" data-search-searching-class="searching">
-            <label class="form-label">@T["Members"]</label>
-            <div class="search-form px-0">
-              <button type="reset" class="btn btn-icon start-0" title="@T["Clear"]" data-search-target="reset"><icon name="close" size="20" /></button>
-              <button class="btn btn-icon start-0" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
-              <input type="search" name="text" class="form-control form-control-sm" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
-            </div>
-            <partial name="_SearchUsersResult" model="new UserSearchResult()" />
+      <form asp-action="@nameof(MessengerController.Update)" asp-route-id="@Model.Conversation.Id" data-turbo-frame="searchresult">
+        <div class="@wy-pane-group">
+          <label asp-for="Name" class="@wy-label"></label>
+          <input asp-for="Name" type="text" class="@wy-input">
+          <div asp-description-for="Name" class="@wy-description"></div>
+        </div>
+        <div class="@wy-pane-group" data-controller="search" data-search-searching-class="searching">
+          <label class="@wy-label">@T["Members"]</label>
+          <div class="@wy-search-form">
+            <button type="reset" class="@wy-button @wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close" size="20" /></button>
+            <button class="@wy-button @wy-button-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
+            <input type="search" name="text" class="@wy-search-input" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
           </div>
-          <div class="form-group-bottom" data-adjust-scrollbar-bottom>
-            <div class="form-buttons">
-              <input type="submit" class="btn btn-primary" value="@T["Save"]" data-turbo-frame="_top">
+          <partial name="_SearchUsersResult" model="new UserSearchResult()" />
+        </div>
+        <div class="@wy-footerbars @wy-footerbars-fixed" data-adjust-scrollbar-bottom>
+          <div class="@wy-footerbar">
+            <div class="@wy-pane-group @wy-buttons">
+              <input type="submit" class="@wy-button @wy-button-primary" value="@T["Save"]" data-turbo-frame="_top">
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     }
   </div>
 </main>

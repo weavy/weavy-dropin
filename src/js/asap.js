@@ -1,8 +1,8 @@
-import postal from "@weavy/dropin-js/src/common/postal";
+import postal from "./utils/postal";
 import "@hotwired/turbo";
 import './navigation';
-import './lib/scrollbar-detection';
-import './lib/styles';
+import './utils/scrollbar-detection';
+import './utils/styles';
 
 window.wvy = {
   postal

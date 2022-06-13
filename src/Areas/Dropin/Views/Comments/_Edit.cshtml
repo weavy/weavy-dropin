@@ -10,7 +10,7 @@
 
                 <div class="me-auto">
                     <avatar for="@user" size="24" class="me-1 d-sm-none" />
-                    <strong>@user.GetTitle()</strong>
+                    <strong>@user.GetDisplayName()</strong>
                 </div>
                 <a asp-action="@nameof(CommentsController.Get)" asp-controller="@typeof(CommentsController).ControllerName()" asp-route-id="@Model.Message.Uid()" class="btn btn-icon"><icon name="close" /></a>
             </div>

@@ -6,6 +6,6 @@
     }
 
     @if (Model.HasNextPage) {
-        <a class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
+        <a class="pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)</a>
     }
 </div>

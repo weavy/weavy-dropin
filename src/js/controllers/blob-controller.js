@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("blob");
 
@@ -20,7 +20,7 @@ export default class extends Controller {
     this.hiddenTarget.value = "";
     this.fileTarget.value = "";
     this.thumbTarget.setAttribute("src", this.thumbTarget.dataset.thumb);       
-    this.removeTarget.setAttribute("hidden", "");
+    this.removeTarget.hidden = true;
   }
 
   upload() {
@@ -50,7 +50,7 @@ export default class extends Controller {
         // crop and resize thumbnail to 256x256 pixels
         this.hiddenTarget.value = blob.id;
         this.thumbTarget.src = `/b${blob.id}/thumb-256-crop,both${ext}`;
-        this.removeTarget.removeAttribute("hidden");
+        this.removeTarget.hidden = false;
       });
   }
 }

@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { debounce } from "../helpers/timing-helpers"
+import { debounce } from "../utils/timing-helpers"
 
 export default class extends Controller {
 

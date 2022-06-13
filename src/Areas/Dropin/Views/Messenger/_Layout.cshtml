@@ -1,12 +1,13 @@
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+  HtmlAttributes.Add("data-theme-prefix", ConfigurationService.ThemePrefix);
 }
 <!DOCTYPE html>
-<html data-controller="presence" data-presence-group-value="messenger">
+<html data-controller="presence">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="turbo-cache-control" content="no-preview">
+  <meta name="turbo-cache-control" content="no-cache">
   <title>Messenger | @Application.Name</title>
   <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
   <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />

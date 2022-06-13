@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Weavy.Core;
 using Weavy.Core.Models;
+using Weavy.Core.Services;
 using Weavy.Core.Utils;
 
 namespace Weavy.Dropin.Controllers;
@@ -18,6 +20,14 @@ public class MeetingsController : AreaController {
     [AllowAnonymous]
     [Route("~/meetings/zoom/auth")]
     public ActionResult ZoomAuthorization(string code, string state) {
+
+        // state = userId...
+        if (int.TryParse(state, out int id)) {
+            var user = UserService.Get(id, sudo:true);
+            if (user != null) {
+                WeavyContext.Current.User = user;
+            }
+        }
 
         var token = ZoomApiUtils.Authorize(code);
 

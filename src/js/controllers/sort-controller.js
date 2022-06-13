@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("sort");
 
@@ -9,7 +9,7 @@ export default class extends Controller {
     console.debug("connected");
 
     // remove data-controller attribute to prevent subsequent sorts when elements are added back to the DOM.
-    this.element.removeAttribute("data-controller");
+    this.element.setAttribute("data-controller", this.element.getAttribute("data-controller").replace("sort", ""));
     let toSort = [].slice.call(this.element.parentNode.querySelectorAll("[data-sort-order]"));
     let sortOrder = this.element.dataset.sortDirection ?? "asc";
 

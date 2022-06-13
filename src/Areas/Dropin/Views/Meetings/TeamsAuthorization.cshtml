@@ -1,13 +1,14 @@
 @model MeetingAuthentication
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+  HtmlAttributes.Add("data-theme-prefix", ConfigurationService.ThemePrefix);
 }
 <div class="container text-center py-3">
-  @Svg.Icon("microsoft-teams", color: "native", size: 48)
+  <icon name="microsoft-teams" size="48"/>
   @if (Model.Authenticated) {
     <h3>@T["Successfully authenticated with Microsoft Teams"]</h3>
     <p>@T["Please wait, redirecting..."]</p>
-    @Svg.Spinner(spin: true)
+    @Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)
   } else {
     <div class="alert alert-danger my-2">@T["Teams authentication failed. Please make sure the Teams Online settings are correct."]</div>
   }

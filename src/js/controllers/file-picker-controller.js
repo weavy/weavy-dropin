@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import postal from "@weavy/dropin-js/src/common/postal";
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import postal from "../utils/postal";
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("file-picker");
 

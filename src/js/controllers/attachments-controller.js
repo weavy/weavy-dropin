@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("attachments");
 

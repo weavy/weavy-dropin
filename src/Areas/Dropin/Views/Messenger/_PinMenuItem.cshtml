@@ -1,12 +1,14 @@
 @model Conversation
+@{
+  var wy = ConfigurationService.ThemePrefix;
+}
 
 @if (Model.IsPinned()) {
-    <form asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Unpin)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Id">
-        <button type="submit" class="dropdown-item"><icon name="pin-off" /> @T["Unpin"]</button>
+    <form asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Unpin)" asp-route-id="@Model.Id">
+        <button type="submit" class="@wy-dropdown-item"><icon name="pin-off" /> @T["Unpin"]</button>
     </form>
-
 } else {
-    <form asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Pin)" asp-route-id="@GetRouteValue("id")" asp-route-conversationId="@Model.Id">
-        <button type="submit" class="dropdown-item"><icon name="pin" /> @T["Pin"]</button>
+    <form asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Pin)" asp-route-id="@Model.Id">
+        <button type="submit" class="@wy-dropdown-item"><icon name="pin" /> @T["Pin"]</button>
     </form>
 }

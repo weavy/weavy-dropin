@@ -1,4 +1,7 @@
 @model IReactable
+@{
+  var wy = ConfigurationService.ThemePrefix;
+}
 
 <turbo-frame id="modal">
     <div class="modal fade" tabindex="-1" aria-hidden="true" data-controller="modal">
@@ -6,18 +9,20 @@
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title">@T["Reactions"]</h5>
-                    <button type="button" class="btn btn-icon" data-bs-dismiss="modal"><icon name="close" /></button>
+                    <button type="button" class="@wy-button @wy-button-icon" data-bs-dismiss="modal"><icon name="close" /></button>
                 </div>
                 <div class="modal-body">
 
-                    @foreach (var user in Model.Reacted()) {
-                        <div class="reaction">
-                            <avatar for="user" />
-                            <emoji name="@Model.Reactions.Reaction(user.Id)" />
-                            @user.GetTitle()
-                        </div>
+                  <table class="@wy-table-reactions">
+                    @foreach (var reaction in Model.Reactions) {
+                      var creator = reaction.CreatedBy();
+                        <tr>
+                          <td><avatar for="@creator" size="32" /></td>
+                          <td>@creator.GetDisplayName()</td>
+                          <td><emoji name="@reaction.Content" /></td>
+                        </tr>
                     }
-
+                    </table>
                 </div>
             </div>
         </div>

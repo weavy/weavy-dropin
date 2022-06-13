@@ -4,21 +4,23 @@ import { EditorState } from "@codemirror/state"
 import { classHighlightStyle, defaultHighlightStyle } from "@codemirror/highlight"
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import { weavyKeymap } from "../lib/editor/commands"
-import utils from "@weavy/dropin-js/src/common/utils"
-import { b64toBlob } from "../helpers/conversion-helpers"
-import WeavyConsole from '@weavy/dropin-js/src/common/console';
+import { b64toBlob } from "../utils/conversion-helpers"
+import WeavyConsole from '../utils/console';
+import throttle from "underscore/modules/throttle";
+import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("editor");
 
 export default class extends Controller {
 
-  static targets = ["container", "control", "form", "button"];
+  static targets = ["container", "control", "form", "button", "attachments", "meetings"];
   static values = {
     typing: Boolean
   };
 
   appId = document.querySelector("body").dataset.appId;
   editor;
+  throttledTyping;
 
   connect() {
     console.debug("connected");
@@ -54,7 +56,7 @@ export default class extends Controller {
                 // dispatch event
                 window.dispatchEvent(new CustomEvent("imagePasted", { detail: fileOfBlob }));
               };
-              reader.readAsDataURL(file);              
+              reader.readAsDataURL(file);
             }
           });
         }
@@ -63,15 +65,18 @@ export default class extends Controller {
         base: markdownLanguage
       })];
 
+    let that = this;
+
     // hook up typing
     if (this.typingValue) {
-      extensions.push(EditorView.updateListener.of(
-        utils.throttle((update) => {
-          if (update.docChanged) {
-            this.sendTyping();
-          }
-        }, 2000, true)
-      ))
+      this.throttledTyping = throttle(function () { that.sendTyping() }, 2000);
+
+      extensions.push(EditorView.updateListener.of(update => {
+        // REVIEW: should probably reset state or something to stop typing after a message has been submitted, instead of checking if text is empty
+        if (update.docChanged && this.editor.state.doc.toString().length > 0) {
+          this.throttledTyping();
+        }
+      }));
     }
 
     // create editor
@@ -93,8 +98,6 @@ export default class extends Controller {
 
     // listen for custom event (ctrl+enter)
     this.containerTarget.querySelector(".cm-editor").addEventListener("Weavy-SoftSubmit", this.submitForm.bind(this));
-
-    let that = this;
 
     // save unsent message on close tab
     window.addEventListener("beforeunload", (e) => {
@@ -129,10 +132,10 @@ export default class extends Controller {
     // show placeholder
     let placeHolder = document.getElementById("message-placeholder");
     let clone = placeHolder.cloneNode(true);
-    clone.querySelector(".text").innerText = text;
-    clone.classList.remove("d-none");
+    clone.querySelector(prefix('.message-text')).innerText = text;
+    clone.hidden = false;
     clone.id = "message-ph";
-    
+
     let messages = document.getElementById("messages");
     messages.appendChild(clone);
     document.scrollingElement.scrollTop = 99999999999;
@@ -144,7 +147,7 @@ export default class extends Controller {
     var key = "text:" + this.appId;
     var value = localStorage.getItem(key);
 
-    if (value && value.length) {      
+    if (value && value.length) {
       this.editor.dispatch({ changes: { from: 0, to: this.editor.state.doc.length, insert: value } });
     }
   }
@@ -152,15 +155,19 @@ export default class extends Controller {
   prepare() {
     console.debug("prepare");
     this.controlTarget.value = this.editor.state.doc.toString();
-    
-    if (this.controlTarget.value !== "" || document.querySelector("#message-form .attachments").children.length > 0 || document.querySelector("#message-form .meetings").children.length > 0) {
+
+    if (this.controlTarget.value !== "" || this.attachmentsTarget.hasChildNodes() || this.meetingsTarget.hasChildNodes()) {
       this.showPlaceholder(this.controlTarget.value);
     }
-    
+
     // clear text
     this.editor.dispatch({ changes: { from: 0, to: this.editor.state.doc.length, insert: "" } });
+
+    if (this.throttledTyping) {
+      this.throttledTyping.cancel();
+    }
   }
-    
+
   disconnect() {
     console.debug("disconnect");
     this.editor.destroy();

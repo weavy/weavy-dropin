@@ -63,24 +63,24 @@ public class ChatController : AreaController {
     public IActionResult InsertMessage(int id, MessageModel model) {
         var conversation = ConversationService.Get(id);
         if (conversation == null) {
-            return BadRequest();
+            return NotFound();
         }
 
         if (ModelState.IsValid) {
-            var message = new Message();
-            message.Text = model.Text;
-            message.MeetingId = model.MeetingId;
+            var message = new Message { Text = model.Text, MeetingId = model.MeetingId };
             message = MessageService.Insert(message, conversation, blobs: model.Blobs);
-                        
+
             if (Request.IsTurboStream()) {
-                // clear form and insert comment
+                // clear form and append message
                 ModelState.Clear();
                 var result = new TurboStreamsResult();
                 result.Streams.Add(TurboStream.Replace("message-form", "_MessageForm", null));
-                result.Streams.Add(TurboStream.Append("messages", "_Message", message));
+
+                // replace placeholder with message and make sure no existing one in the list
+                result.Streams.Add(TurboStream.Remove("_Message", message));
+                result.Streams.Add(TurboStream.Replace("message-ph", "_Message", message));
                 return result;
             }
-
             return SeeOtherAction(nameof(Get), new { id });
         }
 
@@ -89,19 +89,35 @@ public class ChatController : AreaController {
     }
 
     /// <summary>
-    /// 
+    /// Called by chat-controller to update ui after message was inserted.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">Id of the inserted <see cref="Message"/>.</param>
     /// <returns></returns>
-    [HttpGet("turbostream-insert-message/{id:uid}")]
-    public IActionResult TurboStreamInsertMessage(string id) {
-
-        var message = EntityService.Get<Message>(id);
+    [HttpGet("turbostream-insert-message/{id:int}")]
+    public IActionResult TurboStreamInsertMessage(int id) {
+        var message = MessageService.Get(id);
         if (message == null) {
             return BadRequest();
         }
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Append("messages", "_Message", message));
+        result.Streams.Add(TurboStream.Append("messages", "_MessageToast", message));
         return result;
     }
+
+    /// <summary>
+    /// Called by chat-controller to update ui after message was updated.
+    /// </summary>
+    /// <param name="id">Id of the <see cref="Message"/>.</param>
+    /// <returns></returns>
+    [HttpGet("turbostream-update-message/{id:int}")]
+    public IActionResult TurboStreamUpdateMessage(int id) {
+        var message = MessageService.Get(id);
+        if (message == null) {
+            return BadRequest();
+        }
+
+        return TurboStream.Replace("_Message", message);
+    }
+
 }

@@ -1,14 +1,17 @@
 @model IReactable
+@{
+  var wy = ConfigurationService.ThemePrefix;
+}
 
-<div class="reaction-menu dropdown dropup">
-  <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="emoticon-plus" size="20" /></button>
-  <div class="dropdown-menu">
+<div class="@wy-dropdown dropup">
+  <button type="button" class="@wy-button @wy-button-icon" data-bs-toggle="dropdown" title="Reactions"><icon name="emoticon-plus" size="20" /></button>
+  <div class="@wy-reaction-menu @wy-dropdown-menu dropdown-menu">
     <turbo-frame id="@DomId("_ReactionForm", Model)" src="@Url.Action(nameof(EntityController.ReactionForm), typeof(EntityController).ControllerName(), new { id = Model.Uid()} )" loading="lazy">
       @* render placeholder with same size as final result (replaced when turbo-frame loads) *@
-      <div class="d-flex">
+      <div class="@wy-reaction-picker">
         @foreach (var emoji in ConfigurationService.Reactions) {
-          <button type="submit" class="btn btn-icon">
-            <div class="e rounded-circle bg-light"></div>
+          <button type="submit" class="@wy-button @wy-button-icon">
+            <div class="@wy-emoji rounded-circle bg-light"></div>
           </button>
         }
       </div>
