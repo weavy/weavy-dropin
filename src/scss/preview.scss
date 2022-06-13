@@ -10,6 +10,7 @@
 @use "../node_modules/@weavy/themes/scss/default/components/appbar";
 @use "../node_modules/@weavy/themes/scss/default/components/spinner";
 @use "../node_modules/@weavy/themes/scss/default/components/buttons";
+@use "../node_modules/@weavy/themes/scss/default/components/scrolling";
 
 //@use "../node_modules/@weavy/themes/scss/default/components/preview";
 @use "../node_modules/@weavy/themes/scss/default/components/preview-pdf";
@@ -45,12 +46,12 @@ body {
 }
 
 main {
-    height: 100%;
-    position: relative;
+  height: 100%;
+  position: relative;
 }
 
 .#{$wy}-appbars {
-    @include position.fixed-top;
+  @include position.fixed-top;
 }
 
 .#{$wy}-content-area {
@@ -102,31 +103,31 @@ main {
     }
   }
 }
-  // Generic link with big icon and filename
-  .#{$wy}-content-media {
-    text-align: center;
-    max-width: preview-text.$content-page-width;
-    padding: 0 preview-text.$content-page-padding-x;
-    margin: auto;
+// Generic link with big icon and filename
+.#{$wy}-content-media {
+  text-align: center;
+  max-width: preview-text.$content-page-width;
+  padding: 0 preview-text.$content-page-padding-x;
+  margin: auto;
 
-    .#{$wy}-content-icon svg {
-      width: 8rem;
-      height: 8rem
-    }
+  .#{$wy}-content-icon svg {
+    width: 8rem;
+    height: 8rem
+  }
 
-    .#{$wy}-content-icon .#{$wy}-icon {
-      width: 8rem;
-      height: 8rem;
+  .#{$wy}-content-icon .#{$wy}-icon {
+    width: 8rem;
+    height: 8rem;
 
-      &.#{$wy}-icon-stack {
-        .#{$wy}-icon:last-child {
-          width: 4rem;
-          height: 4rem;
-        }
+    &.#{$wy}-icon-stack {
+      .#{$wy}-icon:last-child {
+        width: 4rem;
+        height: 4rem;
       }
     }
-
-    .#{$wy}-content-name {
-      //@extend .h5;
-    }
   }
+
+  .#{$wy}-content-name {
+    //@extend .h5;
+  }
+}
