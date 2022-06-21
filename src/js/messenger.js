@@ -14,7 +14,6 @@ import FilePickerController from "./controllers/file-picker-controller";
 import PresenceController from "./controllers/presence-controller";
 import ReadByController from "./controllers/readby-controller";
 import TypingController from "./controllers/typing-controller";
-import ToggleController from "./controllers/toggle-controller";
 import BadgeController from "./controllers/badge-controller";
 import MessageToastController from "./controllers/message-toast-controller";
 import 'bootstrap/js/dist/dropdown';
@@ -35,7 +34,6 @@ application.register("file-picker", FilePickerController);
 application.register("presence", PresenceController);
 application.register("readby", ReadByController);
 application.register("typing", TypingController);
-application.register("toggle", ToggleController);
 application.register("badge", BadgeController);
 application.register("message-toast", MessageToastController);
 

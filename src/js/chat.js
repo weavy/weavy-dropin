@@ -11,7 +11,6 @@ import PaginationController from "./controllers/pagination-controller";
 import PresenceController from "./controllers/presence-controller";
 import ReadByController from "./controllers/readby-controller";
 import ScrollController from "./controllers/scroll-controller";
-import ToggleController from "./controllers/toggle-controller";
 import TypingController from "./controllers/typing-controller";
 import 'bootstrap/js/dist/dropdown';
 
@@ -28,5 +27,4 @@ application.register("pagination", PaginationController);
 application.register("presence", PresenceController);
 application.register("readby", ReadByController);
 application.register("scroll", ScrollController);
-application.register("toggle", ToggleController);
 application.register("typing", TypingController);

@@ -107,8 +107,10 @@ main {
 .#{$wy}-content-media {
   text-align: center;
   max-width: preview-text.$content-page-width;
-  padding: 0 preview-text.$content-page-padding-x;
+  padding: 1rem preview-text.$content-page-padding-x;
   margin: auto;
+  background-color: #fff;
+  border-radius: 1rem;
 
   .#{$wy}-content-icon svg {
     width: 8rem;
