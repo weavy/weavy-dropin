@@ -1,16 +1,15 @@
 @use "../node_modules/@weavy/themes/scss/default/fonts";
 @use "../node_modules/@weavy/themes/scss/default/utils/position";
-@use "../node_modules/@weavy/themes/scss/default/utils/scroll";
+@use "../node_modules/@weavy/themes/scss/default/utils/scrollbar";
 
 @use "../node_modules/@weavy/themes/scss/default/namespace";
 
-@use "../node_modules/@weavy/themes/scss/default/components/scrollbars";
+@use "../node_modules/@weavy/themes/scss/default/components/scroll";
 @use "../node_modules/@weavy/themes/scss/default/components/avatar";
 @use "../node_modules/@weavy/themes/scss/default/components/icons";
 @use "../node_modules/@weavy/themes/scss/default/components/appbar";
 @use "../node_modules/@weavy/themes/scss/default/components/spinner";
 @use "../node_modules/@weavy/themes/scss/default/components/buttons";
-@use "../node_modules/@weavy/themes/scss/default/components/scrolling";
 
 //@use "../node_modules/@weavy/themes/scss/default/components/preview";
 @use "../node_modules/@weavy/themes/scss/default/components/preview-pdf";
@@ -62,8 +61,8 @@ main {
   padding: 0;
   //flex-direction: row-reverse;
 
-  html.scrollbars &.scroll-y {
-    @include scroll.scrollbar-top-padding($navbar-height);
+  .#{$wy}-scrollbars &.#{$wy}-scroll-y {
+    @include scrollbar.scrollbar-top-padding($navbar-height);
   }
 }
 

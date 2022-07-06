@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import WeavyConsole from "../utils/console";
-import { prefix } from "../utils/styles";
+import { prefix, prefixes } from "../utils/styles";
 
 const console = new WeavyConsole("image-controller");
 
@@ -25,7 +25,7 @@ export default class extends Controller {
     if (isLoaded) {
       if (!img.classList.contains(prefix("loading"))) {
         console.debug("image is instantly loaded")
-        img.classList.add(...prefix("loading", "loaded"));
+        img.classList.add(...prefixes("loading", "loaded"));
       } else {
         img.decode().then(() => {
           console.debug("image is loaded after delay")

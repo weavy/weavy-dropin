@@ -1,5 +1,6 @@
 import WeavyPromise from './promise';
 import WeavyUtils from './utils';
+import { prefix } from "./styles";
 
 // SCROLLBAR DETECTION
 
@@ -14,11 +15,11 @@ export function checkScrollbar(entries) {
       overflowWidth = element === document.documentElement ? window.innerWidth : element.clientWidth;
       if (overflowWidth !== element.offsetWidth) {
         // we have visible scrollbars, add .scrollbar to html element
-        document.documentElement.classList.add("scrollbars");
+        document.documentElement.classList.add(prefix("scrollbars"));
       } else {
-        document.documentElement.classList.remove("scrollbars");
+        document.documentElement.classList.remove(prefix("scrollbars"));
       }
-      whenScrollbarsChecked.resolve(document.documentElement.classList.contains("scrollbars"));
+      whenScrollbarsChecked.resolve(document.documentElement.classList.contains(prefix("scrollbars")));
     } catch (e) {
       console.warn("scrollbar detection failed", e);
     }
@@ -27,7 +28,7 @@ export function checkScrollbar(entries) {
 
 // insert scrollbar detection element
 var scrollCheck = document.createElement("div");
-scrollCheck.className = "scrollbar-detection";
+scrollCheck.className = prefix("scrollbar-detection");
 document.documentElement.insertBefore(scrollCheck, document.body);
 
 // register scrollbar detection
@@ -40,12 +41,12 @@ scrollRO.observe(scrollCheck);
 var adjustRO = new ResizeObserver(checkScrollbarAdjust);
 
 export function registerScrollbarAdjustElements() {
-  document.documentElement.style.removeProperty('--scrollbar-adjust-top');
-  document.documentElement.style.removeProperty('--scrollbar-adjust-bottom');
+  document.documentElement.style.removeProperty(prefix('--scrollbar-adjust-top'));
+  document.documentElement.style.removeProperty(prefix('--scrollbar-adjust-bottom'));
   adjustRO.disconnect();
 
   whenScrollbarsChecked.then(() => {
-    if (document.documentElement.classList.contains("scrollbars")) {
+    if (document.documentElement.classList.contains(prefix("scrollbars"))) {
 
       let scrollbarAdjustElements = document.querySelectorAll("[data-adjust-scrollbar-top], [data-adjust-scrollbar-bottom]");
       if (scrollbarAdjustElements) {
@@ -64,10 +65,10 @@ export function checkScrollbarAdjust(entries) {
     let target = entries[entry].target;
     let targetStyle = getComputedStyle(target);
     if (target.dataset.adjustScrollbarTop !== undefined) {
-      document.documentElement.style.setProperty('--scrollbar-adjust-top', targetStyle.height);
+      document.documentElement.style.setProperty(prefix('--scrollbar-adjust-top'), targetStyle.height);
     }
     if (target.dataset.adjustScrollbarBottom !== undefined) {
-      document.documentElement.style.setProperty('--scrollbar-adjust-bottom', targetStyle.height);
+      document.documentElement.style.setProperty(prefix('--scrollbar-adjust-bottom'), targetStyle.height);
     }
   }
 }

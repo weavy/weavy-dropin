@@ -64,23 +64,44 @@ export function setPrefix(prefix) {
 
 
 /**
- * Prefixes one or more classnames (with or without dot) using the themePrefix
+ * Prefixes one or more classnames (with or without dot or double dash) using the themePrefix
  * @param {...string} strs 
- * @returns string|string[]
+ * @returns string[]
  */
-export function prefix(...strs) {
+export function prefixes(...strs) {
   const themePrefix = document.documentElement.dataset.themePrefix || '';
   if (themePrefix) {
     strs = strs.map((str) => {
       str ??= '';
       if (str[0] === '.') {
-        return `.${themePrefix}-${str.substring(1)}`;
+        // Skip if already set
+        if (str.substring(1).indexOf(themePrefix + "-") !== 0) {
+          return `.${themePrefix}-${str.substring(1)}`;
+        }
+      } else if (str.indexOf("--") === 0) {
+        // Skip if already set
+        if (str.substring(2).indexOf(themePrefix + "-") !== 0) {
+          return `--${themePrefix}-${str.substring(2)}`;
+        }
       } else {
-        return `${themePrefix}-${str}`;
+        // Skip if already set
+        if (str.indexOf(themePrefix + "-") !== 0) {
+          return `${themePrefix}-${str}`;
+        }
       }
+      return str;
     })
   }
-  return strs.length === 1 ? strs[0] : strs;
+  return strs;
+}
+
+/**
+ * Prefixes one classname (with or without dot) using the themePrefix
+ * @param {string} str 
+ * @returns string
+ */
+export function prefix(str) {
+  return prefixes(...(str.split(" "))).join(" ");
 }
 
 /**
