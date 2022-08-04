@@ -3,24 +3,22 @@
     var meetingId = Model.ProviderId.IsNullOrEmpty() ? $"new_{Model.Provider}_meeting" : DomId($"meeting{Model.Id}");
     var provider = Model.Provider;
     var icon = Model.Icon;
-    var iconColorLo = Model.Provider.Equals("zoom") ? "" : "native";    
     var title = Model.Title;
-    var wy = ConfigurationService.ThemePrefix;
 }
 <turbo-frame id="@meetingId">
     @if (!Model.ProviderId.IsNullOrEmpty()) {
-        <div class="@wy-picker-list-item">
-            <icon name="@icon" color="native" />
-            <div class="@wy-picker-list-item-title">@title <a href="#" data-action="meetings#signOut" data-meetings-provider-param="@provider">Sign out...</a></div>
+        <div class="wy-picker-list-item">
+            <icon name="@icon" />
+            <div class="wy-picker-list-item-title">@title <a href="#" data-action="meetings#signOut" data-meetings-provider-param="@provider">Sign out...</a></div>
             <input type="hidden" name="MeetingId" value="@Model.Id" />
-            <button type="button" class="@wy-button @wy-button-icon" data-action="meetings#remove" data-meetings-id-param="@Model.Id"><icon name="close" /></button>
+            <button type="button" class="wy-button wy-button-icon" data-action="meetings#remove" data-meetings-id-param="@Model.Id"><icon name="close" /></button>
         </div>
 
     } else {        
-        <div class="@wy-picker-list-item">
-            <icon name="@icon" color="@iconColorLo" />
-            <div class="@wy-picker-list-item-title">Please <a href="#" data-action="meetings#signIn" data-meetings-provider-param="@provider" data-meetings-state-param="/">Sign In</a> to add a new @title</div>
-            <button type="button" class="@wy-button @wy-button-icon" data-action="meetings#remove"><icon name="close" /></button>
+        <div class="wy-picker-list-item">
+            <icon name="@icon" />
+            <div class="wy-picker-list-item-title">Please <a href="#" data-action="meetings#signIn" data-meetings-provider-param="@provider" data-meetings-state-param="/">Sign In</a> to add a new @title</div>
+            <button type="button" class="wy-button wy-button-icon" data-action="meetings#remove"><icon name="close" /></button>
         </div>
         
     }

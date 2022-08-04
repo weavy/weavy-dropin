@@ -10,24 +10,17 @@ module.exports = (env, argv) => {
     mode: 'production',
     entry: {
       asap: './js/asap.js',
+      "asap-files": './js/asap-files.js',
       chat: {
         import: './js/chat.js',
         dependOn: 'asap'
       },
-      comments: {
-        import: './js/comments.js',
-        dependOn: 'asap'
-      },
       files: {
         import: './js/files.js',
-        dependOn: 'asap'
+        dependOn: 'asap-files'
       },
       messenger: {
         import: './js/messenger.js',
-        dependOn: 'asap'
-      },
-      notifications: {
-        import: './js/notifications.js',
         dependOn: 'asap'
       },
       posts: {
@@ -84,8 +77,7 @@ module.exports = (env, argv) => {
     },
     resolve: {
       alias: {
-        '@microsoft/signalr$': '@microsoft/signalr/dist/browser/signalr.min.js',
-        'highlight.js$': path.resolve(__dirname, "js/lib/highlight/md.js")
+        '@microsoft/signalr$': '@microsoft/signalr/dist/browser/signalr.min.js'
       },
     },
     externals: {

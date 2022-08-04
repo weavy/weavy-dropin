@@ -1,7 +1,4 @@
 @model Meeting
-@{
-  var wy = ConfigurationService.ThemePrefix;
-}
 <div class="mb-1 bg-white p-2 rounded-3">
   <div class="d-flex">
     <div>
@@ -15,9 +12,9 @@
           @if (Model.EndedAt != null) {
             <small class="text-muted">@T["Meeting ended"]: <time>@Model.EndedAt</time> </small>
           } else if (Model.CreatedById == WeavyContext.Current.User.Id) {
-            <a href="@Model.JoinUrl" target="_blank" class="@wy-button @wy-button-primary  mt-2">@T["Start"]</a>
+            <a href="@Model.JoinUrl" target="_blank" class="wy-button wy-button-primary mt-2">@T["Start"]</a>
           } else {
-            <a href="@Model.JoinUrl" target="_blank" class="@wy-button @wy-button-primary  mt-2">@T["Join"]</a>
+            <a href="@Model.JoinUrl" target="_blank" class="wy-button wy-button-primary mt-2">@T["Join"]</a>
           }
         </p>
       </div>

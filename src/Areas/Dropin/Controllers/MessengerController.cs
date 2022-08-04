@@ -290,7 +290,7 @@ public class MessengerController : AreaController {
 
         var model = new UpdateConversationModel() {
             Conversation = conversation,
-            Name = conversation.GetDisplayName()
+            Name = conversation.DisplayName
         };
 
         // edit name field should be empty when name has not been explicitly set

@@ -11,7 +11,7 @@
 
                 <div class="me-auto">
                     <avatar for="@user" size="24" class="me-1 d-sm-none" />
-                    <strong>@user.GetDisplayName()</strong>
+                    <strong>@user.DisplayName</strong>
                 </div>
                 <a asp-action="@nameof(PostsController.Get)" asp-controller="@typeof(PostsController).ControllerName()" asp-route-id="@Model.Message.Uid()" class="btn btn-icon"><icon name="close" /></a>
             </div>

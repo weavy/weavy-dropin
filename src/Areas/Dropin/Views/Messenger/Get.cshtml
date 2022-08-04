@@ -7,32 +7,31 @@
   ViewData["Conversation"] = Model;
   ConversationsBadge badge = ViewData["Badge"] as ConversationsBadge;
   int? unreadConversationsCount = badge.Private + badge.Rooms == 0 ? null : badge.Private + badge.Rooms;
-  var wy = ConfigurationService.ThemePrefix;
 }
-<main role="main" class="@wy-pane" data-controller="scroll messenger" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-messenger-events-value="[&quot;message-inserted&quot;,&quot;turbo-stream&quot;,&quot;reaction-inserted&quot;,&quot;reaction-deleted&quot;]" data-messenger-group-value="@Model.Uid()">
-  <header class="@wy-appbars" data-adjust-scrollbar-top>
-    <nav class="@wy-appbar">
-      <div class="@wy-appbar-buttons">
-        <a class="@wy-button @wy-button-icon" asp-action="@nameof(MessengerController.Index)">
+<main role="main" class="wy-pane" data-controller="scroll messenger" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-messenger-events-value="[&quot;message-inserted&quot;,&quot;turbo-stream&quot;,&quot;reaction-inserted&quot;,&quot;reaction-deleted&quot;]" data-messenger-group-value="@Model.Uid()">
+  <header class="wy-appbars" data-adjust-scrollbar-top>
+    <nav class="wy-appbar">
+      <div class="wy-appbar-buttons">
+        <a class="wy-button wy-button-icon" asp-action="@nameof(MessengerController.Index)">
           <icon name="arrow-left" />        
         </a>
-        <span data-controller="badge" class="@wy-badge" data-badge-target="element" data-badge-userid-value="@WeavyContext.Current.User.Id">@unreadConversationsCount</span>
+        <span data-controller="badge" class="wy-badge" data-badge-target="element" data-badge-userid-value="@WeavyContext.Current.User.Id">@unreadConversationsCount</span>
       </div>
-      <div data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="@wy-typing-active" data-typing-target="element">
-        <div class="@wy-typing-hide @wy-appbar-text">
+      <div data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
+        <div class="wy-typing-hide wy-appbar-text">
           @if (Model is PrivateChat chat && chat.Other != null) {
-            <span class="@wy-presence @Html.If(UserService.GetPresence(chat.Other.Id)?.Status == PresenceStatus.Active, $"{wy}-presence-active")" data-presence-id="@chat.Other.Id"></span>
+            <span class="wy-presence @Html.If(UserService.GetPresence(chat.Other.Id)?.Status == PresenceStatus.Active, "wy-presence-active")" data-presence-id="@chat.Other.Id"></span>
           }
-          <a class="@wy-button" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id">@Model.GetDisplayName()</a>
+          <a asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id">@Model.DisplayName</a>
         </div>
-        <span class="@wy-typing-show @wy-appbar-text" data-typing-target="indicator"></span>
+        <span class="wy-typing-show wy-appbar-text" data-typing-target="indicator"></span>
       </div>
-      <a class="@wy-button @wy-button-icon" asp-action="@nameof(MessengerController.Details)" asp-route-id="@Model.Id" data-target="modal" title="@T["Details"]"><icon name="information-outline" /></a>
+      <a class="wy-button wy-button-icon" asp-action="@nameof(MessengerController.Details)" asp-route-id="@Model.Id" data-target="modal" title="@T["Details"]"><icon name="information-outline" /></a>
     </nav>
   </header>
-  <div class="@wy-pane-body">
+  <div class="wy-pane-body">
 
-    <div id="messages" class="@wy-messages" style="visibility: hidden;" data-controller="pagination">
+    <div id="messages" class="wy-messages" style="visibility: hidden;" data-controller="pagination">
       <partial name="_Messages" model="Model.Messages" />
     </div>
 

@@ -1,7 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { renderStreamMessage } from "@hotwired/turbo";
 import WeavyConsole from "../utils/console";
-import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("meetings");
 
@@ -121,8 +120,8 @@ export default class extends Controller {
     data.append("provider", e.params.provider);
 
     // hide icon and show spinner
-    button.querySelector(prefix(".icon")).hidden = true;
-    button.querySelector(prefix(".spinner")).classList.add(prefix("spin"));
+    button.querySelector(".wy-icon").hidden = true;
+    button.querySelector(".wy-spinner").classList.add("wy-spin");
 
     fetch("/dropin/meeting", { method: "POST", body: data })
       .then(response => response.text())
@@ -135,8 +134,8 @@ export default class extends Controller {
         }
 
         // show icon and hide spinner
-        button.querySelector(prefix(".icon")).hidden = false;
-        button.querySelector(prefix(".spinner")).classList.remove(prefix("spin"));
+        button.querySelector(".wy-icon").hidden = false;
+        button.querySelector(".wy-spinner").classList.remove("wy-spin");
       });
   }
 

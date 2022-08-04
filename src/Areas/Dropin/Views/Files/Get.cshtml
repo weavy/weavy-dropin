@@ -1,29 +1,66 @@
 @model Files
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
-  HtmlAttributes.Add("data-theme-prefix", ConfigurationService.ThemePrefix);
+  BodyAttributes.Add("data-app-id", Model.Id.ToString());
+  BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
 }
 <!DOCTYPE html>
-<html>
+<html data-controller="files preview file-picker" data-files-uploading-class="wy-uploading" class="wy-scroll-y" data-files-app-value="@Model.Id" data-file-picker-url-value="@($"/dropin/files/{Model.Id}/external")" data-files-target="dragzone">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>@Model.GetDisplayName()</title>
+  <title>@Model.DisplayName</title>
   <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
   <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
   <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
   <link rel="stylesheet" href="~/css/files.css" asp-append-version="true" data-turbo-track="reload" />
-  <script src="~/js/asap.js" asp-append-version="true" data-turbo-track="reload"></script>
+  <script src="~/js/asap-files.js" asp-append-version="true" data-turbo-track="reload"></script>
   <script src="~/js/files.js" asp-append-version="true" data-turbo-track="reload" async></script>
 </head>
-<body>
+<body data-files-target="dropzone">
 
-  <form class="row m-0 px-1 py-3 bg-dark" asp-action="@nameof(FilesController.Upload)" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
-    <div class="col"><input class="form-control" name="file" type="file" multiple /></div>
-    <div class="col-auto"><button type="submit" class="btn btn-primary">@T["Upload"]</button></div>
-  </form>
+  <header class="wy-appbars">
+    <nav class="wy-appbar">
+      <div class="wy-appbar-buttons">
+        <div class="wy-dropdown">
+          <button class="wy-button" data-file-picker-target="dropdown" data-bs-toggle="dropdown"><icon name="plus" /><span class="wy-button-text">Add files</span></button>
+          <ul class="wy-dropdown-menu dropdown-menu">
+            <li>
+              <button type="button" class="wy-dropdown-item" data-action="files#select"><icon name="laptop" />@T["From device"]</button>
+              <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-files-target="input" data-action="change->files#handleSelect" multiple hidden />
+            </li>
+            <li><button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" /> @T["From cloud"] </button></li>
+          </ul>
+        </div>
+      </div>
+      <div></div>
+      <div class="wy-appbar-buttons">
+        <partial name="_SortMenu" model="Model.Items.Query" />
+        <partial name="_ViewMenu" model="Model.Items.Query" />
 
-  <table class="table table-hover table-icons table-files">
+        @* REVIEW: additional menu options for app? *@
+        @*
+          <div class="wy-dropdown">
+          <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+          <div class="wy-dropdown-menu dropdown-menu">
+          <a class="wy-dropdown-item" href="#"><icon name="star" /> @T["Star/Unstar"]</a>
+          <a class="wy-dropdown-item" href="#"><icon name="bell" /> @T["Subscribe/Unsubscribe"]</a>
+          <a class="wy-dropdown-item" href="#"><icon name="download" /> @T["Download files"]</a>
+          </div>
+          </div>
+        *@
+
+      </div>
+    </nav>
+  </header>
+
+  <!-- start, temporary progressbar... -->
+  <div class="wy-upload-progress">
+    <progress value="0" max="100" id="progressbar" data-files-target="progressBar"></progress>
+  </div>
+  <!-- end, temporary progressbar... -->
+
+  <table class="wy-table-files">
     <thead>
       <tr>
         <th></th>
@@ -34,9 +71,21 @@
         <th></th>
       </tr>
     </thead>
-    <tbody data-controller="pagination">
+    <tbody data-controller="pagination" data-files-target="content" data-file-picker-target="list">
       <partial name="_Files" model="Model.Items" />
     </tbody>
   </table>
+
+   <div class="modal fade" tabindex="-1" aria-hidden="true" data-files-target="modal" data-file-picker-target="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title">Failed to upload some files</h5>
+                    <button type="button" class="wy-button wy-button-icon" data-bs-dismiss="modal"><icon name="close" /></button>
+                </div>
+                <div class="modal-body wy-file-upload-errors" data-files-target="modalBody" data-file-picker-target="modalBody"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

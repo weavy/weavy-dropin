@@ -1,0 +1,15 @@
+@model Query
+@{
+    var orderby = Model.SortItems?.FirstOrDefault() ?? new SortItem(Model.SortProperties[0]);
+}
+<div class="wy-dropdown">
+    <button class="wy-button wy-button-icon" data-bs-toggle="dropdown" title="@T["Sort items by"]"><icon name="sort" /></button>
+    <div class="wy-dropdown-menu dropdown-menu">
+        <a class="wy-dropdown-item wy-option @Html.If(orderby.Column.Equals(nameof(File.Name), StringComparison.OrdinalIgnoreCase), "wy-selected")" href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(nameof(File.Name), orderby.Direction).ToString().ToLower())" ><icon name="check" /> @T["Name"]</a>
+        <a class="wy-dropdown-item wy-option @Html.If(orderby.Column.Equals(nameof(File.ModifiedAt), StringComparison.OrdinalIgnoreCase), "wy-selected")" href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(nameof(File.ModifiedAt), orderby.Direction).ToString().ToLower())" ><icon name="check" /> @T["Modified"]</a>
+        <a class="wy-dropdown-item wy-option @Html.If(orderby.Column.Equals(nameof(Blob.Size), StringComparison.OrdinalIgnoreCase), "wy-selected")" href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(nameof(Blob.Size), orderby.Direction).ToString().ToLower())" ><icon name="check" /> @T["Size"]</a>
+        <hr class="wy-dropdown-divider" />
+        <a class="wy-dropdown-item wy-option @Html.If(orderby.Direction == SortDirection.Ascending, "wy-selected")" href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(orderby.Column, SortDirection.Ascending).ToString().ToLower())"><icon name="check" /> @T["Ascending"]</a>
+        <a class="wy-dropdown-item wy-option @Html.If(orderby.Direction == SortDirection.Descending, "wy-selected")" href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(orderby.Column, SortDirection.Descending).ToString().ToLower())"><icon name="check" /> @T["Descending"]</a>
+    </div>
+</div>

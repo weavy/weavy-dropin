@@ -1,134 +1,40 @@
-@use "../node_modules/@weavy/themes/scss/default/fonts";
-@use "../node_modules/@weavy/themes/scss/default/utils/position";
-@use "../node_modules/@weavy/themes/scss/default/utils/scrollbar";
+// bootstrap reboot as baseline for drop-in ui
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/reboot" as *;
 
-@use "../node_modules/@weavy/themes/scss/default/namespace";
+// weavy reboot
+@use "../node_modules/@weavy/themes/scss/default/reboot";
 
-@use "../node_modules/@weavy/themes/scss/default/components/scroll";
-@use "../node_modules/@weavy/themes/scss/default/components/avatar";
-@use "../node_modules/@weavy/themes/scss/default/components/icons";
+// use weavy ui components 
 @use "../node_modules/@weavy/themes/scss/default/components/appbar";
-@use "../node_modules/@weavy/themes/scss/default/components/spinner";
+@use "../node_modules/@weavy/themes/scss/default/components/avatar";
 @use "../node_modules/@weavy/themes/scss/default/components/buttons";
-
-//@use "../node_modules/@weavy/themes/scss/default/components/preview";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-pdf";
+@use "../node_modules/@weavy/themes/scss/default/components/code";
+@use "../node_modules/@weavy/themes/scss/default/components/icons";
+@use "../node_modules/@weavy/themes/scss/default/components/preview";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-embed";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-html";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-icon";
 @use "../node_modules/@weavy/themes/scss/default/components/preview-image";
 @use "../node_modules/@weavy/themes/scss/default/components/preview-media";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-embed";
+@use "../node_modules/@weavy/themes/scss/default/components/preview-pdf";
 @use "../node_modules/@weavy/themes/scss/default/components/preview-text";
+@use "../node_modules/@weavy/themes/scss/default/components/scroll";
+@use "../node_modules/@weavy/themes/scss/default/components/spinner";
 
-// core bootstrap functionality and custom variables
-@use "../node_modules/@weavy/themes/scss/default/bootstrap" as *;
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/root";
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/reboot" as *;
-
-//@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/buttons";
-
-// THE FOLLOWING SHOULD BE AVOIDED IN PRODUCTION, SINCE IT'S NON-SEMANTIC
-@import "../node_modules/bootstrap/scss/utilities/api";
-
-$wy: namespace.$prefix;
-
+// additional styling for the preview window/overlay
 html {
-  font-family: $font-family-base;
   height: 100%;
   min-height: 100%;
 }
 
 body {
   height: 100%;
-  background-color: transparent;
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
 
-main {
-  height: 100%;
-  position: relative;
-}
-
-.#{$wy}-appbars {
-  @include position.fixed-top;
-}
-
-.#{$wy}-content-area {
-  //display: flex;
-  height: 100%;
-  max-height: 100%;
-  bottom: 0;
-  padding: 0;
-  //flex-direction: row-reverse;
-
-  .#{$wy}-scrollbars &.#{$wy}-scroll-y {
-    @include scrollbar.scrollbar-top-padding($navbar-height);
+  .wy-dark &, &.wy-dark {
+    background-color: $gray-700;
   }
 }
 
-.#{$wy}-content-viewer {
-  padding-top: $navbar-height;
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-
-.#{$wy}-preview-nav {
-  position: fixed;
-  z-index: $zindex-dropdown;
-  top: 50%;
-  padding: .75rem;
-  margin-top: -1rem;
-
-  &.#{$wy}-nav-prev {
-    left: 0;
-  }
-
-  &.#{$wy}-nav-next {
-    right: 0;
-    /*body.controller-content & {
-      @include media-breakpoint-up(lg) {
-        right: $drawer-right-width;
-      }
-    }*/
-  }
-}
-
-.#{$wy}-dark {
-  .#{$wy}-preview-nav {
-    .#{$wy}-icon {
-      color: $navbar-dark-color;
-    }
-  }
-}
-// Generic link with big icon and filename
-.#{$wy}-content-media {
-  text-align: center;
-  max-width: preview-text.$content-page-width;
-  padding: 1rem preview-text.$content-page-padding-x;
-  margin: auto;
-  background-color: #fff;
-  border-radius: 1rem;
-
-  .#{$wy}-content-icon svg {
-    width: 8rem;
-    height: 8rem
-  }
-
-  .#{$wy}-content-icon .#{$wy}-icon {
-    width: 8rem;
-    height: 8rem;
-
-    &.#{$wy}-icon-stack {
-      .#{$wy}-icon:last-child {
-        width: 4rem;
-        height: 4rem;
-      }
-    }
-  }
-
-  .#{$wy}-content-name {
-    //@extend .h5;
-  }
-}

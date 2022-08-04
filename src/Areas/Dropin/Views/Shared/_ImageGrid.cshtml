@@ -1,7 +1,5 @@
 @model IEnumerable<File>
 @{
-  var wy = ConfigurationService.ThemePrefix;
-
   var count = Model?.Count() ?? 0;
   var index = 0;
   var limit = 3;
@@ -10,7 +8,7 @@
   var baseSize = 64;
 }
 
-<div class="@wy-image-grid">
+<div class="wy-image-grid">
     @foreach (var img in Model.Take(limit)) {
         // we don't have proper resizing of animated gifs/svgs so we use the original image instead of a thumbnail
         var blob = img.Blob;
@@ -26,12 +24,12 @@
         var intrinsicWidth = blob.Width + "px";
         var maxWidth = (blob.Width * maxScale) + "px";
 
-        <div class="@wy-image" style="flex: @flexRatio @flexRatio @flexBasis; width: @intrinsicWidth; max-width: @maxWidth;">
-            <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@img.Id" target="preview" title="@img.Name" class="@wy-image-area" style="padding-bottom: @padding;">
+        <div class="wy-image" style="flex: @flexRatio @flexRatio @flexBasis; width: @intrinsicWidth; max-width: @maxWidth;">
+            <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@img.Id" target="preview" title="@img.Name" class="wy-image-area" style="padding-bottom: @padding;">
                 <img src="@src" alt="" loading="lazy" decoding="async" />
                 @if (count > limit && index == limit - 1) {
                     // display number of additional images
-                    <span class="@wy-more">+@Model.Skip(limit).Count()</span>
+                    <span class="wy-more">+@Model.Skip(limit).Count()</span>
                 }
             </a>
         </div>

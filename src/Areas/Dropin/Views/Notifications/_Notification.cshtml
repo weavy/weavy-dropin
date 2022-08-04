@@ -13,22 +13,22 @@
     <div class="notification @(Model.ReadAt != null ? "read" : "unread") mb-2">
       <avatar for="@user" size="32" class="avatar me-3" />
       <div class="notification-body">
-        @Html.Raw(TextUtils.ToHtml(Model.GetText()))
+        @Html.Raw(MarkdownUtils.ToHtml(Model.GetText()))
         <small class="text-lowercase text-muted"><time datetime="@Model.CreatedAt" /></small>
       </div>
       <div class="notification-icons">
         @if (Model.ReadAt == null) {
-          <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Read)" asp-route-id="@Model.Id"><button type="submit" class="btn btn-icon" title="@T["Mark as read"]"><icon name="circle-medium" color="primary" /></button></form>
+          <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Read)" asp-route-id="@Model.Id"><button type="submit" class="btn btn-icon" title="@T["Mark as read"]"><icon name="circle-medium" /></button></form>
         }
         <div class="dropdown">
           <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
           <div class="dropdown-menu">
             @if (Model.ReadAt != null) {
-              <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Unread)" asp-route-id="@Model.Id"><button type="submit" class="dropdown-item"><icon name="check" color="icon" /> @T["Mark as unread"]</button></form>
+              <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Unread)" asp-route-id="@Model.Id"><button type="submit" class="dropdown-item"><icon name="check" /> @T["Mark as unread"]</button></form>
             } else {
-              <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Read)" asp-route-id="@Model.Id"><button type="submit" class="dropdown-item"><icon name="check" color="icon" /> @T["Mark as read"]</button></form>
+              <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Read)" asp-route-id="@Model.Id"><button type="submit" class="dropdown-item"><icon name="check" /> @T["Mark as read"]</button></form>
             }
-            <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Trash)" asp-route-id="@Model.Id"><button type="submit" class="dropdown-item"><icon name="close" color="icon" /> @T["Remove notification"]</button></form>
+            <form asp-controller="@typeof(NotificationsController).ControllerName()" asp-action="@nameof(NotificationsController.Trash)" asp-route-id="@Model.Id"><button type="submit" class="dropdown-item"><icon name="close" /> @T["Remove notification"]</button></form>
           </div>
         </div>
       </div>

@@ -1,16 +1,13 @@
 @model IStarrable
-@{
-  var wy = ConfigurationService.ThemePrefix;
-}
 
 @if (Model.IsStarred()) {
     <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unstar)" asp-route-id="@Model.Uid()">
-        <button type="submit" class="@wy-dropdown-item"><icon name="star-off" /> @T["Unstar"]</button>
+        <button type="submit" class="wy-dropdown-item"><icon name="star-off" /> @T["Unstar"]</button>
     </form>
 
 } else {
     <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Star)" asp-route-id="@Model.Uid()">
-        <button type="submit" class="@wy-dropdown-item"><icon name="star" /> @T["Star"]</button>
+        <button type="submit" class="wy-dropdown-item"><icon name="star" /> @T["Star"]</button>
     </form>
 }
 

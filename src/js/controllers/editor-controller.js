@@ -7,7 +7,6 @@ import { weavyKeymap } from "../lib/editor/commands"
 import { b64toBlob } from "../utils/conversion-helpers"
 import WeavyConsole from '../utils/console';
 import throttle from "underscore/modules/throttle";
-import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("editor");
 
@@ -132,7 +131,7 @@ export default class extends Controller {
     // show placeholder
     let placeHolder = document.getElementById("message-placeholder");
     let clone = placeHolder.cloneNode(true);
-    clone.querySelector(prefix('.message-text')).innerText = text;
+    clone.querySelector('.wy-message-text').innerText = text;
     clone.hidden = false;
     clone.id = "message-ph";
 

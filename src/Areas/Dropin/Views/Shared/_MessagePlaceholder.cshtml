@@ -1,16 +1,13 @@
-@{
-  string wy = ConfigurationService.ThemePrefix;
-}
-<div id="message-placeholder" class="@wy-message-placeholder" hidden>
-  <div class="@wy-message @wy-message-me @wy-sending">
-    <div class="@wy-message-content">
-      <div class="@wy-message-meta"><time datetime="@DateTime.Now" /></div>
-      <div class="@wy-message-content-row">
-        <div class="@wy-message-bubble">
-          <div class="@wy-message-text"><p>&nbsp;</p></div>
+<div id="message-placeholder" class="wy-message-placeholder" hidden>
+  <div class="wy-message wy-message-me wy-sending">
+    <div class="wy-message-content">
+      <div class="wy-message-meta"><time datetime="@DateTime.Now" /></div>
+      <div class="wy-message-content-row">
+        <div class="wy-message-bubble">
+          <div class="wy-message-text"><p>&nbsp;</p></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="@wy-readby-status"></div>
+  <div class="wy-readby-status"></div>
 </div>

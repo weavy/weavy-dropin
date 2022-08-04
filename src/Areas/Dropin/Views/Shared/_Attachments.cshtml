@@ -1,17 +1,13 @@
 @model IEnumerable<File>
-@{
-  var wy = ConfigurationService.ThemePrefix;
-}
-<div class="@wy-attachments">
+<div class="wy-attachments">
   @foreach (var file in Model) {
-    var icon = file.GetIcon();
-    <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@file.Id" target="preview" title="@file.GetDisplayName()" class="@wy-attachment">
-      <div class="@wy-attachment-icon">
-        <icon name="@icon.Name" color="@icon.Color" size="48" />
+    <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@file.Id" target="preview" title="@file.Name" class="wy-attachment">
+      <div class="wy-attachment-icon">
+        <icon name="@FileUtils.GetIcon(file)" />
       </div>
-      <div class="@wy-attachment-content">
-        <h6 class="@wy-attachment-title">@file.GetDisplayName()</h6>
-        <div class="@wy-attachment-meta">@FileUtils.FileSizeAsString(file.Blob.Size)</div>
+      <div class="wy-attachment-content">
+        <h6 class="wy-attachment-title">@file.Name</h6>
+        <div class="wy-attachment-meta">@FileUtils.FileSizeAsString(file.Blob.Size)</div>
       </div>
     </a>
   }

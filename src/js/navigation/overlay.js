@@ -9,7 +9,7 @@ const console = new WeavyConsole("overlay");
 
 const _overlays = new Map();
 
-document.addEventListener("click", delegate("a[href].close-back, button.close-back", closeOverlay), true);
+document.addEventListener("click", delegate("a[href].wy-close-back, button.wy-close-back", closeOverlay), true);
 
 function closeOverlay(e) {
   if (!isOpenedWindow() && !postal.isLeader) {
@@ -34,7 +34,7 @@ function closeOverlay(e) {
   } else {
     //console.log("close-back normal navigation");
     if (!e) {
-      var backButton = document.querySelector("a[href].close-back");
+      var backButton = document.querySelector("a[href].wy-close-back");
       if (backButton) {
         window.location.href = backButton.href;
       }
@@ -57,7 +57,7 @@ postal.whenLeader().then(function (isLeader) {
   if (isLeader || isOpenedWindow()) {
     document.addEventListener("keyup", function (e) {
       if (e.which === 27) { // Esc
-        var closeBack = document.querySelector("a[href].close-back");
+        var closeBack = document.querySelector("a[href].wy-close-back");
         if (closeBack) {
           e.stopImmediatePropagation();
           closeBack.click();
@@ -98,7 +98,7 @@ postal.whenLeader().then(function (isLeader) {
       if (allowedKeyTarget(e)) {
         if (e.which === 27) { // Esc
           if (isOpenedWindow()) {
-            var closeBack = document.querySelector("a[href].close-back");
+            var closeBack = document.querySelector("a[href].wy-close-back");
             if (closeBack) {
               e.stopImmediatePropagation();
               closeBack.click();
@@ -124,14 +124,14 @@ postal.whenLeader().then(function (isLeader) {
 });
 
 function allowedKeyTarget(e) {
-  var noModalOpen = !document.documentElement.classList.contains("modal-open");
+  var noModalOpen = !document.documentElement.classList.contains("wy-modal-open");
   var notInputField = !e.target.matches("input, textarea, select") && !e.target.closest('[contenteditable="true"]');
   return noModalOpen && notInputField;
 }
 
 function navPrev() {
   //console.log("navigating prev", !!document.querySelector(".nav-prev a"));
-  var prevLink = document.querySelector(".nav-prev a");
+  var prevLink = document.querySelector(".wy-nav-prev a");
   if (prevLink && prevLink.href) {
     turbo.visit(prevLink.href);
   }
@@ -139,7 +139,7 @@ function navPrev() {
 
 function navNext() {
   //console.log("navigating next", !!document.querySelector(".nav-next a"));
-  var nextLink = document.querySelector(".nav-next a");
+  var nextLink = document.querySelector(".wy-nav-next a");
   if (nextLink && nextLink.href) {
     turbo.visit(nextLink.href);
   }
@@ -245,7 +245,7 @@ function isOpenedWindow() {
 
 postal.whenLeader().then(() => {
   if (isOverlay()) {
-    document.documentElement.classList.add("overlay");
+    document.documentElement.classList.add("wy-overlay");
   }
 })
 

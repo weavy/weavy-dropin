@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Weavy.Core.Events;
 using Weavy.Core.Models;
 using Weavy.Core.Services;
@@ -28,7 +24,7 @@ public class MessengerHook : IHook<AfterReadConversation> {
         } else {
             // append new readat indicator, readby stimulus controller will move the indicator to the correct position
             // IMPORTANT: match content with the _ReadBy partial
-            template = @$"<turbo-stream action=""append"" target=""readby-append""><template><img id=""readby-{e.Member.Id}"" src=""{e.Member.AvatarUrl(18)}"" width=""18"" height=""18"" alt="""" class=""{ConfigurationService.ThemePrefix}-avatar"" hidden title=""{string.Format(CultureInfo.InvariantCulture, "Seen by {0} {1}", e.Member.GetDisplayName(), e.Member.ReadAt.Value.When())}"" data-controller=""readby"" data-readby-who-value=""{e.Member.Id}"" data-readby-when-value=""{e.Member.ReadAt.AsSortableDate()}""></template></turbo-stream>";
+            template = @$"<turbo-stream action=""append"" target=""readby-append""><template><img id=""readby-{e.Member.Id}"" src=""{e.Member.AvatarUrl(18)}"" width=""18"" height=""18"" alt="""" class=""wy-avatar"" hidden title=""{string.Format(CultureInfo.InvariantCulture, "Seen by {0} {1}", e.Member.DisplayName, e.Member.ReadAt.Value.When())}"" data-controller=""readby"" data-readby-who-value=""{e.Member.Id}"" data-readby-when-value=""{e.Member.ReadAt.AsSortableDate()}""></template></turbo-stream>";
         }
         PushService.PushToGroup(e.Conversation.Uid(), "turbo-stream", template);
     }

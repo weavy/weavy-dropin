@@ -1,72 +1,23 @@
-// custom components
-@use "../node_modules/@weavy/themes/scss/default/fonts";
-@use "../node_modules/@weavy/themes/scss/default/components/scroll";
-@use "../node_modules/@weavy/themes/scss/default/components/avatar";
-@use "../node_modules/@weavy/themes/scss/default/components/emoji";
+// bootstrap reboot as baseline for drop-in ui
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/reboot" as *;
+
+// weavy reboot
+@use "../node_modules/@weavy/themes/scss/default/reboot";
+
+// weavy ui components
+@use "../node_modules/@weavy/themes/scss/default/components/appbar";
+@use "../node_modules/@weavy/themes/scss/default/components/buttons";
+@use "../node_modules/@weavy/themes/scss/default/components/dropdown";
+@use "../node_modules/@weavy/themes/scss/default/components/files";
 @use "../node_modules/@weavy/themes/scss/default/components/icons";
+@use "../node_modules/@weavy/themes/scss/default/components/inputs";
 @use "../node_modules/@weavy/themes/scss/default/components/pager";
-@use "../node_modules/@weavy/themes/scss/default/components/reactions";
+@use "../node_modules/@weavy/themes/scss/default/components/scroll";
 @use "../node_modules/@weavy/themes/scss/default/components/spinner";
-@use "../node_modules/@weavy/themes/scss/default/components/toasts";
+@use "../node_modules/@weavy/themes/scss/default/components/tables";
 @use "../node_modules/@weavy/themes/scss/default/components/turbo";
 
-// core bootstrap functionality and custom variables
-@use "../node_modules/@weavy/themes/scss/default/bootstrap" as *;
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/root";
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/reboot" as *;
 
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/buttons";
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/dropdown";
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/forms";
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/tables";
-
-// optional bootstrap components
-@import "../node_modules/bootstrap/scss/type";
-@import "../node_modules/bootstrap/scss/images";
-@import "../node_modules/bootstrap/scss/grid";
-@import "../node_modules/bootstrap/scss/tables";
+// additional bootstrap components
 @import "../node_modules/bootstrap/scss/transitions";
-
-// THE FOLLOWING TWO SHOULD BE AVOIDED IN PRODUCTION, SINCE THEY ARE NON-SEMANTIC
-@import "../node_modules/bootstrap/scss/helpers";
-@import "../node_modules/bootstrap/scss/utilities/api";
-
-.table-files {
-  // filename
-  td:nth-child(2), th:nth-child(2) {
-    width: 100%;
-    @include text-truncate;
-  }
-  // modified
-  td:nth-child(3), th:nth-child(3) {
-    display: none;
-    width: 7rem;
-    @include text-truncate;
-  }
-  // kind
-  td:nth-child(4), th:nth-child(4) {
-    display: none;
-    width: 7.5rem;
-    text-align: right;
-    @include text-truncate;
-  }
-  // size
-  td:nth-child(5), th:nth-child(5) {
-    display: none;
-    width: 7rem;
-    text-align: right;
-    @include text-truncate;
-  }
-
-  @include media-breakpoint-up(sm) {
-    td:nth-child(5), th:nth-child(5) {
-      display: table-cell;
-    }
-  }
-
-  @include media-breakpoint-up(md) {
-    td:nth-child(3), th:nth-child(3), td:nth-child(4), th:nth-child(4) {
-      display: table-cell;
-    }
-  }
-}
+@import "../node_modules/bootstrap/scss/modal";

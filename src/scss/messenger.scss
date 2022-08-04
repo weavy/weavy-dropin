@@ -1,23 +1,37 @@
-// custom components
-@use "../node_modules/@weavy/themes/scss/default/fonts";
-@use "../node_modules/@weavy/themes/scss/weavy-default-messenger";
+// bootstrap reboot as baseline for drop-in ui
+@use "../node_modules/@weavy/themes/scss/default/bootstrap/reboot" as *;
 
+// weavy reboot
+@use "../node_modules/@weavy/themes/scss/default/reboot";
 
-// TODO: maybe include these in weavy-default-messenger?
-@use "../node_modules/@weavy/themes/scss/default/components/cm-editor"; 
-@use "../node_modules/@weavy/themes/scss/default/components/turbo"; 
+// weavy ui components
+@use "../node_modules/@weavy/themes/scss/default/components/appbar";
+@use "../node_modules/@weavy/themes/scss/default/components/attachments";
+@use "../node_modules/@weavy/themes/scss/default/components/avatar";
+@use "../node_modules/@weavy/themes/scss/default/components/badge";
+@use "../node_modules/@weavy/themes/scss/default/components/buttons";
+@use "../node_modules/@weavy/themes/scss/default/components/checkbox";
+@use "../node_modules/@weavy/themes/scss/default/components/cm-editor";
+@use "../node_modules/@weavy/themes/scss/default/components/code";
+@use "../node_modules/@weavy/themes/scss/default/components/content";
+@use "../node_modules/@weavy/themes/scss/default/components/conversations";
+@use "../node_modules/@weavy/themes/scss/default/components/dropdown";
+@use "../node_modules/@weavy/themes/scss/default/components/emoji";
+@use "../node_modules/@weavy/themes/scss/default/components/icons";
+@use "../node_modules/@weavy/themes/scss/default/components/image-grid";
+@use "../node_modules/@weavy/themes/scss/default/components/inputs";
+@use "../node_modules/@weavy/themes/scss/default/components/messages";
+@use "../node_modules/@weavy/themes/scss/default/components/message-editor";
+@use "../node_modules/@weavy/themes/scss/default/components/pager";
+@use "../node_modules/@weavy/themes/scss/default/components/pane";
+@use "../node_modules/@weavy/themes/scss/default/components/picker-list";
+@use "../node_modules/@weavy/themes/scss/default/components/reactions";
+@use "../node_modules/@weavy/themes/scss/default/components/search";
+@use "../node_modules/@weavy/themes/scss/default/components/scroll";
+@use "../node_modules/@weavy/themes/scss/default/components/spinner";
+@use "../node_modules/@weavy/themes/scss/default/components/turbo";
+@use "../node_modules/@weavy/themes/scss/default/components/typing";
 
-// core bootstrap functionality and custom variables
-// only needed for optional bootstrap components and utility classes
-@use "../node_modules/@weavy/themes/scss/default/bootstrap" as *;
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/root";
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/legacy/reboot" as *;
-
-// optional bootstrap components
+// additional bootstrap components
 @import "../node_modules/bootstrap/scss/transitions";
-@import "../node_modules/bootstrap/scss/alert";
 @import "../node_modules/bootstrap/scss/modal";
-
-// THE FOLLOWING TWO SHOULD BE AVOIDED IN PRODUCTION, SINCE THEY ARE NON-SEMANTIC
-@import "../node_modules/bootstrap/scss/helpers";
-@import "../node_modules/bootstrap/scss/utilities/api";

@@ -49,14 +49,12 @@ public class AvatarTagHelper : TagHelper {
         }
 
         if (For != null) {
-            var wy = ConfigurationService.ThemePrefix;
-
             // create avatar image
             var img = new TagBuilder("img");
             img.Attributes["alt"] = "";
             img.Attributes["src"] = For.AvatarUrl(Size);
             img.Attributes["width"] = img.Attributes["height"] = Size.ToString(CultureInfo.InvariantCulture);
-            img.AddCssClass($"{wy}-avatar");
+            img.AddCssClass("wy-avatar");
 
             if (Presence) {
                 var userId = For is User user ? user.Id : For is PrivateChat chat ? chat.Other?.Id : null;
@@ -65,7 +63,7 @@ public class AvatarTagHelper : TagHelper {
 
                     // wrap img in element with position:relative
                     var div = new TagBuilder("div");
-                    div.AddCssClass($"{wy}-avatar-presence");
+                    div.AddCssClass("wy-avatar-presence");
                     output.TagName = div.TagName;
                     output.TagMode = TagMode.StartTagAndEndTag;
                     output.MergeAttributes(div);
@@ -74,9 +72,9 @@ public class AvatarTagHelper : TagHelper {
                     // add absolutely positioned presence indicator
                     var indicator = new TagBuilder("div");
                     indicator.Attributes["data-presence-id"] = userId.Value.ToString(CultureInfo.InvariantCulture);
-                    indicator.AddCssClass($"{wy}-presence");
+                    indicator.AddCssClass("wy-presence");
                     if (presence.Status == PresenceStatus.Active) {
-                        indicator.AddCssClass($"{wy}-presence-active");
+                        indicator.AddCssClass("wy-presence-active");
                     }
                     output.Content.AppendHtml(indicator);
 

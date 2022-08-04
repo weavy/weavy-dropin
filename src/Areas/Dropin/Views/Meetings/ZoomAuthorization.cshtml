@@ -1,14 +1,13 @@
 @model MeetingAuthentication
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
-  HtmlAttributes.Add("data-theme-prefix", ConfigurationService.ThemePrefix);
 }
 <div class="container text-center py-3">
   <icon name="zoom" size="48"/>
   @if (Model.Authenticated) {
     <h3>@T["Successfully authenticated with Zoom"]</h3>
     <p>@T["Please wait, redirecting..."]</p>
-    @Svg.Spinner(spin: true, prefix: ConfigurationService.ThemePrefix)
+    @Svg.Spinner(spin: true)
   } else {
     <div class="alert alert-danger my-2">@T["Zoom authentication failed. Please make sure the Zoom settings are correct."]</div>
   }

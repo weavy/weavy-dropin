@@ -1,7 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { delay } from "../utils/timing-helpers"
 import WeavyConsole from "../utils/console";
-import { prefix } from "../utils/styles";
 
 const console = new WeavyConsole("message-toast");
 
@@ -43,7 +42,7 @@ export default class extends Controller {
             let parent = messageReference.parentNode;
             // create new toast
             let toast = document.createElement("div");
-            toast.className = prefix("message-toaster");
+            toast.className = "wy-message-toaster";
             toast.id = toasterId;
             toast.innerHTML = lastToast.innerHTML;
             toast.addEventListener("click", () => {

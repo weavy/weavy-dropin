@@ -1,14 +1,11 @@
 @model Conversation
-@{
-  var wy = ConfigurationService.ThemePrefix;
-}
 
 @if (Model.IsUnread()) {
     <form id="@DomId(Model)" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Read)" asp-route-id="@Model.Id">
-        <button type="submit" class="@wy-dropdown-item"><icon name="check" /> @T["Mark as read"]</button>
+        <button type="submit" class="wy-dropdown-item"><icon name="check" /> @T["Mark as read"]</button>
     </form>
 } else {
     <form id="@DomId(Model)" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Unread)" asp-route-id="@Model.Id">
-        <button type="submit" class="@wy-dropdown-item"><icon name="message-badge" /> @T["Mark as unread"]</button>
+        <button type="submit" class="wy-dropdown-item"><icon name="message-badge" /> @T["Mark as unread"]</button>
     </form>
 }

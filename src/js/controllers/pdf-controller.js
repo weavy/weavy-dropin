@@ -18,7 +18,7 @@ export default class extends Controller {
     url: String    
   };
 
-  static targets = ["zoomLevel", "pageNumber", "totalPages"]
+  static targets = ["container", "pageNumber", "totalPages", "zoomLevel"]
 
   initialize() {
     console.debug("connected");
@@ -27,7 +27,9 @@ export default class extends Controller {
     const SEARCH_FOR = "";
     const ENABLE_XFA = true;
     
-    const container = this.element.querySelector(".pdf-viewerContainer");
+    //const container = this.element.querySelector(".pdf-viewerContainer");
+    const container = this.containerTarget;
+    console.log(container);
     const self = this;
 
     // (Optionally) enable hyperlinks within PDF files.

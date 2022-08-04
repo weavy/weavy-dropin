@@ -12,7 +12,7 @@
     } else {
         <div class="card mb-2">
             <div class="card-header pe-1 d-flex align-items-center">
-                <div class="flex-grow-1"><avatar for="@user" /> @user.GetDisplayName()</div>
+                <div class="flex-grow-1"><avatar for="@user" /> @user.DisplayName</div>
                 @if(Model.HasPermission(Permission.Update)){
                    <div>
                     <div class="dropdown">
@@ -39,7 +39,7 @@
 
                             <a class="dropdown-item" asp-controller="@typeof(PostsController).ControllerName()" asp-action="@nameof(PostsController.Edit)" asp-route-id="@Model.Uid()"><icon name="pencil" /> @T["Edit"]</a>
                             <hr class="dropdown-divider">
-                            <form asp-action="@nameof(PostsController.Trash)" asp-route-id="@Model.Uid()"><button type="submit" class="dropdown-item"><icon name="delete" color="danger" /> @T["Trash"]</button></form>
+                            <form asp-action="@nameof(PostsController.Trash)" asp-route-id="@Model.Uid()"><button type="submit" class="dropdown-item"><icon name="delete" /> @T["Trash"]</button></form>
 
                         </div>
                     </div>
@@ -55,7 +55,7 @@
 
 
 
-                <div class="content">@Html.Raw(TextUtils.ToHtml(Model.Text))</div>
+                <div class="content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
 
                 @if (files.Any()) {
                     <partial name="_Attachments" model="files" />

@@ -31,7 +31,7 @@ public class EmojiTagHelper : TagHelper {
         }
 
         if (Name != null) {
-            var img = Emojione.ToImage(Name, classname: ConfigurationService.ThemePrefix + "-emoji", ascii: true);
+            var img = Emojione.ToImage(Name, ascii: true);
             output.TagName = null;
             output.TagMode = TagMode.StartTagOnly;
             output.Content.SetHtmlContent(img);

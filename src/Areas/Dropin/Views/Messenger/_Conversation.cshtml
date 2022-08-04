@@ -1,46 +1,60 @@
 @model Conversation
 @{
-  var wy = ConfigurationService.ThemePrefix;
+  // get snippet of last message
+  var snippet = "";
+  if (Model.LastMessage != null) {
+    snippet = MarkdownUtils.ToPlain(Model.LastMessage.Text);
+    snippet = Emojione.ToImage(snippet);
+    if (string.IsNullOrWhiteSpace(snippet)) {
+      if (Model.LastMessage.AttachmentIds.Any()) {
+        snippet = Weavy.Core.Utils.Svg.Icon("attachment").ToString();
+      } else if (Model.LastMessage.EmbedId != null) {
+        snippet = Weavy.Core.Utils.Svg.Icon("link").ToString();
+      } else if (Model.LastMessage.MeetingId != null) {
+        snippet = Weavy.Core.Utils.Svg.Icon("video").ToString();
+      }
+    }
+  }
 }
-<div id="@DomId(Model)" class="@wy-conversation @Html.If(Model.IsUnread(), wy + "-unread")" data-controller="messenger @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Uid()" data-messenger-events-value="[&quot;app-updated&quot;,&quot;turbo-stream&quot;,&quot;member-added&quot;,&quot;member-removed&quot;]">
-  <a asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id" class="@wy-conversation-link" data-turbo-frame="_top">
+<div id="@DomId(Model)" class="wy-conversation @Html.If(Model.IsUnread(), "wy-unread")" data-controller="messenger @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Uid()" data-messenger-events-value="[&quot;app-updated&quot;,&quot;turbo-stream&quot;,&quot;member-added&quot;,&quot;member-removed&quot;]">
+  <a asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id" class="wy-conversation-link" data-turbo-frame="_top">
     <avatar for="@Model" size="48" presence="true" />
-    <div class="@wy-conversation-body">
-      <div class="@wy-conversation-header">
-        <div class="@wy-conversation-title">@Model.GetDisplayName()</div>
+    <div class="wy-conversation-body">
+      <div class="wy-conversation-header">
+        <div class="wy-conversation-title">@Model.DisplayName</div>
         @if (Model.LastMessage != null) {
-          <time class="@wy-conversation-time" datetime="@Model.LastMessage.CreatedAt" />
+          <time class="wy-conversation-time" datetime="@Model.LastMessage.CreatedAt" />
         }
       </div>
-      <div class="@wy-conversation-summary" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="@wy-typing-active" data-typing-target="element">
-        <span class="@wy-typing-hide">
+      <div class="wy-conversation-summary" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
+        <span class="wy-typing-hide">
           @if (Model.LastMessage != null) {
             @if (Model.LastMessage.CreatedById == WeavyContext.Current.User.Id) {
               <text>@T["You"]: </text>
             } else if (Model is ChatRoom) {
-              <text>@Model.LastMessage.CreatedBy().GetDisplayName(): </text>
+              <text>@Model.LastMessage.CreatedBy().DisplayName: </text>
             }
-            @Html.Raw(Model.LastMessage.GetExcerpt(html:true))
+            @Html.Raw(snippet)
           } else {
             <text>&nbsp;</text>
           }
         </span>
-        <span class="@wy-typing-show" data-typing-target="indicator"></span>
+        <span class="wy-typing-show" data-typing-target="indicator"></span>
       </div>
     </div>
   </a>
 
-  <div class="@wy-conversation-actions">
+  <div class="wy-conversation-actions">
     <partial name="_StarButton" />
-    <div class="@wy-dropdown">
-      <button type="button" class="@wy-button @wy-button-icon" data-bs-toggle="dropdown">
+    <div class="wy-dropdown">
+      <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown">
         @if (Model.IsPinned()) {
           <icon name="pin" />
         } else {
           <icon name="dots-vertical" />
         }
       </button>
-      <div class="@wy-dropdown-menu dropdown-menu">
+      <div class="wy-dropdown-menu dropdown-menu">
         @if (Model.LastMessage != null) {
           <partial name="_ReadMenuItem" />
         }
@@ -48,7 +62,7 @@
         <partial name="_StarMenuItem" />
         @if (Model is ChatRoom) {
           <form asp-action="@nameof(MessengerController.Leave)" asp-route-id="@Model.Id">
-            <button type="submit" class="@wy-dropdown-item"><icon name="account-minus" /> @T["Leave conversation"]</button>
+            <button type="submit" class="wy-dropdown-item"><icon name="account-minus" /> @T["Leave conversation"]</button>
           </form>
         }
       </div>

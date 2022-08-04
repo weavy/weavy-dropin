@@ -11,26 +11,13 @@ namespace Weavy.Dropin.TagHelpers;
 public class IconTagHelper : TagHelper {
 
     private const string NameAttributeName = "name";
-    private const string ColorAttributeName = "color";
-    private const string SizeAttributeName = "size";
 
     /// <summary>
-    /// The name of the icon to return.</param>
+    /// The name of the icon to render.</param>
     /// </summary>
     [HtmlAttributeName(NameAttributeName)]
     public string Name { get; set; }
 
-    /// <summary>
-    /// Gets or sets the icon color.
-    /// </summary>
-    [HtmlAttributeName(ColorAttributeName)]
-    public string Color { get; set; }
-
-    /// <summary>
-    /// Gets or sets the icon size.
-    /// </summary>
-    [HtmlAttributeName(SizeAttributeName)]
-    public int Size { get; set; } = 24;
 
     /// <inheritdoc />
     /// <remarks>Does nothing if <see cref="Name"/> is <c>null</c>.</remarks>
@@ -45,12 +32,11 @@ public class IconTagHelper : TagHelper {
 
 
         if (Name != null) {
-            // REVIEW: pass in all attributes and not just class?
             object attrs = null;
             if (output.Attributes.TryGetAttribute("class", out var css)) {
                 attrs = new { @class = css.Value };
             }
-            var svg = Weavy.Core.Utils.Svg.Icon(Name, size: Size, classname: ConfigurationService.ThemePrefix + "-icon", htmlAttributes: attrs);
+            var svg = Weavy.Core.Utils.Svg.Icon(Name, htmlAttributes: attrs);
             output.TagName = null;
             output.TagMode = TagMode.StartTagAndEndTag;
             output.Content.SetHtmlContent(svg);
