@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html class="wy-scroll-y wy-scrollbars">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@T["Test"]</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/test.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/test.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body>
+
+  <header class="wy-appbars">
+    <nav class="wy-appbar">
+      <div class="wy-appbar-buttons">
+        <a class="wy-button wy-button-icon" asp-action="Index"><icon name="weavy" class="wy-icon-native" /></a>
+      </div>
+      <div>@T["Test"]</div>
+      <div class="wy-appbar-buttons">
+        <div class="wy-dropdown">
+          <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+          <div class="wy-dropdown-menu dropdown-menu">
+            <a class="wy-dropdown-item" href="#"><icon name="star" /> @T["Star"]</a>
+            <a class="wy-dropdown-item" href="#"><icon name="bell" /> @T["Subscribe"]</a>
+            <a class="wy-dropdown-item" href="#"><icon name="download" /> @T["Download"]</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <article>
+
+    <section class="wy-test-section">
+      <h2>Avatars</h2>
+      <avatar for="WeavyContext.Current.User" size="64" />
+      <avatar for="WeavyContext.Current.User" size="48" />
+      <avatar for="WeavyContext.Current.User" size="32" />
+      <avatar for="WeavyContext.Current.User" size="24" />
+    </section>
+
+    <section class="wy-test-section">
+      <h3>Buttons</h3>
+      <div class="wy-buttons">
+        <button class="wy-button wy-button-primary">Primary</button>
+        <button class="wy-button">Default</button>
+        <button class="wy-button wy-button-link">Link</button>
+      </div>
+      <br />
+      <div class="wy-buttons">
+        <button class="wy-button wy-button-icon wy-button-primary"><icon name="close" /></button>
+        <button class="wy-button wy-button-icon"><icon name="close" color="primary" /></button>
+        <button class="wy-button wy-button-icon "><icon name="close" /></button>
+        <button class="wy-button wy-button-primary wy-button-icon"><icon name="google-drive" color="native" /></button>
+        <button class="wy-button wy-button-icon"><icon name="google-drive" color="native" /></button>
+        <button class="wy-button wy-button-icon "><icon name="google-drive" /></button>
+      </div>
+      <br />
+      <div class="wy-buttons">
+        <button class="wy-button wy-button-primary"><icon name="microsoft" color="native" /> <span>Primary</span></button>
+        <button class="wy-button"><icon name="microsoft" color="native" /> <span>Default</span></button>
+        <button class="wy-button wy-button-primary"><icon name="arrow-left" /> <span>Primary</span></button>
+        <button class="wy-button"><span>Default</span> <icon name="arrow-right" /></button>
+      </div>
+    </section>
+
+    <section class="wy-test-section">
+      <h2>Emoji</h2>
+      @Svg.Emoji(";)")
+      @Svg.Emoji(":smiley:", inline:true)
+      @Svg.Emoji("😎")
+    </section>
+
+    <section class="wy-test-section">
+      <h2>Icons</h2>
+      @Svg.Icons()
+      <br /><br />
+      <icon name="microsoft" color="native" />
+      <icon name="microsoft" color="primary " />
+      <icon name="microsoft" />
+      <br /><br />
+      <icon name="file-document-box+google-drive" color="native" />
+      <icon name="file-document-box+google-drive" color="primary" />
+      <icon name="file-document-box+google-drive" />
+
+    </section>
+
+  </article>
+
+</body>
+</html>

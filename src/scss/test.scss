@@ -1,0 +1,26 @@
+// weavy reboot
+@use "theme/root" as *;
+@use "theme/reboot";
+
+// weavy ui components
+@use "theme/appbar";
+@use "theme/avatar";
+@use "theme/buttons";
+@use "theme/dropdown";
+@use "theme/emoji";
+@use "theme/icons";
+@use "theme/scroll";
+@use "theme/spinner";
+
+// bootstrap reboot as baseline for drop-in ui
+@import "theme/bootstrap/reboot";
+
+.wy-test-section {
+  margin: 2rem;
+}
+
+body {
+  .wy-dark &, &.wy-dark {
+    background-color: $gray-700;
+  }
+}

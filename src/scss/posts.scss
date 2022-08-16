@@ -1,18 +1,19 @@
-// bootstrap reboot as baseline for drop-in ui
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/reboot" as *;
-
 // weavy reboot
-@use "../node_modules/@weavy/themes/scss/default/reboot";
+@use "theme/root" as *;
+@use "theme/reboot";
 
 // weavy ui components
-@use "../node_modules/@weavy/themes/scss/default/components/avatar";
-@use "../node_modules/@weavy/themes/scss/default/components/buttons";
-@use "../node_modules/@weavy/themes/scss/default/components/dropdown";
-@use "../node_modules/@weavy/themes/scss/default/components/emoji";
-@use "../node_modules/@weavy/themes/scss/default/components/icons";
-@use "../node_modules/@weavy/themes/scss/default/components/turbo";
+@use "theme/avatar";
+@use "theme/buttons";
+@use "theme/dropdown";
+@use "theme/emoji";
+@use "theme/icons";
+@use "theme/turbo";
 // etc. etc.
 
+// bootstrap reboot as baseline for drop-in ui
+@import "theme/bootstrap/reboot";
+
 // additional bootstrap components
-@import "../node_modules/bootstrap/scss/transitions";
-@import "../node_modules/bootstrap/scss/modal";
+@import "theme/bootstrap/transitions";
+@import "theme/bootstrap/modal";

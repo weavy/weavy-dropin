@@ -1,23 +1,23 @@
-// bootstrap reboot as baseline for drop-in ui
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/reboot" as *;
-
 // weavy reboot
-@use "../node_modules/@weavy/themes/scss/default/reboot";
+@use "theme/root" as *;
+@use "theme/reboot";
 
 // weavy ui components
-@use "../node_modules/@weavy/themes/scss/default/components/appbar";
-@use "../node_modules/@weavy/themes/scss/default/components/buttons";
-@use "../node_modules/@weavy/themes/scss/default/components/dropdown";
-@use "../node_modules/@weavy/themes/scss/default/components/files";
-@use "../node_modules/@weavy/themes/scss/default/components/icons";
-@use "../node_modules/@weavy/themes/scss/default/components/inputs";
-@use "../node_modules/@weavy/themes/scss/default/components/pager";
-@use "../node_modules/@weavy/themes/scss/default/components/scroll";
-@use "../node_modules/@weavy/themes/scss/default/components/spinner";
-@use "../node_modules/@weavy/themes/scss/default/components/tables";
-@use "../node_modules/@weavy/themes/scss/default/components/turbo";
+@use "theme/appbar";
+@use "theme/buttons";
+@use "theme/dropdown";
+@use "theme/files";
+@use "theme/icons";
+@use "theme/inputs";
+@use "theme/pager";
+@use "theme/scroll";
+@use "theme/spinner";
+@use "theme/tables";
+@use "theme/turbo";
 
+// bootstrap reboot as baseline for drop-in ui
+@import "theme/bootstrap/reboot";
 
 // additional bootstrap components
-@import "../node_modules/bootstrap/scss/transitions";
-@import "../node_modules/bootstrap/scss/modal";
+@import "theme/bootstrap/transitions";
+@import "theme/bootstrap/modal";

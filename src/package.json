@@ -7,12 +7,12 @@
     "build": "npm-run-all clean --parallel css js",
     "clean": "rimraf wwwroot/{css,js}/*",
     "css": "npm-run-all css-compile css-prefix css-minify",
-    "css-compile": "sass --load-path=node_modules --style=expanded --no-source-map --no-error-css scss/:wwwroot/css/",
+    "css-compile": "sass --style=expanded --no-source-map --no-error-css scss:wwwroot/css",
     "css-minify": "cleancss -O1 --format breakWith=lf --with-rebase --output wwwroot/css/ --batch --batch-suffix \"\" \"wwwroot/css/*.css\"",
     "css-prefix": "postcss --replace \"wwwroot/css/*.css\"",
     "js": "webpack --mode production",
     "watch": "npm-run-all --parallel watch-*",
-    "watch-css": "sass --load-path=node_modules --style=expanded --embed-sources scss/:wwwroot/css/ --watch --color",
+    "watch-css": "sass --style=expanded --embed-sources scss/:wwwroot/css/ --watch --color",
     "watch-js": "webpack --mode development --watch"
   },
   "devDependencies": {
@@ -48,8 +48,7 @@
     "@hotwired/turbo": "^7.1.0",
     "@microsoft/signalr": "^6.0.4",
     "@popperjs/core": "^2.11.5",
-    "@weavy/themes": "^12.0.1",
-    "bootstrap": "5.1.3",
+    "bootstrap": "^5.1.3",
     "pdfjs-dist": "^2.13.216"
   }
 }

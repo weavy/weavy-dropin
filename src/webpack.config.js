@@ -35,6 +35,9 @@ module.exports = (env, argv) => {
         import: 'pdfjs-dist/build/pdf.worker.min',
         filename: "preview.worker.js"
       },
+      test: {
+        import: './js/test.js',
+      },
     },
     output: {
       filename: '[name].js',

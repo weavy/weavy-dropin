@@ -1,25 +1,26 @@
-// bootstrap reboot as baseline for drop-in ui
-@use "../node_modules/@weavy/themes/scss/default/bootstrap/reboot" as *;
-
 // weavy reboot
-@use "../node_modules/@weavy/themes/scss/default/reboot";
+@use "theme/root" as *;
+@use "theme/reboot";
 
 // use weavy ui components 
-@use "../node_modules/@weavy/themes/scss/default/components/appbar";
-@use "../node_modules/@weavy/themes/scss/default/components/avatar";
-@use "../node_modules/@weavy/themes/scss/default/components/buttons";
-@use "../node_modules/@weavy/themes/scss/default/components/code";
-@use "../node_modules/@weavy/themes/scss/default/components/icons";
-@use "../node_modules/@weavy/themes/scss/default/components/preview";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-embed";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-html";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-icon";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-image";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-media";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-pdf";
-@use "../node_modules/@weavy/themes/scss/default/components/preview-text";
-@use "../node_modules/@weavy/themes/scss/default/components/scroll";
-@use "../node_modules/@weavy/themes/scss/default/components/spinner";
+@use "theme/appbar";
+@use "theme/avatar";
+@use "theme/buttons";
+@use "theme/code";
+@use "theme/icons";
+@use "theme/preview";
+@use "theme/preview-embed";
+@use "theme/preview-html";
+@use "theme/preview-icon";
+@use "theme/preview-image";
+@use "theme/preview-media";
+@use "theme/preview-pdf";
+@use "theme/preview-text";
+@use "theme/scroll";
+@use "theme/spinner";
+
+// bootstrap reboot as baseline for drop-in ui
+@import "theme/bootstrap/reboot";
 
 // additional styling for the preview window/overlay
 html {

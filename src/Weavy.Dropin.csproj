@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Weavy.Core" Version="12.0.1" />
+    <PackageReference Include="Weavy.Core" Version="12.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,8 +22,6 @@
     <None Include="..\..\..\assets\weavy-128.png" Pack="true" PackagePath="" />
     <!-- Do not copy these to output -->
     <Content Remove="package.json" />
-    <Content Remove="package-lock.json" />
-    <None Include="package-lock.json" />
     <None Include="package.json" />
   </ItemGroup>
 
