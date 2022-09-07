@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import postal from "../utils/postal";
+import postal from "../utils/postal-child";
 import WeavyConsole from '../utils/console';
 import Modal from 'bootstrap/js/dist/modal';
 const console = new WeavyConsole("file-picker");

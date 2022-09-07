@@ -1,5 +1,5 @@
 import { delegate } from '../utils/utils';
-import postal from '../utils/postal';
+import postal from '../utils/postal-child';
 import turbo from './turbo';
 import overlay from './overlay';
 import browser from '../utils/browser';

@@ -8,7 +8,7 @@
   ConversationsBadge badge = ViewData["Badge"] as ConversationsBadge;
   int? unreadConversationsCount = badge.Private + badge.Rooms == 0 ? null : badge.Private + badge.Rooms;
 }
-<main role="main" class="wy-pane" data-controller="scroll messenger" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-messenger-events-value="[&quot;message-inserted&quot;,&quot;turbo-stream&quot;,&quot;reaction-inserted&quot;,&quot;reaction-deleted&quot;]" data-messenger-group-value="@Model.Uid()">
+<main role="main" class="wy-pane" data-controller="scroll messenger" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-messenger-events-value="[&quot;message-inserted&quot;,&quot;turbo-stream&quot;,&quot;reaction-inserted&quot;,&quot;reaction-deleted&quot;]" data-messenger-group-value="@Model.Eid()">
   <header class="wy-appbars" data-adjust-scrollbar-top>
     <nav class="wy-appbar">
       <div class="wy-appbar-buttons">

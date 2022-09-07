@@ -15,6 +15,12 @@
     <pre class="wy-content-text">@System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob).FullName)</pre>
   </div>
 
+} else if (fmt == PreviewFormat.Code) {
+
+  <div class="wy-content-code wy-code">
+    @Html.Raw(System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob, ".html").FullName))
+  </div>
+
 } else if (fmt == PreviewFormat.Html) {
 
   <div class="wy-document">

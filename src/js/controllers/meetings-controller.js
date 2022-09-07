@@ -7,6 +7,7 @@ const console = new WeavyConsole("meetings");
 export default class extends Controller {
 
   static targets = ["list"];
+  static classes = ["uploading"];
   static values = {
     zoomAuthenticationUrl: String,
     teamsAuthenticationUrl: String,
@@ -24,7 +25,7 @@ export default class extends Controller {
           break;
 
         case "teams-signed-in":
-          self.recreateMeeting("teams"); 
+          self.recreateMeeting("teams");
           break;
       }
     })
@@ -42,13 +43,11 @@ export default class extends Controller {
     fetch("/dropin/meeting", { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "PUT", body: data })
       .then(response => response.text())
       .then(html => {
-        renderStreamMessage(html);        
+        renderStreamMessage(html);
       });
   }
 
   signIn(e) {
-    
-    
     e.preventDefault();
 
     const provider = e.params.provider;
@@ -77,7 +76,7 @@ export default class extends Controller {
         break;
       }
     }
-    
+
   }
 
   clearMeetings(provider) {
@@ -108,20 +107,16 @@ export default class extends Controller {
 
 
   add(e) {
-    
     console.debug("add:" + event.params.provider);
-
-    const data = new FormData();
-    const list = this.listTarget;
-    const button = e.currentTarget;
     
+    const list = this.listTarget;
     if (list.childElementCount > 0) return;
 
+    const data = new FormData();
     data.append("provider", e.params.provider);
 
     // hide icon and show spinner
-    button.querySelector(".wy-icon").hidden = true;
-    button.querySelector(".wy-spinner").classList.add("wy-spin");
+    this.element.classList.add(this.uploadingClass);
 
     fetch("/dropin/meeting", { method: "POST", body: data })
       .then(response => response.text())
@@ -134,8 +129,7 @@ export default class extends Controller {
         }
 
         // show icon and hide spinner
-        button.querySelector(".wy-icon").hidden = false;
-        button.querySelector(".wy-spinner").classList.remove("wy-spin");
+        this.element.classList.remove(this.uploadingClass);
       });
   }
 

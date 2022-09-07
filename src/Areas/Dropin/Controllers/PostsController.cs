@@ -82,7 +82,7 @@ public class PostsController : AreaController {
     /// </summary>
     /// <param name="id">Post id.</param>
     /// <returns></returns>
-    [HttpGet("{id:uid}")]
+    [HttpGet("{id:eid}")]
     public IActionResult Get(string id) {
         var post = EntityService.Get<Message>(id);
         if (post == null) {
@@ -96,7 +96,7 @@ public class PostsController : AreaController {
     /// </summary>
     /// <param name="id">Comment id.</param>
     /// <returns></returns>
-    [HttpGet("{id:uid}/edit")]
+    [HttpGet("{id:eid}/edit")]
     public IActionResult Edit(string id) {
         var post = EntityService.Get<Message>(id);
         if (post == null) {
@@ -117,7 +117,7 @@ public class PostsController : AreaController {
     /// <param name="id">Post id.</param>
     /// <param name="model"></param>
     /// <returns></returns>
-    [HttpPut("{id:uid}")]
+    [HttpPut("{id:eid}")]
     public IActionResult Update(string id, MessageModel model) {
         var post = EntityService.Get<Message>(id);
         if (post == null) {
@@ -146,7 +146,7 @@ public class PostsController : AreaController {
     /// </summary>
     /// <param name="id">Id of the post to trash.</param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/trash")]
+    [HttpPost("{id:eid}/trash")]
     public IActionResult Trash(string id) {
         var post = EntityService.Get<Message>(id, trashed: true);
         if (post == null) {
@@ -163,7 +163,7 @@ public class PostsController : AreaController {
     /// </summary>
     /// <param name="id">Id of the comment to restore.</param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/restore")]
+    [HttpPost("{id:eid}/restore")]
     public IActionResult Restore(string id) {
         var post = EntityService.Get<Message>(id, trashed: true);
         if (post == null) {
@@ -180,7 +180,7 @@ public class PostsController : AreaController {
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("turbostream-insert-post/{id:uid}")]
+    [HttpGet("turbostream-insert-post/{id:eid}")]
     public IActionResult TurboStreamInsertPost(string id) {
 
         var message = EntityService.Get<Message>(id);

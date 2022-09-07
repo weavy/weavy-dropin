@@ -1,4 +1,4 @@
-import WeavyPostal from './postal';
+import WeavyPostal from './postal-child';
 import WeavyConsole from './console';
 
 const console = new WeavyConsole("CSS");

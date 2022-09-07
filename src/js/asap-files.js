@@ -1,4 +1,4 @@
-import postal from "./utils/postal";
+import postal from "./utils/postal-child";
 import "@hotwired/turbo";
 //import './navigation';
 import './utils/scrollbar-detection';

@@ -3,11 +3,11 @@ import WeavyPromise from './promise';
 import WeavyConsole from './console';
 import WeavyStorage from './storage';
 
-//console.debug("postal.js", self.name);
+//console.debug("postal-child.js", self.name);
 
 function WeavyPostal(options) {
 
-    var console = new WeavyConsole("WeavyPostal");
+    var console = new WeavyConsole("WeavyPostalChild");
 
     var weavyPostal = this;
 
@@ -15,12 +15,6 @@ function WeavyPostal(options) {
 
     var inQueue = [];
     var messageListeners = [];
-    var contentWindows = new Set();
-    var contentWindowsByWeavyId = new Map();
-    var contentWindowOrigins = new WeakMap();
-    var contentWindowNames = new WeakMap();
-    var contentWindowWeavyIds = new WeakMap();
-    var contentWindowDomain = new WeakMap();
 
     var _whenLeader = new WeavyPromise();
     var _isLeader = null;
@@ -44,15 +38,10 @@ function WeavyPostal(options) {
     function distributeMessage(e, fromFrame) {
         var fromSelf = e.source === window && e.origin === _origin;
         var fromParent = e.source === _parentWindow && e.origin === _parentOrigin;
-        fromFrame ||= contentWindowOrigins.has(e.source) && e.origin === contentWindowOrigins.get(e.source);
 
-        if (fromSelf || fromParent || fromFrame) {
+        if (fromSelf || fromParent) {
 
             var genericDistribution = !e.data.weavyId || e.data.weavyId === true;
-
-            if (fromFrame && !e.data.windowName) {
-                e.data.windowName = contentWindowNames.get(e.source);
-            }
 
             var messageName = e.data.name;
             if (messageName === "distribute") {
@@ -62,7 +51,7 @@ function WeavyPostal(options) {
                 e.data.name = e.data.distributeName;
             }
 
-            //console.debug("message from", fromSelf && "self" || fromParent && "parent" || fromFrame && "frame " + e.data.windowName, e.data.name);
+            //console.debug("message from", fromSelf && "self" || fromParent && "parent", e.data.name);
 
             messageListeners.forEach(function (listener) {
                 var matchingName = listener.name === messageName || listener.name === "message";
@@ -94,33 +83,6 @@ function WeavyPostal(options) {
             }
 
             switch (e.data.name) {
-                case "register-child":
-                    if (!_parentWindow) {
-                        if (!contentWindowWeavyIds.has(e.source)) {
-                            console.warn("register-child: contentwindow not pre-registered");
-                        }
-
-                        if (contentWindowOrigins.get(e.source) !== e.origin) {
-                            console.error("register-child: " + contentWindowNames.get(e.source) + " has invalid origin", e.origin);
-                            return;
-                        }
-
-                        try {
-                            var weavyId = contentWindowWeavyIds.get(e.source);
-                            var contentWindowName = contentWindowNames.get(e.source);
-
-                            if (contentWindowName) {
-                                e.source.postMessage({
-                                    name: "register-window",
-                                    windowName: contentWindowName,
-                                    weavyId: weavyId || true,
-                                }, e.origin);
-                            }
-                        } catch (e) {
-                            console.error("could not register frame window", weavyId, contentWindowName, e);
-                        }
-                    }
-                    break;
                 case "register-window":
                     if (!_parentWindow) {
                         //console.debug("registering frame window");
@@ -163,27 +125,13 @@ function WeavyPostal(options) {
                     }
 
                     break;
-                case "ready":
-                    if (contentWindowsByWeavyId.has(e.data.weavyId) && contentWindowNames.has(e.source) && contentWindowsByWeavyId.get(e.data.weavyId).get(contentWindowNames.get(e.source))) {
-                        contentWindowDomain.set(e.source, e.origin);
-                        distributeMessage(e);
-                    }
-
-                    break;
-                case "unready":
-                    // Source window does no loanger exist at this point
-                    if (contentWindowsByWeavyId.has(e.data.weavyId)) {
-                        distributeMessage(e, true);
-                    }
-
-                    break;
                 case "reload":
                     console.debug("reload", _parentName, !!e.data.force);
                     window.location.reload(e.data.force);
 
                     break;
                 default:
-                    if (e.source === window || _parentWindow || contentWindowsByWeavyId.size) {
+                    if (e.source === window || _parentWindow) {
                         distributeMessage(e);
                     } else {
                         inQueue.push(e);
@@ -228,73 +176,6 @@ function WeavyPostal(options) {
         });
     }
 
-    /**
-     * Sends the id of a frame to the frame content scripts, so that the frame gets aware of which id it has.
-     * The frame needs to have a unique name attribute.
-     *
-     * @category panels
-     * @param {string} weavyId - The id of the group or entity which the contentWindow belongs to.
-     * @param {Window} contentWindow - The frame window to send the data to.
-     */
-    function registerContentWindow(contentWindow, contentWindowName, weavyId, contentOrigin) {
-        try {
-            if (!contentWindowName) {
-                console.error("registerContentWindow() No valid contentWindow to register, must be a window and have a name.");
-                return;
-            }
-        } catch (e) {
-            console.error("registerContentWindow() cannot access contentWindowName")
-        }
-
-        if (contentWindow.self) {
-            contentWindow = contentWindow.self;
-        }
-
-        if (!weavyId || weavyId === "true") {
-            weavyId = true;
-        }
-
-        if (!contentWindowsByWeavyId.has(weavyId)) {
-            contentWindowsByWeavyId.set(weavyId, new Map());
-        }
-
-        contentWindowsByWeavyId.get(weavyId).set(contentWindowName, contentWindow);
-        contentWindows.add(contentWindow);
-        contentWindowNames.set(contentWindow, contentWindowName);
-        contentWindowWeavyIds.set(contentWindow, weavyId);
-        contentWindowOrigins.set(contentWindow, contentOrigin);
-    }
-
-    function unregisterWeavyId(weavyId) {
-        if (contentWindowsByWeavyId.has(weavyId)) {
-            contentWindowsByWeavyId.get(weavyId).forEach(function (contentWindow, contentWindowName) {
-                unregisterContentWindow(contentWindowName, weavyId);
-            });
-            contentWindowsByWeavyId.get(weavyId)
-            contentWindowsByWeavyId.delete(weavyId);
-        }
-    }
-
-    function unregisterContentWindow(windowName, weavyId) {
-        if (contentWindowsByWeavyId.has(weavyId)) {
-            if (contentWindowsByWeavyId.get(weavyId).has(windowName)) {
-                var contentWindow = contentWindowsByWeavyId.get(weavyId).get(windowName);
-                try {
-                    contentWindows.delete(contentWindow);
-                    contentWindowNames.delete(contentWindow);
-                    contentWindowWeavyIds.delete(contentWindow);
-                    contentWindowOrigins.delete(contentWindow);
-                } catch (e) { /* no need to delete contentwindow */ }
-            }
-            contentWindowsByWeavyId.get(weavyId).delete(windowName);
-            if (contentWindowsByWeavyId.get(weavyId).size === 0) {
-                try {
-                    contentWindowsByWeavyId.delete(weavyId);
-                } catch (e) { /* no need to delete weavyId */ }
-            }
-        }
-    }
-
     function whenPostMessage(contentWindow, message, transfer) {
         var whenReceipt = new WeavyPromise();
 
@@ -306,9 +187,8 @@ function WeavyPostal(options) {
         var toSelf = contentWindow === window.self;
         var toParent = _parentWindow && _parentWindow !== window && _parentWindow === contentWindow;
         var origin = toSelf ? extractOrigin(window.location.href) :
-            toParent ? _parentOrigin :
-                contentWindowOrigins.get(contentWindow);
-        var validWindow = toSelf || toParent || contentWindow && origin === contentWindowDomain.get(contentWindow)
+            (toParent && _parentOrigin);
+        var validWindow = toSelf || toParent
 
         if (validWindow) {
             if (!message.weavyMessageId) {
@@ -341,51 +221,6 @@ function WeavyPostal(options) {
         }
 
         return whenReceipt();
-    }
-
-    function postToChildren(message, transfer) {
-        if (typeof message !== "object" || !message.name) {
-            console.error("postToChildren() Invalid message format", message);
-            return;
-        }
-
-        if (transfer === null) {
-            // Chrome does not allow transfer to be null
-            transfer = undefined;
-        }
-
-        message.distributeName = message.name;
-        message.name = "distribute";
-        message.weavyId = message.weavyId || true;
-
-        contentWindows.forEach(function (contentWindow) {
-            if (contentWindowOrigins.get(contentWindow) === contentWindowDomain.get(contentWindow)) {
-                try {
-                    contentWindow.postMessage(message, contentWindowOrigins.get(contentWindow), transfer);
-                } catch (e) {
-                    console.warn("postToChildren() could not distribute message to " + contentWindowNames.get(contentWindow))
-                }
-            }
-        })
-
-    }
-
-    function postToFrame(windowName, weavyId, message, transfer) {
-        if (typeof message !== "object" || !message.name) {
-            console.error("postToFrame() Invalid message format", message);
-            return;
-        }
-
-        var contentWindow;
-        try {
-            contentWindow = contentWindowsByWeavyId.get(weavyId).get(windowName);
-        } catch (e) {
-            console.error("postToFrame() Window not registered", weavyId, windowName);
-        }
-
-        message.weavyId = weavyId;
-
-        return whenPostMessage(contentWindow, message, transfer);
     }
 
     function postToSelf(message, transfer) {
@@ -426,14 +261,13 @@ function WeavyPostal(options) {
         if (e.source && e.data.weavyId !== undefined) {
             var fromSelf = e.source === window.self && e.origin === _origin;
             var fromParent = e.source === _parentWindow && e.origin === _parentOrigin;
-            var fromFrame = contentWindowOrigins.has(e.source) && e.origin === contentWindowOrigins.get(e.source);
 
             if (transfer === null) {
                 // Chrome does not allow transfer to be null
                 transfer = undefined;
             }
 
-            if (fromSelf || fromParent || fromFrame) {
+            if (fromSelf || fromParent) {
                 message.weavyId = e.data.weavyId;
 
                 try {
@@ -553,14 +387,9 @@ function WeavyPostal(options) {
     this.on = on;
     this.one = one;
     this.off = off;
-    this.registerContentWindow = registerContentWindow;
-    this.unregisterContentWindow = unregisterContentWindow;
-    this.unregisterAll = unregisterWeavyId;
-    this.postToFrame = postToFrame;
     this.postToParent = postToParent;
     this.postToSelf = postToSelf;
     this.postToSource = postToSource;
-    this.postToChildren = postToChildren;
     this.whenLeader = function () { return _whenLeader(); };
 
     Object.defineProperty(this, "isLeader", {

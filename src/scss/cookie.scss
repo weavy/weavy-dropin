@@ -1,0 +1,39 @@
+@use "sass:map";
+
+// weavy reboot
+@use "theme/root" as *;
+@use "theme/reboot";
+
+@use "theme/buttons";
+
+// additional styling for the page
+html {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: $font-family-base;
+}
+
+
+.wy-header {
+  text-align: center;
+  margin: 3rem .75rem;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-weight: $display-font-weight;
+    line-height: $display-line-height;
+    @include font-size(map.get($display-font-sizes, 5));
+  } 
+}

@@ -16,7 +16,7 @@
     }
   }
 }
-<div id="@DomId(Model)" class="wy-conversation @Html.If(Model.IsUnread(), "wy-unread")" data-controller="messenger @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Uid()" data-messenger-events-value="[&quot;app-updated&quot;,&quot;turbo-stream&quot;,&quot;member-added&quot;,&quot;member-removed&quot;]">
+<div id="@DomId(Model)" class="wy-conversation @Html.If(Model.IsUnread(), "wy-unread")" data-controller="messenger @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Eid()" data-messenger-events-value="[&quot;app-updated&quot;,&quot;turbo-stream&quot;,&quot;member-added&quot;,&quot;member-removed&quot;]">
   <a asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id" class="wy-conversation-link" data-turbo-frame="_top">
     <avatar for="@Model" size="48" presence="true" />
     <div class="wy-conversation-body">

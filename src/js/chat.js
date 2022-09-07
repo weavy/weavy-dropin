@@ -1,5 +1,6 @@
 import { Application } from "@hotwired/stimulus";
 import AttachmentsController from "./controllers/attachments-controller";
+import AuthenticateController from "./controllers/authenticate-controller";
 import ChatController from "./controllers/chat-controller";
 import EditorController from "./controllers/editor-controller";
 import FilePickerController from "./controllers/file-picker-controller";
@@ -16,6 +17,7 @@ import 'bootstrap/js/dist/dropdown';
 
 const application = Application.start();
 application.register("attachments", AttachmentsController);
+application.register("authenticate", AuthenticateController);
 application.register("chat", ChatController);
 application.register("editor", EditorController);
 application.register("file-picker", FilePickerController);

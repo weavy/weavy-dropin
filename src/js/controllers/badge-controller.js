@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { subscribe, unsubscribe } from "../utils/connection-helpers.js"
-import postal from "../utils/postal";
+import postal from "../utils/postal-child";
 import WeavyConsole from '../utils/console';
 
 const console = new WeavyConsole("badge");

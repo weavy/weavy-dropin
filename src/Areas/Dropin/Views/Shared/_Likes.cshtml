@@ -5,11 +5,11 @@
 
 <div id="@DomId(Model)" class="wy-likes">
     @if (Model.IsLiked()) {
-        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unlike)" asp-route-id="@Model.Uid()">
+        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unlike)" asp-route-id="@Model.Eid()">
             <button type="submit" class="wy-button wy-button-icon"><icon name="thumb-up" /></button>
         </form>
     } else {
-        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Like)" asp-route-id="@Model.Uid()">
+        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Like)" asp-route-id="@Model.Eid()">
             <button type="submit" class="wy-button wy-button-icon"><icon name="thumb-up-outline" /></button>
         </form>
     }

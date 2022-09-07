@@ -6,6 +6,7 @@
         data-editor-target="form"
         data-editor-typing-value="true"
         data-attachments-uploading-class="wy-uploading"
+        data-meetings-uploading-class="wy-uploading"
         data-meetings-zoom-authentication-url-value="@ConfigurationService.ZoomAuthenticationUrl"
         data-meetings-teams-authentication-url-value="@ConfigurationService.TeamsAuthenticationUrl"
         data-action="submit->editor#prepare imagePasted@window->attachments#pasteImage">
@@ -40,30 +41,30 @@
 
     @* editor *@
     <div class="wy-message-editor-inputs">
-
-      <div class="wy-buttons">
         <div class="wy-dropup dropup">
-          <button class="wy-button wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown" title="@T["Add files"]"><icon name="attachment" />@Svg.Spinner(size: 20, spin: true)</button>
-          <ul class="wy-dropdown-menu dropdown-menu">
-            <li><button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" />@T["From cloud"]</button></li>
-            <li>
-              <button type="button" class="wy-dropdown-item" data-action="attachments#select"><icon name="laptop" />@T["From device"]</button>
+          <button class="wy-button wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown" title="@T["Attach"]"><icon name="plus" />@Svg.Spinner(size: 20, spin: true)</button>
+          <div class="wy-dropdown-menu dropdown-menu">
+            <div>
+              <button type="button" class="wy-dropdown-item" data-action="attachments#select"><icon name="attachment" />@T["File from device"]</button>
               <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
-            </li>
-          </ul>
+            </div>
+            @if (ConfigurationService.BlobProviders.Any()) {
+              <button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" />@T["File from cloud"]</button>
+            }
+            @if (ConfigurationService.TeamsMeetings) {
+              <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" /> @T["Teams meeting"]</button>
+            }
+            @if (ConfigurationService.ZoomMeetings) {
+              <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" /> @T["Zoom meeting"]</button>
+            }
+          </div>
         </div>
-        @if (@ConfigurationService.ZoomMeetings) {
-          <button type="button" class="wy-button wy-button-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" />@Svg.Spinner(size: 20)</button>
-        }
-        @if (@ConfigurationService.TeamsMeetings) {
-          <button type="button" class="wy-button wy-button-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" />@Svg.Spinner(size: 20)</button>
-        }
-      </div>
+
       <div class="wy-message-editor-text">
         <input type="hidden" asp-for="Text" data-editor-target="control" placeholder="@T["Type a message..."]" />
         <div id="editor-container" class="wy-message-editor-container" data-editor-target="container"></div>
       </div>
-      <div class="wy-message-editor-buttons"><button type="submit" class="wy-button wy-button-icon" data-editor-target="button"><icon name="send" color="primary" /></button></div>
+      <button type="submit" class="wy-button wy-button-icon" data-editor-target="button"><icon name="send" color="primary" /></button>
     </div>
   </form>
 

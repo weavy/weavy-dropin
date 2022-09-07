@@ -9,6 +9,7 @@
 @use "theme/code";
 @use "theme/icons";
 @use "theme/preview";
+@use "theme/preview-code";
 @use "theme/preview-embed";
 @use "theme/preview-html";
 @use "theme/preview-icon";
@@ -18,9 +19,6 @@
 @use "theme/preview-text";
 @use "theme/scroll";
 @use "theme/spinner";
-
-// bootstrap reboot as baseline for drop-in ui
-@import "theme/bootstrap/reboot";
 
 // additional styling for the preview window/overlay
 html {
@@ -33,9 +31,6 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-
-  .wy-dark &, &.wy-dark {
-    background-color: $gray-700;
-  }
+  font-family: $font-family-base;
 }
 

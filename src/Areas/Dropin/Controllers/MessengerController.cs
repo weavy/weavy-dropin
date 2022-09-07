@@ -163,7 +163,7 @@ public class MessengerController : AreaController {
     /// </summary>
     /// <param name="id">The message id.</param>        
     /// <returns></returns>
-    [HttpGet("{id:uid}")]
+    [HttpGet("{id:eid}")]
     public IActionResult Get(string id) {
         // REVIEW: is this method used?
         var message = EntityService.Get<Message>(id);

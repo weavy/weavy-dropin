@@ -1,5 +1,6 @@
 import { Application } from "@hotwired/stimulus";
 import ModalController from "./controllers/modal-controller";
+import AuthenticateController from "./controllers/authenticate-controller";
 import AttachmentsController from "./controllers/attachments-controller";
 import MessengerController from "./controllers/messenger-controller";
 import PaginationController from "./controllers/pagination-controller";
@@ -19,6 +20,7 @@ import MessageToastController from "./controllers/message-toast-controller";
 import 'bootstrap/js/dist/dropdown';
 
 const application = Application.start();
+application.register("authenticate", AuthenticateController);
 application.register("modal", ModalController);
 application.register("attachments", AttachmentsController);
 application.register("messenger", MessengerController);

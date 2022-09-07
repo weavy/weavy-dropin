@@ -1,6 +1,6 @@
 @model IReactable
 <turbo-frame id="@DomId(Model)">
-  <form class="wy-reaction-picker" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ToggleReaction)" asp-route-id="@Model.Uid()">
+  <form class="wy-reaction-picker" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ToggleReaction)" asp-route-id="@Model.Eid()">
     @foreach (var emoji in ConfigurationService.Reactions) {
       <button type="submit" class="wy-button wy-button-icon @Html.If(Model.HasReacted(emoji), "wy-active")" name="content" value="@emoji"><emoji name="@emoji" size="20" /></button>
     }

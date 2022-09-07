@@ -1,5 +1,5 @@
 import * as Turbo from "@hotwired/turbo";
-import postal from '../utils/postal';
+import postal from '../utils/postal-child';
 import navigation from './navigation';
 import browser from '../utils/browser';
 import WeavyConsole from '../utils/console';

@@ -1,6 +1,6 @@
 /* global WEAVY_DEVELOPMENT */
 import { delegate } from '../utils/utils';
-import postal from '../utils/postal';
+import postal from '../utils/postal-child';
 import turbo from './turbo';
 import browser from '../utils/browser';
 import WeavyConsole from '../utils/console';

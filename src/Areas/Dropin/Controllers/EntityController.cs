@@ -92,7 +92,7 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpPost("meeting/signout")]
     public IActionResult MeetingSignOut(string provider) {
-        TokenService.Clear(provider);
+        ExternalTokenService.Delete(WeavyContext.Current.User.Id, provider);
         return Ok();
     }
 
@@ -101,7 +101,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity id.</param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/like")]
+    [HttpPost("{id:eid}/like")]
     public IActionResult Like(string id) {
         var likeable = EntityService.Get<IReactable>(id);
         if (likeable == null) {
@@ -126,7 +126,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity identifier.</param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/unlike")]
+    [HttpPost("{id:eid}/unlike")]
     public IActionResult Unlike(string id) {
         var likeable = EntityService.Get<IReactable>(id);
         if (likeable == null) {
@@ -151,7 +151,7 @@ public class EntityController : AreaController {
     /// <param name="id">Entity identifier.</param>
     /// <param name="content"></param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/react")]
+    [HttpPost("{id:eid}/react")]
     public IActionResult ToggleReaction(string id, string content) {
         var reactable = EntityService.Get<IReactable>(id);
         if (reactable == null) {
@@ -188,7 +188,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity identifier.</param>
     /// <returns></returns>
-    [HttpGet("{id:uid}/react")]
+    [HttpGet("{id:eid}/react")]
     public IActionResult PartialReactable(string id) {
         var reactable = EntityService.Get<IReactable>(id);
         if (reactable == null) {
@@ -203,7 +203,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity identifier.</param>
     /// <returns></returns>
-    [HttpGet("{id:uid}/reactions")]
+    [HttpGet("{id:eid}/reactions")]
     public IActionResult ReactionsModal(string id) {
         var reactable = EntityService.Get<IReactable>(id);
         if (reactable == null) {
@@ -218,7 +218,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity identifier.</param>
     /// <returns></returns>
-    [HttpGet("{id:uid}/reaction-form")]
+    [HttpGet("{id:eid}/reaction-form")]
     public IActionResult ReactionForm(string id) {
         var reactable = EntityService.Get<IReactable>(id);
         if (reactable == null) {
@@ -233,7 +233,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity identifier.</param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/star")]
+    [HttpPost("{id:eid}/star")]
     public IActionResult Star(string id) {
         var starrable = EntityService.Get<IStarrable>(id);
         if (starrable == null) {
@@ -251,7 +251,7 @@ public class EntityController : AreaController {
     /// </summary>
     /// <param name="id">Entity identifier.</param>
     /// <returns></returns>
-    [HttpPost("{id:uid}/unstar")]
+    [HttpPost("{id:eid}/unstar")]
     public IActionResult Unstar(string id) {
         var starrable = EntityService.Get<IStarrable>(id);
         if (starrable == null) {
@@ -270,7 +270,7 @@ public class EntityController : AreaController {
     /// <param name="id"></param>
     /// <param name="reaction"></param>
     /// <returns></returns>
-    [HttpGet("turbostream-toggle-reaction/{id:uid}/react")]
+    [HttpGet("turbostream-toggle-reaction/{id:eid}/react")]
     public IActionResult TurboStreamToggleReaction(string id, string reaction) {
         var reactable = EntityService.Get<IReactable>(id);
         if (reactable == null) {

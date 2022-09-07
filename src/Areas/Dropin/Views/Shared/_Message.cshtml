@@ -36,7 +36,7 @@
 
 <turbo-frame id="@DomId(Model)">
 
-  <div id="@Model.Uid()" class="wy-message @Html.If(me, "wy-message-me") @Html.If(emoji, "wy-message-emoji")" data-controller="@controller">
+  <div id="@Model.Eid()" class="wy-message @Html.If(me, "wy-message-me") @Html.If(emoji, "wy-message-emoji")" data-controller="@controller">
     @if (!me) {
       <div class="wy-message-author"><avatar for="@user" size="32" /></div>
     }

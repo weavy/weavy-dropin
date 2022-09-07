@@ -35,11 +35,12 @@ public class ClientController : AreaController {
 
     /// <summary>
     /// Called from client to set auth cookie.
-    /// The request should contain a JWT in the Authorization header using the Bearer authentication scheme.
+    /// The request should contain an access_token in the Authorization header using the Bearer authentication scheme.
     /// </summary>
     /// <returns></returns>
     [HttpPost("login")]
     public async Task<ActionResult<UserOut>> Login() {
+
         // set auth cookie needed by the drop-in ui
         if (await HttpContext.SignInAsync(WeavyContext.Current.User, false)) {
             // sign in succeeded and auth cookie was issued
@@ -68,17 +69,16 @@ public class ClientController : AreaController {
     /// <returns>Returns a <see cref="User"/> object.</returns>
     [AllowAnonymous]
     [HttpPost("user")]
-    public ActionResult<UserOut> GetUser([FromBody] TokenIn token) {
-        if (token != null && token.Jwt != null) {
-            // NOTE: we just want to determine if cookie and token is different so we don't need to perform any validation or integrity checks
-            var payload = JwtUtils.Payload(token.Jwt);
-            var iss = payload[ClaimsUtils.ISS] as string;
-            var sub = payload[ClaimsUtils.SUB] as string;
-            var tokenUser = UserService.Get(iss, sub);
+    public ActionResult<UserOut> GetUser([FromBody] string accessToken) {
+        if (accessToken != null) {
+            var token = AccessTokenService.Get(accessToken);
+            if (token != null) {
+                var tokenUser = UserService.Get(token.UserId);
 
-            // if the current (cookie) user is the same as the the user specified in the token, we return 200 OK
-            if (tokenUser != null && tokenUser.Id == WeavyContext.Current.User.Id) {
-                return Ok(WeavyContext.Current.User.MapOut());
+                // if the current (cookie) user is the same as the the user specified in the token, we return 200 OK
+                if (tokenUser != null && tokenUser.Id == WeavyContext.Current.User.Id) {
+                    return Ok(WeavyContext.Current.User.MapOut());
+                }
             }
         }
 
@@ -132,23 +132,17 @@ public class ClientController : AreaController {
         // NOTE: some types aren't really apps so we need to handle them specially
         if (model.Type != null && model.Type.Equals("messenger", StringComparison.OrdinalIgnoreCase)) {
             model.Url = Application.Url + Url.Action(nameof(MessengerController.Index), typeof(MessengerController).ControllerName());
-        //} else if (model.Type.Equals("notifications", StringComparison.OrdinalIgnoreCase)) {
-        //    model.Url = Application.Url + Url.Action(nameof(NotificationsController.Get), typeof(NotificationsController).ControllerName());
+        } else if (model.Uid == null) {
+            return Problem("Uid is required.");
         } else {
-            if (model.Id == null) {
-                // apps must have identifiers
-                return Problem("Id is required.");
-            }
-
             // try to locate app with specified identifier
-            var app = AppService.Get(model.Id, trashed: true, sudo: true);
-
+            var app = AppService.Get(model.Uid, trashed: true, sudo: true);
             if (app == null) {
-                return Problem($"App {model.Id} was not found.");
+                return Problem($"App {model.Uid} was not found.");
             } else if (app.IsTrashed()) {
-                return Problem($"App {model.Id} is trashed.");
+                return Problem($"App {model.Uid} is trashed.");
             } else if (!app.HasPermission(Permission.Read)) {
-                return Problem($"Access denied for app {model.Id}.");
+                return Problem($"Access denied for app {model.Uid}.");
             }
 
             // set url that dropin-js should use when loading app,

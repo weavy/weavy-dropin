@@ -5,7 +5,7 @@
 
 @if (total > 0) {
   <turbo-frame id="@DomId(Model)">
-    <a class="wy-reactions" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ReactionsModal)" asp-route-id="@Model.Uid()" data-turbo-frame="modal">
+    <a class="wy-reactions" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ReactionsModal)" asp-route-id="@Model.Eid()" data-turbo-frame="modal">
       @foreach (var emoji in Model.Reactions.Select(x => x.Content).Distinct()) {
         <emoji name="@emoji" />
       }

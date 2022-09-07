@@ -8,7 +8,7 @@
 <turbo-frame id="@DomId(Model)">
 
   @if (Model.IsTrashed() && Model.HasPermission(Permission.Delete)) {
-    <form class="alert alert-warning d-flex align-items-center justify-content-center my-3" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Restore)" asp-route-id="@Model.Uid()">
+    <form class="alert alert-warning d-flex align-items-center justify-content-center my-3" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Restore)" asp-route-id="@Model.Eid()">
       Comment was trashed. <button type="submit" class="btn alert-link p-0 ms-1">@T["Undo"]</button>.
     </form>
   } else {
@@ -35,14 +35,14 @@
             <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
             <div class="dropdown-menu">
               @if (Model.HasPermission(Permission.Update)) {
-                <a class="dropdown-item" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Edit)" asp-route-id="@Model.Uid()"><icon name="pencil" /> @T["Edit"]</a>
+                <a class="dropdown-item" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Edit)" asp-route-id="@Model.Eid()"><icon name="pencil" /> @T["Edit"]</a>
               }
 
               <partial name="_StarMenuItem" />
 
               @if (Model.HasPermission(Permission.Delete)) {
                 <hr class="dropdown-divider">
-                <form asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Trash)" asp-route-id="@Model.Uid()"><button type="submit" class="dropdown-item"><icon name="delete" /> @T["Trash"]</button></form>
+                <form asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Trash)" asp-route-id="@Model.Eid()"><button type="submit" class="dropdown-item"><icon name="delete" /> @T["Trash"]</button></form>
               }
             </div>
           </div>

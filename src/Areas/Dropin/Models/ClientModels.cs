@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Weavy.Core;
 using Weavy.Core.Models;
@@ -13,7 +14,7 @@ public class InitAppModel {
     /// <summary>
     ///   Gets or sets the unique identifier for the app in the the host system.
     /// </summary>
-    public string Id { get; set; }
+    public string Uid { get; set; }
 
     /// <summary>
     ///   Gets or sets the expected app type (preferably GUID, but name also works).
@@ -65,14 +66,4 @@ public class ClientOutputModel {
     /// </summary>
     public static string Version => Application.SemVer;
 
-}
-
-/// <summary>
-/// Jwt model
-/// </summary>
-public class TokenIn {
-    /// <summary>
-    /// The token
-    /// </summary>
-    public string Jwt { get; set; }
 }

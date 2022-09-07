@@ -10,19 +10,19 @@
   <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
   <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
   <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
-  <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" data-turbo-track="reload" />
+  <link rel="stylesheet" href="~/css/cookie.css" asp-append-version="true" data-turbo-track="reload" />
   <script src="~/js/asap.js" asp-append-version="true"></script>
 </head>
 <body>
-  <div class="container-fluid text-center my-5">
-    <img class="mb-3" src="@Url.Favicon(128)" width="128" height="128" alt="" />
-    <h1 class="display-5">@T["Cookie access"]</h1>
+  <header class="wy-header">
+    <img src="@Url.Favicon(128)" width="128" height="128" alt="" />
+    <h1>@T["Cookie access"]</h1>
     <p>@T["Cookies are required to use collaborative features from {0}.", ViewContext.HttpContext.Request.Host]</p>
     <div>
-      <button id="saa" class="btn btn-primary">@T["Allow cookie access"]</button>
-      <button id="saa_cancel" class="btn btn-secondary">@T["Cancel"]</button>
+      <button id="saa" class="wy-button wy-button-primary">@T["Allow cookie access"]</button>
+      <button id="saa_cancel" class="wy-button">@T["Cancel"]</button>
     </div>
-  </div>
+  </header>
 
   <script>
     function enableCookie() {

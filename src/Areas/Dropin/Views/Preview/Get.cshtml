@@ -33,7 +33,7 @@
     </nav>
   </header>
 
-  <main role="main" class="wy-preview wy-scroll-y">
+  <main role="main" class="wy-preview wy-scroll-y wy-scroll-x">
     @if (Model.Prev != null) {
       <nav class="wy-nav-prev"><a class="wy-button wy-button-icon" asp-action="@nameof(PreviewController.Get)" asp-route-id="@Model.Prev.Id"><icon name="arrow-left" /></a></nav>
     }

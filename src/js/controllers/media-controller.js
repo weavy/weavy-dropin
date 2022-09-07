@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import WeavyConsole from "../utils/console";
-import WeavyPostal from "../utils/postal";
+import WeavyPostal from "../utils/postal-child";
 
 const console = new WeavyConsole("media-controller");
 

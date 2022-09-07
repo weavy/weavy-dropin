@@ -26,6 +26,6 @@ public class MessengerHook : IHook<AfterReadConversation> {
             // IMPORTANT: match content with the _ReadBy partial
             template = @$"<turbo-stream action=""append"" target=""readby-append""><template><img id=""readby-{e.Member.Id}"" src=""{e.Member.AvatarUrl(18)}"" width=""18"" height=""18"" alt="""" class=""wy-avatar"" hidden title=""{string.Format(CultureInfo.InvariantCulture, "Seen by {0} {1}", e.Member.DisplayName, e.Member.ReadAt.Value.When())}"" data-controller=""readby"" data-readby-who-value=""{e.Member.Id}"" data-readby-when-value=""{e.Member.ReadAt.AsSortableDate()}""></template></turbo-stream>";
         }
-        PushService.PushToGroup(e.Conversation.Uid(), "turbo-stream", template);
+        PushService.PushToGroup(e.Conversation.Eid(), "turbo-stream", template);
     }
 }

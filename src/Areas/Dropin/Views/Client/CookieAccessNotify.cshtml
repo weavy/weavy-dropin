@@ -10,13 +10,13 @@
   <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
   <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
   <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
-  <link rel="stylesheet" href="~/css/core.css" asp-append-version="true" data-turbo-track="reload" />
+  <link rel="stylesheet" href="~/css/cookie.css" asp-append-version="true" data-turbo-track="reload" />
   <script src="~/js/asap.js" asp-append-version="true"></script>
 </head>
 <body>
-  <div class="container-fluid text-center my-5">
-    <img class="mb-3" src="@Url.Favicon(128)" width="128" height="128" alt="" />
-    <h1 class="display-5">@T["Cookie access"]</h1>
+  <div class="wy-header">
+    <img src="@Url.Favicon(128)" width="128" height="128" alt="" />
+    <h1>@T["Cookie access"]</h1>
     <p>@T["Saving cookie access."]</p>
   </div>
 

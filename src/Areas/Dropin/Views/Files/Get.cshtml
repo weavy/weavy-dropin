@@ -5,7 +5,7 @@
   BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
 }
 <!DOCTYPE html>
-<html data-controller="files preview file-picker" data-files-uploading-class="wy-uploading" class="wy-scroll-y" data-files-app-value="@Model.Id" data-file-picker-url-value="@($"/dropin/files/{Model.Id}/external")" data-files-target="dragzone">
+<html data-controller="authenticate files preview file-picker" data-files-uploading-class="wy-uploading" class="wy-scroll-y" data-files-app-value="@Model.Id" data-file-picker-url-value="@($"/dropin/files/{Model.Id}/external")" data-files-target="dragzone">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -26,7 +26,7 @@
           <button class="wy-button" data-file-picker-target="dropdown" data-bs-toggle="dropdown"><span>Add files</span><icon name="plus" /></button>
           <ul class="wy-dropdown-menu dropdown-menu">
             <li>
-              <button type="button" class="wy-dropdown-item" data-action="files#select"><icon name="laptop" />@T["From device"]</button>
+              <button type="button" class="wy-dropdown-item" data-action="files#select"><icon name="attachment" />@T["From device"]</button>
               <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-files-target="input" data-action="change->files#handleSelect" multiple hidden />
             </li>
             <li><button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" /> @T["From cloud"] </button></li>
