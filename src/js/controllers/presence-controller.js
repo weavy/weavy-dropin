@@ -1,8 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 import { subscribe, unsubscribe } from "../utils/connection-helpers.js"
-import WeavyConsole from "../utils/console";
-
-const console = new WeavyConsole("presence");
 
 export default class extends Controller {
 
@@ -26,12 +23,10 @@ export default class extends Controller {
   }
 
   async connect() {
-    console.debug("connected");
-    subscribe("online", "online", this.onlineChanged);
+    subscribe(null, "online", this.onlineChanged);
   }
 
   disconnect() {
-    console.debug("disconnected");
-    unsubscribe("online", "online", this.onlineChanged);
+    unsubscribe(null, "online", this.onlineChanged);
   }
 }

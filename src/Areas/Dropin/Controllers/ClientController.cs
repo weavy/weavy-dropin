@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Weavy.Core;
 using Weavy.Core.Authentication;
 using Weavy.Core.DTO;
+using Weavy.Core.Middleware;
 using Weavy.Core.Models;
 using Weavy.Core.Services;
 using Weavy.Core.Utils;
@@ -91,7 +92,7 @@ public class ClientController : AreaController {
     /// </summary>
     /// <returns></returns>
     [HttpGet("conversation-badge")]
-    public ConversationsBadge ConversationBadge() {
+    public ConversationBadges ConversationBadge() {
         // REVIEW: also return number of unread notifications?
         return ConversationService.GetBadge(WeavyContext.Current.User.Id);
     }
@@ -118,7 +119,7 @@ public class ClientController : AreaController {
         // set language and timezone cookies
         // REVIEW: set the cookie path to /dropin?
         Response.Cookies.Append("lang", options.Language ?? "", new CookieOptions() { Expires = options.Language == null ? DateTimeOffset.MinValue : DateTimeOffset.UtcNow.AddYears(1), Secure = true, SameSite = SameSiteMode.None });
-        Response.Cookies.Append("tz", options.TimeZone ?? "", new CookieOptions() { Expires = options.TimeZone == null ? DateTimeOffset.MinValue : DateTimeOffset.UtcNow.AddYears(1), Secure = true, SameSite = SameSiteMode.None });
+        Response.Cookies.Append(TimeZoneMiddleware.TIMEZONE_COOKIE_NAME, options.TimeZone ?? "", new CookieOptions() { Expires = options.TimeZone == null ? DateTimeOffset.MinValue : DateTimeOffset.UtcNow.AddYears(1), Secure = true, SameSite = SameSiteMode.None });
 
         return output;
     }

@@ -2,18 +2,17 @@
 @{
   ViewData["IsInitialLoad"] = true;
 }
-<turbo-frame id="conversations" class="wy-conversations">
-    @foreach (var conversation in Model) {
-      <partial name="_Conversation" model="conversation" />
-    }
 
-    @if (Model.HasNextPage) {
-      <a class="wy-pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
-    }
+@foreach (var conversation in Model) {
+  <partial name="_Conversation" model="conversation" />
+}
 
-    @if (!Model.Any()) {
-      <div class="wy-search-no-result">
-        @(Model.Query.Text != null ? @T["Your search did not match any conversations."] : @T["There are no conversations."])        
-      </div>
-    }
-</turbo-frame>
+@if (Model.HasNextPage) {
+  <a class="wy-pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">@Svg.Spinner(spin: true)</a>
+}
+
+@if (!Model.Any()) {
+  <div class="wy-table-no-result">
+    @(Model.Query.Text != null ? @T["Your search did not match any conversations."] : @T["There are no conversations."])
+  </div>
+}

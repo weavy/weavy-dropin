@@ -1,0 +1,21 @@
+// Minimal reboot for dropin
+@use "theme/base/reboot";
+@use "theme/base/vars";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: vars.$font-family-sans-serif;
+  font-size: vars.$font-size-base;
+  font-weight: vars.$font-weight-base;
+  line-height: vars.$line-height-base;
+  color: var(--wy-on-background);
+  background-color: var(--wy-background);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}

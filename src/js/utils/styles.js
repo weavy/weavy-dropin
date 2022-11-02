@@ -13,17 +13,28 @@ export function setId(id) {
   }
 }
 
+var _lastClassNames = [];
+
 /**
- * Adds classNames to the HTML element
+ * Adds classNames to the HTML element and removes previously added classNames
  * @param {string} classNames - Any number of className strings
  */
 export function setClassNames(classNames) {
-  if (classNames && typeof classNames === "string") {
+  if (typeof classNames === "string") {
     // Splits className by space to an array and filters out empty entries
     let classNamesList = classNames.split(" ").filter((x) => x);
+    let removeClassNamesList = _lastClassNames.filter((x) => !classNamesList.includes(x));
+    if (removeClassNamesList && removeClassNamesList.length) {
+      document.documentElement.classList.remove(...removeClassNamesList);
+    }
+
+    // Skip any already existing classes
+    classNamesList = classNamesList.filter((x) => !document.documentElement.classList.contains(x));
+
     if (classNamesList && classNamesList.length) {
       document.documentElement.classList.add(...classNamesList);
     }
+    _lastClassNames = classNamesList;
   }
 }
 

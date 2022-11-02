@@ -1,8 +1,0 @@
-@model MessageModel
-<turbo-frame id="comment-form">
-    <form class="d-flex align-items-start my-3" data-controller="editor" data-action="submit->editor#prepare" asp-action="@nameof(CommentsController.Insert)" method="post" autocomplete="off" novalidate>
-        <vc:editor placeholder="Add a comment..."
-                   send-button="Comment">
-        </vc:editor>
-    </form>
-</turbo-frame>

@@ -1,19 +1,42 @@
 @model MessageModel
+@{
+  var embedUrl = Model?.Message?.Embed?.OriginalUrl;
+}
+<turbo-frame id="@DomId(Model.Parent)" class="wy-footerbar wy-message-editor wy-message-editor-bottom" data-adjust-scrollbar-bottom>
 
-<turbo-frame id="message-form" class="wy-message-editor" data-adjust-scrollbar-bottom>
-  <form asp-action="@nameof(ChatController.InsertMessage)" class="wy-message-form" method="post" autocomplete="off" novalidate
-        data-controller="editor attachments meetings file-picker"
+  <form action="@Url.Action("InsertMessage", new { id = Model.Parent.Id })" class="wy-message-form" method="post" autocomplete="off" novalidate
+        data-controller="editor attachments file-picker meetings polls"
+        data-editor-placeholder-value="@T["Type a message..."]"
         data-editor-target="form"
+        data-editor-autofocus-value="true"
         data-editor-typing-value="true"
         data-attachments-uploading-class="wy-uploading"
+        data-attachments-dragging-class="wy-message-editor-dragging"
+        data-attachments-target="dragzone"
         data-meetings-uploading-class="wy-uploading"
         data-meetings-zoom-authentication-url-value="@ConfigurationService.ZoomAuthenticationUrl"
         data-meetings-teams-authentication-url-value="@ConfigurationService.TeamsAuthenticationUrl"
-        data-action="submit->editor#prepare imagePasted@window->attachments#pasteImage">
+        data-action="submit->editor#prepare editor:filePasted->attachments#pasteFile editor:placeholder->message#showPlaceholder">
+
+    @* polls *@
+    @if (Model?.Message?.Options.Any() ?? false) {
+      var options = Model.Message.Options.ToArray();
+      <div data-polls-target="list" data-editor-target="polls" class="wy-poll-form">
+        @for (int i = 0; i < options.Length; i++) {
+          <input type="hidden" name="Options[@i].Id" value="@options[i].Id" />
+          <input class="wy-input" type="text" name="Options[@i].Text" value="@options[i].Text" placeholder="@T["+ add an option"]" />
+        }        
+        @if (options.Length > 0) {
+          <input class="wy-input" type="text" name="Options[@options.Length].Text" placeholder="@T["+ add an option"]" data-action="focus->polls#addOption" />
+        }
+      </div>
+    } else {
+      <div data-polls-target="list" data-editor-target="polls" class="wy-poll-form" hidden></div>
+    }
 
     @* attachments *@
-    <div class="wy-picker-list" data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list">@{
-      if (Model != null && Model.Message != null) {
+    @if (Model?.Message?.Attachments().Any() ?? false) {
+      <div class="wy-picker-list" data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list">
         @foreach (var attachment in Model.Message.Attachments()) {
           <div class="wy-picker-list-item">
             <icon name="@FileUtils.GetIcon(attachment)" />
@@ -22,12 +45,14 @@
             <button type="button" class="wy-button wy-button-icon" data-action="attachments#remove"><icon name="close-circle" /></button>
           </div>
         }
-      }
-    }</div>
+      </div>
+    } else {
+      <div class="wy-picker-list" data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list"></div>
+    }
 
-    @* meetings *@
-    <div class="wy-picker-list" data-editor-target="meetings" data-meetings-target="list">@{
-      if (Model != null && Model.Message != null && Model.Message.Meeting != null) {
+    @* meetings*@
+    @if (Model?.Message?.Meeting != null) {
+      <div class="wy-picker-list" data-editor-target="meetings" data-meetings-target="list">
         <turbo-frame id="@DomId($"meeting{Model.Message.MeetingId}")">
           <div class="wy-picker-list-item">
             <icon name="@Model.Message.Meeting.Icon" />
@@ -36,33 +61,39 @@
             <button type="button" class="wy-button wy-button-icon" data-action="meetings#remove" data-meetings-id-param="@Model.Message.MeetingId"><icon name="close-circle" /></button>
           </div>
         </turbo-frame>
-      }
-    }</div>
+      </div>
+    } else {
+      <div class="wy-picker-list" data-editor-target="meetings" data-meetings-target="list"></div>
+    }
 
     @* editor *@
-    <div class="wy-message-editor-inputs">
-        <div class="wy-dropup dropup">
-          <button class="wy-button wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown" title="@T["Attach"]"><icon name="plus" />@Svg.Spinner(size: 20, spin: true)</button>
-          <div class="wy-dropdown-menu dropdown-menu">
-            <div>
-              <button type="button" class="wy-dropdown-item" data-action="attachments#select"><icon name="attachment" />@T["File from device"]</button>
-              <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
-            </div>
-            @if (ConfigurationService.BlobProviders.Any()) {
-              <button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" />@T["File from cloud"]</button>
-            }
-            @if (ConfigurationService.TeamsMeetings) {
-              <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" /> @T["Teams meeting"]</button>
-            }
-            @if (ConfigurationService.ZoomMeetings) {
-              <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" /> @T["Zoom meeting"]</button>
-            }
+    <div class="wy-message-editor-inputs" data-attachments-target="dropzone">
+      <div class="wy-dropup dropup">
+        <button class="wy-button wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown" title="@T["Attach"]"><icon name="plus" />@Svg.Spinner(size: 20, spin: true)</button>
+        <div class="wy-dropdown-menu dropdown-menu">
+          <div>
+            <button type="button" class="wy-dropdown-item" data-action="attachments#select"><icon name="attachment" />@T["File from device"]</button>
+            <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
           </div>
+          @if (ConfigurationService.BlobProviders.Any()) {
+            <button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" />@T["File from cloud"]</button>
+          }
+          @if (ConfigurationService.TeamsMeetings) {
+            <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" /> @T["Teams meeting"]</button>
+          }
+          @if (ConfigurationService.ZoomMeetings) {
+            <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" /> @T["Zoom meeting"]</button>
+          }
+
+          
+          <button type="button" class="wy-dropdown-item" data-polls-target="button" data-action="polls#addPoll"><icon name="poll-box" /> @T["Poll"]</button>
         </div>
 
+      </div>
+
       <div class="wy-message-editor-text">
-        <input type="hidden" asp-for="Text" data-editor-target="control" placeholder="@T["Type a message..."]" />
-        <div id="editor-container" class="wy-message-editor-container" data-editor-target="container"></div>
+        <input type="hidden" asp-for="Text" data-editor-target="control" />
+        <div class="wy-message-editor-container" data-editor-target="container"></div>
       </div>
       <button type="submit" class="wy-button wy-button-icon" data-editor-target="button"><icon name="send" color="primary" /></button>
     </div>

@@ -1,0 +1,15 @@
+@model File
+@{
+  var name = ViewData["Name"] ?? Model.Name;
+}
+<turbo-frame id="@DomId(Model)" class="wy-rename-container">
+  @if (Model.IsTrashed()) {
+    <a>@name</a>
+  } else {
+    <a href="@(Model.Blob.Link ?? Model.Url())" data-rename-target="name" data-action="preview-link#open" data-preview-link-url-param="@Url.Action(nameof(FileController.Get), typeof(FileController).ControllerName(), new { id = Model.Id })" data-preview-link-title-param="@name">@name</a>
+    <form asp-controller="@typeof(FileController).ControllerName()" asp-action="@nameof(FileController.Edit)" asp-route-id="@Model.Id" method="post" data-rename-target="form" hidden>
+      <input asp-for="Name" class="wy-input" data-rename-target="input" />
+      <button type="submit" class="wy-button" data-rename-target="submit" hidden>@T["Submit"]</button>
+    </form>
+  }
+</turbo-frame>

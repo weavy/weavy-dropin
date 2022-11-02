@@ -1,0 +1,17 @@
+@model UserSearchResult
+@{
+  var selected = ViewData["Selected"] as IEnumerable<User>;
+}
+<turbo-frame id="searchresult" class="wy-search-result">
+
+  <table class="wy-table wy-search-result-table">
+    @if (selected != null) {
+      @foreach (var user in selected) {
+        <tr>
+          <td class="wy-table-cell-icon"><avatar for="user" presence="true" size="32" /></td>
+          <td class="wy-table-cell-text">@user.DisplayName</td>
+        </tr>
+      }
+    }
+  </table>
+</turbo-frame>

@@ -25,7 +25,7 @@
         var maxWidth = (blob.Width * maxScale) + "px";
 
         <div class="wy-image" style="flex: @flexRatio @flexRatio @flexBasis; width: @intrinsicWidth; max-width: @maxWidth;">
-            <a asp-controller="@typeof(PreviewController).ControllerName()" asp-action="@nameof(PreviewController.Get)" asp-route-id="@img.Id" target="preview" title="@img.Name" class="wy-image-area" style="padding-bottom: @padding;">
+            <a asp-controller="@typeof(FileController).ControllerName()" asp-action="@nameof(FileController.Get)" asp-route-id="@img.Id" target="preview" title="@img.Name" class="wy-image-area" style="padding-bottom: @padding;">
                 <img src="@src" alt="" loading="lazy" decoding="async" />
                 @if (count > limit && index == limit - 1) {
                     // display number of additional images

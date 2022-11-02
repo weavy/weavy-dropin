@@ -1,0 +1,11 @@
+@model FileSearchResult
+
+@foreach (var file in Model) {
+  <partial name="~/Areas/Dropin/Views/File/_ListFile.cshtml" model="file" />
+}
+
+@if (Model.HasNextPage) {
+  <tr class="wy-pager" data-pagination-target="pager" data-next="@Url.NextPage(Model)">
+    <td colspan="6">@Svg.Spinner(spin:true)</td>
+  </tr>
+}

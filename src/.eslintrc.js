@@ -4,16 +4,12 @@ module.exports = {
   "root": true,
   "env": {
     "browser": true,
-    "es6": true
+    "es2022": true
   },
   "extends": "eslint:recommended",
-  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "ecmaVersion": 2021,
+    "ecmaVersion": "latest",
     "sourceType": "module",
-    "babelOptions": {
-      "root": __dirname
-    }
   },
   "ignorePatterns": ["node_modules/**/*", "wwwroot/**/*"],
   "rules": {

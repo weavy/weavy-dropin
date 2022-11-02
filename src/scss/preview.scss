@@ -1,24 +1,44 @@
-// weavy reboot
-@use "theme/root" as *;
-@use "theme/reboot";
+// dropin
+@use "reboot";
+@use "turbo";
 
-// use weavy ui components 
+// theme
+@use "theme/base/scroll";
+@use "theme/alert";
 @use "theme/appbar";
 @use "theme/avatar";
 @use "theme/buttons";
-@use "theme/code";
+@use "theme/comments";
+@use "theme/comment-editor";
+@use "theme/comment-editor-cm";
+@use "theme/content";
+@use "theme/dropdown";
+@use "theme/embed";
+@use "theme/emoji";
+@use "theme/facepile";
 @use "theme/icons";
+@use "theme/image-grid";
+@use "theme/input";
+@use "theme/item";
+@use "theme/list";
+@use "theme/meta";
+@use "theme/pane";
+@use "theme/picker-list";
+@use "theme/placeholder";
+@use "theme/poll";
 @use "theme/preview";
 @use "theme/preview-code";
 @use "theme/preview-embed";
 @use "theme/preview-html";
-@use "theme/preview-icon";
 @use "theme/preview-image";
 @use "theme/preview-media";
 @use "theme/preview-pdf";
 @use "theme/preview-text";
-@use "theme/scroll";
+@use "theme/sidebar";
+@use "theme/sheet";
 @use "theme/spinner";
+@use "theme/type";
+@use "theme/meeting";
 
 // additional styling for the preview window/overlay
 html {
@@ -31,6 +51,11 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: $font-family-base;
 }
 
+
+.wy-versions {
+  .wy-item-hover {
+    cursor: pointer;
+  }
+}

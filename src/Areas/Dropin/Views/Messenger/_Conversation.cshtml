@@ -16,17 +16,17 @@
     }
   }
 }
-<div id="@DomId(Model)" class="wy-conversation @Html.If(Model.IsUnread(), "wy-unread")" data-controller="messenger @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Eid()" data-messenger-events-value="[&quot;app-updated&quot;,&quot;turbo-stream&quot;,&quot;member-added&quot;,&quot;member-removed&quot;]">
-  <a asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id" class="wy-conversation-link" data-turbo-frame="_top">
-    <avatar for="@Model" size="48" presence="true" />
-    <div class="wy-conversation-body">
-      <div class="wy-conversation-header">
-        <div class="wy-conversation-title">@Model.DisplayName</div>
-        @if (Model.LastMessage != null) {
-          <time class="wy-conversation-time" datetime="@Model.LastMessage.CreatedAt" />
-        }
-      </div>
-      <div class="wy-conversation-summary" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
+<a id="@DomId(Model)" class="wy-item wy-item-lg wy-item-hover wy-conversation @Html.If(Model.IsUnread(), "wy-unread")" data-controller="messenger link @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Eid()" data-messenger-events-value="[&quot;message_created&quot;,&quot;member_added&quot;,&quot;member_removed&quot;]" asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id" data-turbo-frame="_top">
+  <avatar for="@Model" size="48" presence="true" />
+  <div class="wy-item-body">
+    <div class="wy-item-row">
+      <div class="wy-item-title">@Model.DisplayName</div>
+      @if (Model.LastMessage != null) {
+        <time class="wy-meta" datetime="@Model.LastMessage.CreatedAt" />
+      }
+    </div>
+    <div class="wy-item-row">
+      <div class="wy-item-text" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
         <span class="wy-typing-hide">
           @if (Model.LastMessage != null) {
             @if (Model.LastMessage.CreatedById == WeavyContext.Current.User.Id) {
@@ -42,9 +42,8 @@
         <span class="wy-typing-show" data-typing-target="indicator"></span>
       </div>
     </div>
-  </a>
-
-  <div class="wy-conversation-actions">
+  </div>
+  <div class="wy-item-actions wy-item-actions-bottom">
     <partial name="_StarButton" />
     <div class="wy-dropdown">
       <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown">
@@ -69,5 +68,5 @@
     </div>
 
   </div>
-</div>
+</a>
 

@@ -2,7 +2,7 @@
 
 @if (Model.IsStarred()) {
     <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unstar)" asp-route-id="@Model.Eid()">
-        <button type="submit" class="wy-button wy-button-icon"><icon name="star" /></button>
+        <button type="submit" class="wy-button wy-button-icon"><icon name="star" color="yellow" /></button>
     </form>
 } else if (Action == nameof(EntityController.Unstar)) {
     <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Star)" asp-route-id="@Model.Eid()">

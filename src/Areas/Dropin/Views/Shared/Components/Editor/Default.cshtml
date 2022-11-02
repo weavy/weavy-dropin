@@ -3,7 +3,7 @@
 
   <textarea class="form-control mb-2 d-none" data-editor-target="control" asp-for="Text" placeholder="@T[ViewBag.Placeholder]"></textarea>
 
-  <div id="editor-container" data-editor-target="container" style="visibility: hidden;"></div>
+  <div data-editor-target="container" style="visibility: hidden;"></div>
 
   <div class="mb-2" data-attachments-target="list" data-file-picker-target="list">
     @if (Model != null && Model.Message != null) {

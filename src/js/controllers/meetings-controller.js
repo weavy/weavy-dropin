@@ -13,30 +13,33 @@ export default class extends Controller {
     teamsAuthenticationUrl: String,
   };
 
+  handler = this.handleMessages.bind(this);
+
   connect() {
-    console.debug("connected:");
-
-    var self = this;
-    window.addEventListener("message", function (e) {
-
-      switch (e.data.name) {
-        case "zoom-signed-in":
-          self.recreateMeeting("zoom");
-          break;
-
-        case "teams-signed-in":
-          self.recreateMeeting("teams");
-          break;
-      }
-    })
+    console.debug("connected");
+    window.addEventListener("message", this.handler)
   }
 
   disconnect() {
+    console.debug("disconnected");
+    window.removeEventListener("message", this.handler)
+  }
 
+  handleMessages(e) {
+    
+    switch (e.data.name) {
+      case "zoom-signed-in":
+        this.recreateMeeting("zoom");
+        break;
+
+      case "teams-signed-in":
+        this.recreateMeeting("teams");
+        break;
+    }
   }
 
   recreateMeeting(provider) {
-
+    
     const data = new FormData();
     data.append("provider", provider);
 
@@ -108,7 +111,7 @@ export default class extends Controller {
 
   add(e) {
     console.debug("add:" + event.params.provider);
-    
+
     const list = this.listTarget;
     if (list.childElementCount > 0) return;
 

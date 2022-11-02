@@ -97,6 +97,43 @@ public class EntityController : AreaController {
     }
 
     /// <summary>
+    /// Creates a new <see cref="Embed"/>.
+    /// </summary>
+    /// <param name="url">The url to scrape.</param>
+    /// <param name="target">The id of the target dom element.</param>
+    /// <returns></returns>
+    [HttpPost("embed")]
+    public IActionResult Embed(string url, string target) {
+        var embed = EmbedService.Insert(url);
+        if (embed == null) {
+            return NotFound();
+        }
+        return TurboStream.Prepend(target, "_Embed", embed);
+    }
+
+    /// <summary>
+    /// Vote for a poll option.
+    /// </summary>
+    /// <param name="id">Poll option id.</param>
+    /// <returns></returns>
+    [HttpPost("{id:int}/vote")]
+    public IActionResult Vote(int id) {
+        var poll = MessageService.Vote(id);
+        return TurboStream.Replace("_Poll", poll);        
+    }
+
+    /// <summary>
+    /// Get who voted for a scpecific poll option.
+    /// </summary>
+    /// <param name="id">Poll option id.</param>
+    /// <returns></returns>
+    [HttpGet("{id:int}/votes")]
+    public IActionResult Votes(int id) {
+        var option = MessageService.GetOption(id);
+        return View("_VotesSheet", option);
+    }
+
+    /// <summary>
     /// Like the specified entity.
     /// </summary>
     /// <param name="id">Entity id.</param>
@@ -175,7 +212,7 @@ public class EntityController : AreaController {
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Reactions", reactable));
         result.Streams.Add(TurboStream.Replace("_ReactionForm", reactable));
-        if (content == "👍") {
+        if (content == ReactionService.LIKE) {
             // also update likes 
             result.Streams.Add(TurboStream.Replace("_Likes", reactable));
         }
@@ -265,6 +302,40 @@ public class EntityController : AreaController {
     }
 
     /// <summary>
+    /// Follow the specified entity.
+    /// </summary>
+    /// <param name="id">Entity identifier.</param>
+    /// <returns></returns>
+    [HttpPost("{id:eid}/follow")]
+    public IActionResult Follow(string id) {
+        var followable = EntityService.Get<IFollowable>(id);
+        if (followable == null) {
+            return BadRequest();
+        }
+        followable = EntityService.Follow(followable);
+        var result = new TurboStreamsResult();
+        result.Streams.Add(TurboStream.Replace("_FollowMenuItem", followable));
+        return result;
+    }
+
+    /// <summary>
+    /// Un-follow the specified entity.
+    /// </summary>
+    /// <param name="id">Entity identifier.</param>
+    /// <returns></returns>
+    [HttpPost("{id:eid}/unfollow")]
+    public IActionResult Unfollow(string id) {
+        var followable = EntityService.Get<IFollowable>(id);
+        if (followable == null) {
+            return BadRequest();
+        }
+        followable = EntityService.Unfollow(followable);
+        var result = new TurboStreamsResult();
+        result.Streams.Add(TurboStream.Replace("_FollowMenuItem", followable));
+        return result;
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="id"></param>
@@ -280,7 +351,7 @@ public class EntityController : AreaController {
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Reactions", reactable));
         result.Streams.Add(TurboStream.Replace("_ReactionForm", reactable));
-        if (reaction == "👍") {
+        if (reaction == ReactionService.LIKE) {
             // also update likes 
             result.Streams.Add(TurboStream.Replace("_Likes", reactable));
         }

@@ -1,9 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { subscribe, unsubscribe } from "../utils/connection-helpers.js"
 import postal from "../utils/postal-child";
-import WeavyConsole from '../utils/console';
-
-const console = new WeavyConsole("badge");
 
 export default class extends Controller {
 
@@ -11,22 +8,26 @@ export default class extends Controller {
 
   badgeHandler = this.badge.bind(this);
 
-  badge(conversationsBadge) {
-    var count = conversationsBadge.private + conversationsBadge.rooms;
-
-    if (count > 0 && this.hasElementTarget) {
-      this.elementTarget.innerText = count.toString();
-    }
-    postal.postToParent({ name: "badge", count: count });
+  badge(args) {    
+    // api call to get actual badge
+    fetch("/api/conversations/badge").then(response => response.json())
+      .then(json => {
+        var count = json.private + json.rooms;        
+        if (this.hasElementTarget) {
+          this.elementTarget.innerText = count > 0 ? count.toString() : "";
+        } 
+        postal.postToParent({ name: "badge", count: count });
+      });
   }
 
   connect() {
-    console.debug("connected");
-    subscribe(null, "conversation-badge", this.badgeHandler);
+    // TODO: listen to other events and call badge api endpoint
+    subscribe(null, "message_created", this.badgeHandler);
+    subscribe(null, "conversation_marked", this.badgeHandler);
   }
 
   disconnect() {
-    console.debug("disconnected");
-    unsubscribe(null, "conversation-badge", this.badgeHandler);
+    unsubscribe(null, "message_created", this.badgeHandler);
+    unsubscribe(null, "conversation_marked", this.badgeHandler);
   }
 }

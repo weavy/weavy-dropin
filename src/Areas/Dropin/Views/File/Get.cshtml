@@ -1,0 +1,71 @@
+@model PreviewModel
+@{
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@Model.Current.Name</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/preview.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/asap.js" asp-append-version="true" data-turbo-track="reload"></script>
+  <script src="~/js/preview.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body data-controller="version tabs presence" data-tabs-current-class="wy-active" data-app-id="@EntityUtils.ResolveAppId(Model.Current)">
+  <header class="wy-appbars">
+    <nav class="wy-appbar">
+      <button class="wy-button wy-button-icon wy-close-back"><icon name="close" /></button>
+      <div class="wy-appbar-text">@Model.Current.Name</div>
+      <div class="wy-appbar-buttons">
+        @if (Model.Current.IsAttachment()) {
+            <a class="wy-button wy-button-icon" href="@Model.Current.Url()" title="@T["Download"]" download><icon name="download" /></a>
+        } else {
+          <button class="wy-button wy-button-icon" data-tabs-target="toggle" data-tabs-selector="#tab-comments">
+            <div class="wy-icon-active-stack">
+              <icon name="comment-outline" />
+              <icon name="comment" />
+            </div>
+          </button>
+          <div class="wy-dropdown">
+            <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+            <div class="wy-dropdown-menu dropdown-menu">
+                @if (Model.Current.Blob?.Provider != null) {
+                  <a class="wy-dropdown-item" href="@Model.Current.Blob.Link" target="_blank" title="@T["Open in {0}", Model.Current.Blob.Provider]"><icon name="@Model.Current.Blob.Provider.ToKebabCase()" /> @T["Open in {0}", Model.Current.Blob.Provider]</a>
+                } else {
+                  if (FileUtils.IsOfficeDocument(Model.Current.Name)) {
+                    <a class="wy-dropdown-item" href="@Model.Current.OfficeUrl(hmac: true)" target="_top" title="@T["Open in {0}", @FileUtils.OpenWith(Model.Current.Name)]"><icon name="@FileUtils.GetIcon(Model.Current)" /> @T["Open in {0}", @FileUtils.OpenWith(Model.Current.Name)]</a>
+                  }
+                  <a class="wy-dropdown-item" href="@Model.Current.Url()" title="@T["Download"]" download><icon name="download" /> @T["Download"]</a>
+                }
+              <partial name="_FollowMenuItem" model="Model.Current" />
+
+              <button class="wy-dropdown-item" data-tabs-target="toggle" data-tabs-selector="#tab-versions"><icon name="backup-restore" /> @T["Versions"]</button>
+            </div>
+          </div>
+        }
+      </div>
+    </nav>
+  </header>
+
+  <main role="main" class="wy-main">
+    <partial name="_Sidebar" model="Model.Current" />
+    <section class="wy-preview">
+      @if (Model.Prev != null) {
+        <nav class="wy-nav-prev"><a class="wy-button wy-button-icon" asp-action="@nameof(FileController.Get)" asp-route-id="@Model.Prev.Id"><icon name="arrow-left" /></a></nav>
+      }
+
+      @if (Model.Next != null) {
+        <nav class="wy-nav-next"><a class="wy-button wy-button-icon" asp-action="@nameof(FileController.Get)" asp-route-id="@Model.Next.Id"><icon name="arrow-right" /></a></nav>
+      }
+      <div class="wy-preview-area wy-scroll-y wy-scroll-x">
+        <partial name="_Preview" model="Model.Current" />
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>

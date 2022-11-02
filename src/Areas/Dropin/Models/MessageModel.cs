@@ -16,12 +16,17 @@ public class MessageModel : IValidatableObject {
     private static readonly IStringLocalizer T = Localizer.For<MessageModel>();
 
     /// <summary>
-    /// The underlaying Message entity
+    /// Gets or sets the parent entity (app, post, file).
+    /// </summary>
+    public IEntity Parent { get; set; }
+
+    /// <summary>
+    /// The Message itself (when editing existing message).
     /// </summary>
     public Message Message { get; set; }
 
     /// <summary>
-    /// Gets or sets ids of <see cref="File"/>s attached to the <see cref="Message"/>.
+    /// Gets or sets ids of files attached to the <see cref="Message"/>.
     /// </summary>
     public int[] Attachments { get; set; } = Array.Empty<int>();
 
@@ -41,15 +46,21 @@ public class MessageModel : IValidatableObject {
     public int? MeetingId { get; set; }
 
     /// <summary>
+    /// Gets or sets poll options.
+    /// </summary>
+    public List<PollOptionModel> Options { get; set; }
+
+    /// <summary>
     /// Gets or sets the message text.
     /// </summary>
+    /// 
     public string Text { get; set; }
 
     /// <summary>
     /// Performs custom validation.
     /// </summary>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
-        if (Attachments.IsNullOrEmpty() && Blobs.IsNullOrEmpty() && EmbedId == null && MeetingId == null && string.IsNullOrEmpty(Text)) {
+        if (Attachments.IsNullOrEmpty() && Blobs.IsNullOrEmpty() && Options.IsNullOrEmpty() && EmbedId == null && MeetingId == null && string.IsNullOrEmpty(Text)) {
             yield return new ValidationResult(T["Message is empty."], new string[] { nameof(Text) });
         }
     }

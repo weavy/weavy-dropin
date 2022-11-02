@@ -6,6 +6,7 @@ export default class extends Controller {
 
   #oldname = "";
   #newname = "";
+  #editing = true;
 
   nameTargetConnected(el) {
     this.#oldname = this.nameTarget.innerText;
@@ -34,11 +35,22 @@ export default class extends Controller {
     if (el.classList.contains("wy-is-invalid")) {
       this.nameTarget.hidden = true;
       this.formTarget.hidden = false;
+      this.focus();
     }
   }
 
   formTargetConnected(el) {
+    this.#editing = true;
+
     el.addEventListener("submit", (e) => {
+
+      if (!this.#editing) {
+        e.preventDefault();
+        return false;
+      }
+
+      this.#editing = false;
+
       if (this.#newname.trim().length === 0 || this.#newname === this.#oldname) {
         // no change, prevent submit
         e.preventDefault();
@@ -51,11 +63,20 @@ export default class extends Controller {
       this.close();
     });
   }
-  
+
   open() {
     this.nameTarget.hidden = true;
     this.formTarget.hidden = false;
 
+    // fix for renaming cards. Better way?
+    if (this.element.classList.contains("wy-card-hover")) {
+      this.element.classList.remove("wy-card-hover")
+    }
+
+    this.focus();
+  }
+
+  focus() {
     // focus and select file name without extension
     this.inputTarget.focus();
     const i = this.inputTarget.value.lastIndexOf(".");

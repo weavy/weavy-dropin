@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Weavy.Core.Http;
@@ -32,25 +34,30 @@ public class ChatController : AreaController {
     /// <returns></returns>
     [HttpGet("{id:int}")]
     public IActionResult Get(int id, MessageQuery query) {
-        var app = ConversationService.Get<Chat>(id);
-        if (app == null) {
+        var chat = ConversationService.Get<Chat>(id);
+        if (chat == null) {
             return BadRequest();
         }
 
-        query.AppId = app.Id;
-        query.Parent = app;
-        query.OrderBy = nameof(Message.Id);
+        query.AppId = chat.Id;
+        query.Parent = chat;
+        query.OrderBy = "Id DESC";
         // limit page size to [1,25]
         query.Top = Math.Clamp(query.Top ?? PageSizeMedium, 1, PageSizeMedium);
 
-        app.Messages = MessageService.Search(query);
+        var result = MessageService.Search(query);
+        result.Reverse();
+        chat.Messages = result;
+
+        // add app to viewdata so that we can avoid lazy-loading Message.Parent when rendering messages
+        ViewData[nameof(Message.Parent)] = chat;
 
         if (Request.IsAjaxRequest()) {
             // infinite scroll, return partial view                
-            return PartialView("_Messages", app.Messages);
+            return PartialView("_Messages", chat.Messages);
         }
 
-        return View(app);
+        return View(chat);
     }
 
     /// <summary>
@@ -68,23 +75,29 @@ public class ChatController : AreaController {
 
         if (ModelState.IsValid) {
             var message = new Message { Text = model.Text, MeetingId = model.MeetingId };
-            message = MessageService.Insert(message, conversation, blobs: model.Blobs);
+            message = MessageService.Insert(message, conversation, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
 
             if (Request.IsTurboStream()) {
+                var result = new TurboStreamsResult();
+
                 // clear form and append message
                 ModelState.Clear();
-                var result = new TurboStreamsResult();
-                result.Streams.Add(TurboStream.Replace("message-form", "_MessageForm", null));
-
-                // replace placeholder with message and make sure no existing one in the list
+                result.Streams.Add(TurboStream.Replace(TurboStreamHelper.DomId(this, "_MessageForm", conversation), "_MessageForm", new MessageModel { Parent = conversation }));
+                
+                // REVIEW: why are we removing existing message here? because it might have been injected via realtime?
                 result.Streams.Add(TurboStream.Remove("_Message", message));
-                result.Streams.Add(TurboStream.Replace("message-ph", "_Message", message));
+
+                // replace placeholder with inserted message
+                conversation = ConversationService.Get(id);
+                ViewData[nameof(Message.Parent)] = conversation;
+                result.Streams.Add(TurboStream.Replace(TurboStreamHelper.DomId(this, "_MessagePlaceholder", conversation), "_Message", message));
                 return result;
             }
             return SeeOtherAction(nameof(Get), new { id });
         }
 
         // validation error, display form again
+        model.Parent = conversation;
         return PartialView("_MessageForm", model);
     }
 

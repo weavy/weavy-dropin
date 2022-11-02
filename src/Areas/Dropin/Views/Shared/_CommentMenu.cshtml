@@ -1,0 +1,25 @@
+@model Message
+@{
+  if (!Model.HasPermission(Permission.Update) && !Model.HasPermission(Permission.Delete)) {
+    // no menu items to render
+    return;
+  }
+
+  var controller = Model.Parent.Type == EntityType.File ? typeof(FileController).ControllerName() : typeof(PostController).ControllerName();
+  var editAction = Model.Parent.Type == EntityType.File ? nameof(FileController.EditComment) : nameof(PostController.EditComment);
+  var trashAction = Model.Parent.Type == EntityType.File ? nameof(FileController.TrashComment) : nameof(PostController.TrashComment);
+}
+
+<div class="wy-dropdown">
+  <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+  <div class="wy-dropdown-menu dropdown-menu">
+    @if (Model.HasPermission(Permission.Update)) {
+      <a class="wy-dropdown-item" asp-controller="@controller" asp-action="@editAction" asp-route-id="@Model.Id"><icon name="pencil" /> @T["Edit"]</a>
+    }
+    @if (Model.HasPermission(Permission.Delete)) {
+      <hr class="wy-dropdown-divider">
+      <form asp-controller="@controller" asp-action="@trashAction" asp-route-id="@Model.Id"><button type="submit" class="wy-dropdown-item"><icon name="delete" /> @T["Trash"]</button></form>
+    }
+  </div>
+</div>
+

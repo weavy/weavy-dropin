@@ -1,18 +1,29 @@
 @model UserSearchResult
 @{
   var selected = ViewData["Selected"] as IEnumerable<User>;
+  ChatRoom room = null;
+
+  if (Model.Query.NotAppId != null) {
+    room = ConversationService.Get<ChatRoom>(Model.Query.NotAppId.Value);
+  }
 }
 <turbo-frame id="searchresult" class="wy-search-result">
 
-  <table class="wy-search-result-table" data-controller="checkbox" >
+  <table class="wy-table wy-table-hover wy-search-result-table" data-controller="checkbox" >
     @if (selected != null) {
       @foreach (var user in selected) {
         <tr class="wy-search-result-table-checkbox" data-action="click->checkbox#toggle">
-          <td><avatar for="user" presence="true" size="32" /></td>
-          <td>@user.DisplayName</td>
-          <td>
-            <input type="checkbox" class="wy-button-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable" checked />
-            <label class="wy-button wy-button-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
+          <td class="wy-table-cell-icon"><avatar for="user" presence="true" size="32" /></td>
+          <td class="wy-table-cell-text">@user.DisplayName</td>
+          <td class="wy-table-cell-icon">
+            @if (room == null || (room.HasPermission(Permission.Admin) || user.Id == WeavyContext.Current.User.Id)) {
+              <input type="checkbox" class="wy-button-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable" checked />
+              <label class="wy-button wy-button-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
+            } else {
+              <input type="hidden" name="users" value="@user.Id" />
+              <input type="checkbox" class="wy-button-check" autocomplete="off" checked disabled="disabled" />
+              <label class="wy-button wy-button-icon" title="@T["You are not allowed to remove the member."]"><icon name="checkbox-marked-outline" /></label>
+            }            
           </td>
         </tr>
       }
@@ -25,9 +36,9 @@
         }
 
         <tr data-action="click->checkbox#toggle">
-          <td><avatar for="user" presence="true" size="32" /></td>
-          <td>@user.DisplayName</td>
-          <td>
+          <td class="wy-table-cell-icon"><avatar for="user" presence="true" size="32" /></td>
+          <td class="wy-table-cell-text">@user.DisplayName</td>
+          <td class="wy-table-cell-icon">
             <input type="checkbox" class="wy-button-check" id="chk-@user.Id" name="users" value="@user.Id" autocomplete="off" data-action="click->checkbox#click change->form#enable"  />
             <label class="wy-button wy-button-icon" for="chk-@user.Id"><icon name="checkbox-blank-outline" /><icon name="checkbox-marked-outline" /></label>
           </td>

@@ -1,7 +1,7 @@
 @model Conversation
 
 @if (Model.IsUnread()) {
-    <form id="@DomId(Model)" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Read)" asp-route-id="@Model.Id">
+    <form id="@DomId(Model)" asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Read)" asp-route-id="@Model.Id" asp-route-messageId="@Model.LastMessage.Id">
         <button type="submit" class="wy-dropdown-item"><icon name="check" /> @T["Mark as read"]</button>
     </form>
 } else {

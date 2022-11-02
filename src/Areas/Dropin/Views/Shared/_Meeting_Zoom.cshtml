@@ -1,31 +1,30 @@
 @model Meeting
 
-<div class="mb-1 bg-white p-2 rounded-3">
-  <div class="d-flex">
-    <div>
-      <icon name="zoom" />
-    </div>
-    <div >
-      <div class="ms-2">
-        <strong class="card-title text-black">@T["Zoom meeting"]</strong>
-        <p class="card-text">
-          @if (Model.EndedAt != null) {
-            <small class="text-muted">@T["Meeting ended"]: <time>@Model.EndedAt</time> </small>
-          } else {
-            <small class="text-muted">@T["Meeting ID"]: @(System.Text.RegularExpressions.Regex.Replace(Model.ProviderId, @"(\d{3})(\d{3})(\d{4})", "$1-$2-$3"))</small>
-          }
-          <br/>
+<div class="wy-list wy-list-bordered">
+  <div class="wy-item wy-meeting">
+    <icon name="zoom" color="native" size="48" />
+    <div class="wy-item-body">
+      <div class="wy-item-title">@T["Zoom meeting"]</div>
+      <div class="wy-item-text">
+        @if (Model.EndedAt != null) {
+          <div>@T["Meeting ended"]: <time>@Model.EndedAt</time> </div>
+        } else {
+          <div>@T["ID"]: @(System.Text.RegularExpressions.Regex.Replace(Model.ProviderId, @"(\d{3})(\d{3})(\d{4})", "$1-$2-$3"))</div>
+        }
+
+        <div class="wy-meeting-actions">
           @if (Model.EndedAt != null) {
             if (Model.RecordingUrl != null) {
-              <a href="@Model.RecordingUrl" target="_blank" class="wy-button wy-button-primary mt-2">@Svg.Icon("play") @T["Play recording"]</a>
+              <a href="@Model.RecordingUrl" target="_blank" class="wy-button wy-button-primary">@Svg.Icon("play") @T["Play recording"]</a>
             }
           } else if (Model.CreatedById == WeavyContext.Current.User.Id) {
-            <a href="@Model.JoinUrl" target="_blank" class="wy-button wy-button-primary mt-2">@T["Start"]</a>
+            <a href="@Model.JoinUrl" target="_blank" class="wy-button wy-button-primary">@T["Start"]</a>
           } else {
-            <a href="@Model.JoinUrl" target="_blank" class="wy-button wy-button-primary mt-2">@T["Join"]</a>
+            <a href="@Model.JoinUrl" target="_blank" class="wy-button wy-button-primary">@T["Join"]</a>
           }
-        </p>
+        </div>
       </div>
     </div>
   </div>
 </div>
+

@@ -4,8 +4,6 @@
   BodyAttributes.Add("data-app-uid", Model.Eid());
   BodyAttributes.Add("data-app-id", Model.Id.ToString());
   BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
-  ViewData["NewMessageLabelBeforeId"] = Model.IsUnread() ? Model.Messages.FirstOrDefault(x => x.CreatedAt > (Model.Member.ReadAt ?? DateTime.MinValue))?.Id : null;
-  ViewData["Conversation"] = Model;
 }
 <!DOCTYPE html>
 <html data-controller="authenticate presence" class="wy-scroll-y">
@@ -23,22 +21,25 @@
 </head>
 <body>
 
-  <main role="main" class="wy-pane" data-controller="chat scroll" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-chat-events-value="[&quot;message-inserted&quot;,&quot;turbo-stream&quot;,&quot;reaction-inserted&quot;,&quot;reaction-deleted&quot;]" data-chat-group-value="@Model.Eid()">
+  <main
+    role="main"
+    class="wy-main wy-pane wy-pane-background"
+    data-controller="chat pagination scroll message"
+    data-pagination-mode-value="reverse"
+    data-pagination-deferred-value="true"
+    data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom scroll:at-bottom->pagination#setup"
+    data-chat-events-value="[&quot;message_created&quot;,&quot;read_by&quot;,&quot;reaction_added&quot;,&quot;reaction_removed&quot;]"
+    data-chat-group-value="@Model.Eid()">
     <div class="wy-pane-body">
-      <div id="messages" class="wy-messages" style="visibility: hidden;" data-controller="pagination">
+      <div id="messages" class="wy-messages" data-message-target="container" style="visibility: hidden;">
+        <partial name="_MessagePlaceholder" />
         <partial name="_Messages" model="Model.Messages" />
       </div>
-
-      @* placeholder: cloned and placed in correct position on send *@
-      <partial name="_MessagePlaceholder" />
     </div>
     <div id="readby-append" hidden></div>
-
-    <partial name="_MessageForm" model="new MessageModel()" />
-    <turbo-frame id="modal"></turbo-frame>
+    <partial name="_MessageForm" model="new MessageModel { Parent = Model }" />
+    <turbo-frame id="sheet"></turbo-frame>
   </main>
-
-
 </body>
 </html>
 

@@ -28,15 +28,15 @@ public class PostsController : AreaController {
         }
 
         query.AppId = app.Id;
-        query.OrderBy = nameof(Message.Id) + " DESC";
+        query.OrderBy = $"IsPinned DESC, {nameof(Message.Id)} DESC";
         query.Parent = app;
         // limit page size to [1,10]
         query.Top = Math.Clamp(query.Top ?? PageSizeSmall, 1, PageSizeSmall);
-        app.Items = MessageService.Search(query);
+        app.Messages = MessageService.Search(query);
 
         if (Request.IsAjaxRequest()) {
             // infinite scroll, return partial view                
-            return PartialView("_Posts", app.Items);
+            return PartialView("_Posts", app.Messages);
         }
 
         return View(app);
@@ -56,139 +56,27 @@ public class PostsController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var post = new Message();
-            post.Text = model.Text;
-            post.MeetingId = model.MeetingId;
-            post = MessageService.Insert(post, app, blobs: model.Blobs);
+            var post = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId  };
+            post = MessageService.Insert(post, app, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
 
-            if (Request.IsTurboStream()) {
-                // clear form and insert post
-                ModelState.Clear();
+            if (Request.IsTurboStream()) {                              
                 var result = new TurboStreamsResult();
-                result.Streams.Add(TurboStream.Replace("post-form", "_PostForm", null));
-                result.Streams.Add(TurboStream.Prepend("posts", "_Post", post));
+
+                // reset form
+                ModelState.Clear();
+                result.Streams.Add(TurboStream.Replace(TurboStreamHelper.DomId(this, "_PostForm", app), "_PostForm", new MessageModel { Parent = app }));
+
+                // replace placeholder with inserted post 
+                result.Streams.Add(TurboStream.Replace(TurboStreamHelper.DomId(this, "_PostPlaceholder", app), "~/Areas/Dropin/Views/Post/_Post.cshtml", post));
                 return result;
             }
 
             return SeeOtherAction(nameof(Get), new { id });
         }
 
+        // REVIEW: _PostForm tar inte in en MessageModel. Är det kanske _PostEditor vi ska returnera?
         // validation error, display form again
+        model.Parent = app;
         return PartialView("_PostForm", model);
-    }
-
-    /// <summary>
-    /// Returns a partial view with post details. 
-    /// </summary>
-    /// <param name="id">Post id.</param>
-    /// <returns></returns>
-    [HttpGet("{id:eid}")]
-    public IActionResult Get(string id) {
-        var post = EntityService.Get<Message>(id);
-        if (post == null) {
-            return BadRequest();
-        }
-        return PartialView("_Post", post);
-    }
-
-    /// <summary>
-    /// Display post edit form.
-    /// </summary>
-    /// <param name="id">Comment id.</param>
-    /// <returns></returns>
-    [HttpGet("{id:eid}/edit")]
-    public IActionResult Edit(string id) {
-        var post = EntityService.Get<Message>(id);
-        if (post == null) {
-            return BadRequest();
-        }
-        var model = new MessageModel {
-            Message = post,
-            Text = post.Text,
-            Attachments = post.AttachmentIds.ToArray(),
-            MeetingId = post.MeetingId
-        };
-        return PartialView("_Edit", model);
-    }
-
-    /// <summary>
-    /// Update post.
-    /// </summary>
-    /// <param name="id">Post id.</param>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    [HttpPut("{id:eid}")]
-    public IActionResult Update(string id, MessageModel model) {
-        var post = EntityService.Get<Message>(id);
-        if (post == null) {
-            return BadRequest();
-        }
-
-        if (ModelState.IsValid) {
-            // remove attachments that should no longer be associated with the comment
-            foreach (var attachmentId in post.AttachmentIds.Except(model.Attachments)) {
-                FileService.Trash(attachmentId);
-            }
-
-            // update post and attach additional blobs (if any)
-            post.Text = model.Text;
-            post.MeetingId = model.MeetingId;
-            post = MessageService.Update(post, blobs: model.Blobs);
-
-            return PartialView("_Post", post);
-        }
-        return PartialView("_Edit", post);
-    }
-
-
-    /// <summary>
-    /// Trash a post.
-    /// </summary>
-    /// <param name="id">Id of the post to trash.</param>
-    /// <returns></returns>
-    [HttpPost("{id:eid}/trash")]
-    public IActionResult Trash(string id) {
-        var post = EntityService.Get<Message>(id, trashed: true);
-        if (post == null) {
-            return BadRequest();
-        }
-
-        post = MessageService.Trash(post.Id);
-
-        return PartialView("_Post", post);
-    }
-
-    /// <summary>
-    /// Restore a trashed comment.
-    /// </summary>
-    /// <param name="id">Id of the comment to restore.</param>
-    /// <returns></returns>
-    [HttpPost("{id:eid}/restore")]
-    public IActionResult Restore(string id) {
-        var post = EntityService.Get<Message>(id, trashed: true);
-        if (post == null) {
-            return BadRequest();
-        }
-
-        post = MessageService.Restore(post.Id);
-
-        return PartialView("_Post", post);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [HttpGet("turbostream-insert-post/{id:eid}")]
-    public IActionResult TurboStreamInsertPost(string id) {
-
-        var message = EntityService.Get<Message>(id);
-        if (message == null) {
-            return BadRequest();
-        }
-        var result = new TurboStreamsResult();
-        result.Streams.Add(TurboStream.Prepend("posts", "_Post", message));
-        return result;
     }
 }

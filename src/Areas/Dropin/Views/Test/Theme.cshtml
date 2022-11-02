@@ -1,0 +1,741 @@
+@model Theme
+@{
+  BodyAttributes.Add("class", "wy-theme");
+  Layout = "_Layout";
+  Title = Model.Color;
+  var tones = new int[] { 100, 99, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0 };
+}
+
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Theme</h2>
+
+  @* LIGHT MODE *@
+  <div class="wy-color-scheme wy-dark-hide">
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.Primary">
+        <span class="wy-color-label" style="color: @Model.Light.OnPrimary">@StringUtils.ToSpaceCase(nameof(Model.Light.Primary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnPrimary">
+        <span class="wy-color-label" style="color: @Model.Light.Primary">@StringUtils.ToSpaceCase(nameof(Model.Light.OnPrimary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.PrimaryContainer">
+        <span class="wy-color-label" style="color: @Model.Light.OnPrimaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.PrimaryContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnPrimaryContainer">
+        <span class="wy-color-label" style="color: @Model.Light.PrimaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.OnPrimaryContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.Secondary">
+        <span class="wy-color-label" style="color: @Model.Light.OnSecondary">@StringUtils.ToSpaceCase(nameof(Model.Light.Secondary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnSecondary">
+        <span class="wy-color-label" style="color: @Model.Light.Secondary">@StringUtils.ToSpaceCase(nameof(Model.Light.OnSecondary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.SecondaryContainer">
+        <span class="wy-color-label" style="color: @Model.Light.OnSecondaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.SecondaryContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnSecondaryContainer">
+        <span class="wy-color-label" style="color: @Model.Light.SecondaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.OnSecondaryContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.Tertiary">
+        <span class="wy-color-label" style="color: @Model.Light.OnTertiary">@StringUtils.ToSpaceCase(nameof(Model.Light.Tertiary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnTertiary">
+        <span class="wy-color-label" style="color: @Model.Light.Tertiary">@StringUtils.ToSpaceCase(nameof(Model.Light.OnTertiary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.TertiaryContainer">
+        <span class="wy-color-label" style="color: @Model.Light.OnTertiaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.TertiaryContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnTertiaryContainer">
+        <span class="wy-color-label" style="color: @Model.Light.TertiaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.OnTertiaryContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.Error">
+        <span class="wy-color-label" style="color: @Model.Light.OnError">@StringUtils.ToSpaceCase(nameof(Model.Light.Error))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnError">
+        <span class="wy-color-label" style="color: @Model.Light.Error">@StringUtils.ToSpaceCase(nameof(Model.Light.OnError))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.ErrorContainer">
+        <span class="wy-color-label" style="color: @Model.Light.OnErrorContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.ErrorContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnErrorContainer">
+        <span class="wy-color-label" style="color: @Model.Light.ErrorContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.OnErrorContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.Background">
+        <span class="wy-color-label" style="color: @Model.Light.OnBackground">@StringUtils.ToSpaceCase(nameof(Model.Light.Background))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnBackground">
+        <span class="wy-color-label" style="color: @Model.Light.Background">@StringUtils.ToSpaceCase(nameof(Model.Light.OnBackground))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Surface">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Light.Surface))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnSurface">
+        <span class="wy-color-label" style="color: @Model.Light.Surface">@StringUtils.ToSpaceCase(nameof(Model.Light.OnSurface))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.SurfaceVariant">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurfaceVariant">@StringUtils.ToSpaceCase(nameof(Model.Light.SurfaceVariant))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OnSurfaceVariant">
+        <span class="wy-color-label" style="color: @Model.Light.SurfaceVariant">@StringUtils.ToSpaceCase(nameof(Model.Light.OnSurfaceVariant))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Outline">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[100])">@StringUtils.ToSpaceCase(nameof(Model.Light.Outline))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.OutlineVariant">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[0])">@StringUtils.ToSpaceCase(nameof(Model.Light.OutlineVariant))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.Surface1">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Light.Surface1))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Surface2">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Light.Surface2))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Surface3">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Light.Surface3))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Surface4">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Light.Surface4))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Surface5">
+        <span class="wy-color-label" style="color: @Model.Light.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Light.Surface5))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.SurfaceTint">
+        <span class="wy-color-label" style="color: @Model.Light.OnPrimary">@StringUtils.ToSpaceCase(nameof(Model.Light.SurfaceTint))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Light.InverseSurface">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[100])">@StringUtils.ToSpaceCase(nameof(Model.Light.InverseSurface))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.InverseOnSurface">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[0])">@StringUtils.ToSpaceCase(nameof(Model.Light.InverseOnSurface))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.InversePrimary">
+        <span class="wy-color-label" style="color: @Model.Light.OnPrimaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Light.InversePrimary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Light.Shadow">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[100])">@StringUtils.ToSpaceCase(nameof(Model.Light.Shadow))/@StringUtils.ToSpaceCase(nameof(Model.Light.Scrim))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-surface">
+      <span class="wy-color-label" style="color: @Model.Light.Blue">blue</span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo">indigo</span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple">purple</span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink">pink</span>
+      <span class="wy-color-label" style="color: @Model.Light.Red">red</span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange">orange</span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow">yellow</span>
+      <span class="wy-color-label" style="color: @Model.Light.Green">green</span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal">teal</span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan">cyan</span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray">gray</span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Light.Surface;">
+      <span class="wy-color-label" style="color: @Model.Light.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Light.PrimaryContainer;">
+      <span class="wy-color-label" style="color: @Model.Light.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Light.SecondaryContainer;">
+      <span class="wy-color-label" style="color: @Model.Light.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Light.TertiaryContainer;">
+      <span class="wy-color-label" style="color: @Model.Light.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Light.ErrorContainer;">
+      <span class="wy-color-label" style="color: @Model.Light.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Light.SurfaceVariant;">
+      <span class="wy-color-label" style="color: @Model.Light.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Light.Gray"><icon name="post-it" /></span>
+    </div>
+
+  </div>
+
+  @* DARK MODE *@
+  <div class="wy-color-scheme wy-dark-show">
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.Primary">
+        <span class="wy-color-label" style="color: @Model.Dark.OnPrimary">@StringUtils.ToSpaceCase(nameof(Model.Dark.Primary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnPrimary">
+        <span class="wy-color-label" style="color: @Model.Dark.Primary">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnPrimary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.PrimaryContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.OnPrimaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.PrimaryContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnPrimaryContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.PrimaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnPrimaryContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.Secondary">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSecondary">@StringUtils.ToSpaceCase(nameof(Model.Dark.Secondary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnSecondary">
+        <span class="wy-color-label" style="color: @Model.Dark.Secondary">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnSecondary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.SecondaryContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSecondaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.SecondaryContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnSecondaryContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.SecondaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnSecondaryContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.Tertiary">
+        <span class="wy-color-label" style="color: @Model.Dark.OnTertiary">@StringUtils.ToSpaceCase(nameof(Model.Dark.Tertiary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnTertiary">
+        <span class="wy-color-label" style="color: @Model.Dark.Tertiary">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnTertiary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.TertiaryContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.OnTertiaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.TertiaryContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnTertiaryContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.TertiaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnTertiaryContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.Error">
+        <span class="wy-color-label" style="color: @Model.Dark.OnError">@StringUtils.ToSpaceCase(nameof(Model.Dark.Error))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnError">
+        <span class="wy-color-label" style="color: @Model.Dark.Error">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnError))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.ErrorContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.OnErrorContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.ErrorContainer))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnErrorContainer">
+        <span class="wy-color-label" style="color: @Model.Dark.ErrorContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnErrorContainer))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.Background">
+        <span class="wy-color-label" style="color: @Model.Dark.OnBackground">@StringUtils.ToSpaceCase(nameof(Model.Dark.Background))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnBackground">
+        <span class="wy-color-label" style="color: @Model.Dark.Background">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnBackground))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Surface">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Dark.Surface))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnSurface">
+        <span class="wy-color-label" style="color: @Model.Dark.Surface">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnSurface))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.SurfaceVariant">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurfaceVariant">@StringUtils.ToSpaceCase(nameof(Model.Dark.SurfaceVariant))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OnSurfaceVariant">
+        <span class="wy-color-label" style="color: @Model.Dark.SurfaceVariant">@StringUtils.ToSpaceCase(nameof(Model.Dark.OnSurfaceVariant))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Outline">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[0])">@StringUtils.ToSpaceCase(nameof(Model.Dark.Outline))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.OutlineVariant">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[100])">@StringUtils.ToSpaceCase(nameof(Model.Dark.OutlineVariant))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.Surface1">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Dark.Surface1))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Surface2">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Dark.Surface2))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Surface3">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Dark.Surface3))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Surface4">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Dark.Surface4))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Surface5">
+        <span class="wy-color-label" style="color: @Model.Dark.OnSurface">@StringUtils.ToSpaceCase(nameof(Model.Dark.Surface5))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.SurfaceTint">
+        <span class="wy-color-label" style="color: @Model.Dark.OnPrimary">@StringUtils.ToSpaceCase(nameof(Model.Dark.SurfaceTint))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-family">
+      <div class="wy-color-item" style="background-color: @Model.Dark.InverseSurface">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[0])">@StringUtils.ToSpaceCase(nameof(Model.Dark.InverseSurface))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.InverseOnSurface">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[100])">@StringUtils.ToSpaceCase(nameof(Model.Dark.InverseOnSurface))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.InversePrimary">
+        <span class="wy-color-label" style="color: @Model.Dark.OnPrimaryContainer">@StringUtils.ToSpaceCase(nameof(Model.Dark.InversePrimary))</span>
+      </div>
+      <div class="wy-color-item" style="background-color: @Model.Dark.Shadow">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[100])">@StringUtils.ToSpaceCase(nameof(Model.Dark.Shadow))/@StringUtils.ToSpaceCase(nameof(Model.Dark.Scrim))</span>
+      </div>
+    </div>
+
+    <div class="wy-color-surface">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue">blue</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo">indigo</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple">purple</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink">pink</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red">red</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange">orange</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow">yellow</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green">green</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal">teal</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan">cyan</span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray">gray</span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Dark.Surface;">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Dark.PrimaryContainer;">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Dark.SecondaryContainer;">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Dark.TertiaryContainer;">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Dark.ErrorContainer;">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray"><icon name="post-it" /></span>
+    </div>
+    <div class="wy-color-surface" style="background: @Model.Dark.SurfaceVariant;">
+      <span class="wy-color-label" style="color: @Model.Dark.Blue"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Indigo"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Purple"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Pink"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Red"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Orange"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Yellow"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Green"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Teal"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Cyan"><icon name="post-it" /></span>
+      <span class="wy-color-label" style="color: @Model.Dark.Gray"><icon name="post-it" /></span>
+    </div>
+  </div>
+
+</section>
+
+
+<section class="wy-test-section">
+</section>
+
+@* PALETTE *@
+<section class="wy-test-section">
+  <h2 class="wy-headline">Palette</h2>
+  <h3 class="wy-label">Primary</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Primary[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Primary[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Secondary</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Secondary[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Secondary[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Tertiary</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Tertiary[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Tertiary[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Error</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Error[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Error[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Neutral</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Neutral[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Neutral variant</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.NeutralVariant[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.NeutralVariant[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Red</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Red[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Red[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Pink</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Pink[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Pink[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Purple</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Purple[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Purple[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Deep purple</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.DeepPurple[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.DeepPurple[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Indigo</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Indigo[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Indigo[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Blue</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Blue[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Blue[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+
+  <h3 class="wy-label">Light blue</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.LightBlue[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.LightBlue[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Cyan</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Cyan[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Cyan[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Teal</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Teal[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Teal[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Green</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Green[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Green[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Light green</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.LightGreen[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.LightGreen[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Lime</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Lime[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Lime[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Yellow</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Yellow[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Yellow[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Amber</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Amber[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Amber[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Orange</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.Orange[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.Orange[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+  <h3 class="wy-label">Deep orange</h3>
+  <div class="wy-tonal-row">
+    @foreach (var tone in tones) {
+      <div class="wy-color-item" style="background-color: @ColorUtils.HexFromArgb(Model.Palette.DeepOrange[tone])">
+        <span class="wy-color-label" style="color: @ColorUtils.HexFromArgb(Model.Palette.DeepOrange[ColorUtils.ToneOn(tone)])">@tone</span>
+      </div>
+    }
+  </div>
+
+
+</section>
+
+<section class="wy-test-section">
+
+  <h2 class="wy-label">SCSS variables</h2>
+  <pre><code>// initial color used to generate palette
+$seed: @Model.Color;
+
+// primary
+      @foreach (var tone in tones.Reverse()) {
+        Write($"$primary-{tone}: {ColorUtils.HexFromArgb(Model.Palette.Primary[tone])};\n");
+      }
+
+// secondary
+      @foreach (var tone in tones.Reverse()) {
+        Write($"$secondary-{tone}: {ColorUtils.HexFromArgb(Model.Palette.Secondary[tone])};\n");
+      }
+
+// tertiary
+      @foreach (var tone in tones.Reverse()) {
+        Write($"$tertiary-{tone}: {ColorUtils.HexFromArgb(Model.Palette.Tertiary[tone])};\n");
+      }
+
+// error
+      @foreach (var tone in tones.Reverse()) {
+        Write($"$error-{tone}: {ColorUtils.HexFromArgb(Model.Palette.Error[tone])};\n");
+      }
+
+// neutral
+      @foreach (var tone in tones.Reverse()) {
+        Write($"$neutral-{tone}: {ColorUtils.HexFromArgb(Model.Palette.Neutral[tone])};\n");
+      }
+
+// neutral variant
+      @foreach (var tone in tones.Reverse()) {
+        Write($"$neutral-variant-{tone}: {ColorUtils.HexFromArgb(Model.Palette.NeutralVariant[tone])};\n");
+      }
+
+// custom colors
+$blue-light: @Model.Light.Blue;
+$indigo-light: @Model.Light.Indigo;
+$purple-light: @Model.Light.Purple;
+$pink-light: @Model.Light.Pink;
+$red-light: @Model.Light.Red;
+$orange-light: @Model.Light.Orange;
+$yellow-light: @Model.Light.Yellow;
+$green-light: @Model.Light.Green;
+$teal-light: @Model.Light.Teal;
+$cyan-light: @Model.Light.Cyan;
+$gray-light: @Model.Light.Gray;
+
+$blue-dark: @Model.Dark.Blue;
+$indigo-dark: @Model.Dark.Indigo;
+$purple-dark: @Model.Dark.Purple;
+$pink-dark: @Model.Dark.Pink;
+$red-dark: @Model.Dark.Red;
+$orange-dark: @Model.Dark.Orange;
+$yellow-dark: @Model.Dark.Yellow;
+$green-dark: @Model.Dark.Green;
+$teal-dark: @Model.Dark.Teal;
+$cyan-dark: @Model.Dark.Cyan;
+$gray-dark: @Model.Dark.Gray;
+
+// surface levels
+$surface-1-light: @Model.Light.Surface1; // $neutral-99 + $primary-40 with 5% opacity
+$surface-2-light: @Model.Light.Surface2; // $neutral-99 + $primary-40 with 8% opacity
+$surface-3-light: @Model.Light.Surface3; // $neutral-99 + $primary-40 with 11% opacity
+$surface-4-light: @Model.Light.Surface4; // $neutral-99 + $primary-40 with 12% opacity
+$surface-5-light: @Model.Light.Surface5; // $neutral-99 + $primary-40 with 14 opacity
+
+$surface-1-dark: @Model.Dark.Surface1; // $neutral-10 + $primary-80 with 5% opacity
+$surface-2-dark: @Model.Dark.Surface2; // $neutral-10 + $primary-80 with 8% opacity
+$surface-3-dark: @Model.Dark.Surface3; // $neutral-10 + $primary-80 with 11% opacity
+$surface-4-dark: @Model.Dark.Surface4; // $neutral-10 + $primary-80 with 12% opacity
+$surface-5-dark: @Model.Dark.Surface5; // $neutral-10 + $primary-80 with 14 opacity
+</code></pre>
+</section>

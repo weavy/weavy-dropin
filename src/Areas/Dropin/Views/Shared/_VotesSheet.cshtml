@@ -1,0 +1,24 @@
+@model PollOption
+<turbo-frame id="sheet">
+  <div class="wy-sheet" data-controller="sheet" hidden>
+    <div class="wy-appbar">
+      <div></div>
+      <div class="wy-appbar-text">@Model.Text</div>
+      <div class="wy-appbar-buttons">
+        <button type="button" class="wy-button wy-button-icon" data-action="click->sheet#close"><icon name="close" /></button>
+      </div>
+    </div>
+    <div class="wy-sheet-body wy-scroll-y">
+      @foreach (var voter in Model.Voters) {
+        <div class="wy-item">
+          <avatar for="@voter" size="32" />
+          <div class="wy-item-body">@voter.DisplayName</div>
+        </div>
+      }
+    </div>
+  </div>
+</turbo-frame>
+
+
+
+

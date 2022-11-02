@@ -1,0 +1,13 @@
+@model File
+
+<tr id="@DomId(Model)" @Html.If(Model.IsTrashed(), @"class=""wy-table-trashed""", $@"data-controller=""rename"" data-action=""click->preview-link#open"" data-preview-link-url-param=""{Url.Action(nameof(FileController.Get), typeof(FileController).ControllerName(), new { id = Model.Id })}"" data-preview-link-title-param=""{Model.Name}""")>
+  <td class="wy-table-cell-icon"><icon for="Model.Blob" /></td>
+  <td><partial name="~/Areas/Dropin/Views/File/_Rename.cshtml" model="Model" ></td>
+  <td><time date="@Model.ModifiedAt">@Model.ModifiedAt.ToLocal().ToShortDateString()</time></td>
+  <td><span>@T[Model.Kind]</span></td>
+  <td><span>@FileUtils.FileSizeAsString(Model.Blob.Size)</span></td>
+  <td class="wy-table-cell-icon">
+    <partial name="~/Areas/Dropin/Views/File/_FileMenu.cshtml" model="Model" />
+  </td>
+</tr>
+

@@ -1,0 +1,46 @@
+@model Embed
+@{
+  // do not display caption for html or giphy embeds
+  bool giphy = Model.Type == EmbedType.Photo && Model.ProviderName.Equals("Giphy", StringComparison.OrdinalIgnoreCase);
+  bool caption = Model.Html == null && !giphy;
+}
+
+<div class="wy-embed">
+  <div class="wy-embed-actions">
+    <button class="wy-button wy-button-icon wy-embed-cycle" data-action="click->embed#cycle" type="button" title="@T["Switch"]"><icon name="swap-horizontal" /></button>
+    <button class="wy-button wy-button-icon wy-embed-remove" data-action="click->embed#reject" data-embed-url-param="@Model.OriginalUrl" title="@T["Remove"]" type="button"><icon name="close-circle" /></button>
+  </div>
+
+  @if (Model.Type == EmbedType.Audio) {
+    <div class="wy-embed-audio">@* TODO: audio player? *@</div>
+  } else if (Model.Type == EmbedType.Video) {
+    <div class="wy-embed-video">@Html.Raw(Model.Html)</div>
+  } else if (Model.Type == EmbedType.Rich) {
+    <div class="wy-embed-rich">@* TODO: display rich HTML? *@</div>
+  } else if (Model.Type == EmbedType.Photo) {
+    <div class="wy-embed-photo @Html.If(Model.Width < 250, "wy-embed-photo-sm")">
+      <a href="@Model.OriginalUrl" target="_blank">
+        <img src="@Model.Url" width="@Model.Width" height="@Model.Height" alt="" />
+      </a>
+    </div>
+  } else if (Model.Image != null) {
+    <div class="wy-embed-photo @Html.If(Model.Image.Width < 250, "wy-embed-photo-sm")">
+      <a href="@Model.OriginalUrl" target="_blank">
+        <img src="@Model.ThumbUrl(null, null)" width="@Model.Image.Width" height="@Model.Image.Height" alt="">
+      </a>
+    </div>
+  }
+
+  @if (caption) {
+    <div class="wy-embed-caption">
+      <a class="wy-embed-link" href="@Model.OriginalUrl" target="_blank">@Model.Host</a>
+      @if (Model.Title != null) {
+        <div class="wy-embed-title">@Model.Title</div>
+      }
+      @if (Model.Description != null) {
+        <div class="wy-embed-description">@Model.Description</div>
+      }
+    </div>
+  }
+  <input type="hidden" name="@nameof(MessageModel.EmbedId)" value="@Model.Id" />
+</div>

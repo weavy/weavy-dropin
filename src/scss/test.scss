@@ -1,26 +1,133 @@
-// weavy reboot
-@use "theme/root" as *;
-@use "theme/reboot";
+// dropin
+@use "reboot";
+@use "turbo";
 
-// weavy ui components
+// theme
+
+@use "theme/base/colors";
+@use "theme/base/scroll";
 @use "theme/appbar";
 @use "theme/avatar";
 @use "theme/buttons";
+@use "theme/card";
+@use "theme/comments";
+@use "theme/conversations";
 @use "theme/dropdown";
 @use "theme/emoji";
+@use "theme/facepile";
+@use "theme/grid";
 @use "theme/icons";
-@use "theme/scroll";
+@use "theme/input";
+@use "theme/item";
+@use "theme/list";
+@use "theme/meta";
+@use "theme/poll";
+@use "theme/reactions";
 @use "theme/spinner";
+@use "theme/type";
 
-// bootstrap reboot as baseline for drop-in ui
-@import "theme/bootstrap/reboot";
 
 .wy-test-section {
-  margin: 2rem;
+  margin: 2rem 1rem;
 }
 
 body {
-  .wy-dark &, &.wy-dark {
-    background-color: $gray-700;
+  --wy-component-background-color: #{colors.$background};
+  --wy-component--color: #{colors.$on-background};
+  background-color: var(--wy-component-background-color);
+  color: var(--wy-component-color);
+  padding-bottom: 2rem;
+}
+
+
+body.wy-theme {
+  article {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+html.wy-dark {
+
+  .wy-dark-hide {
+    display: none;
+  }
+}
+
+html:not(.wy-dark) {
+  .wy-dark-show {
+    display: none;
+  }
+}
+
+
+.wy-color-scheme {
+    margin-bottom:2rem;
+
+  > .wy-color-family:first-of-type {
+    height: 6rem;
+  }
+}
+
+
+.wy-tonal-row {
+  height: 4.5rem;
+
+  > .wy-color-item {
+    > .wy-color-label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+
+.wy-color-family, .wy-tonal-row {
+  width: 100%;
+  height: 2.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: .5rem 0;
+
+}
+
+
+.wy-color-item {
+  height: 100%;
+  flex: 1 1 0%;
+  position: relative;
+
+  > .wy-color-label {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    overflow-wrap: break-word;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+
+
+.wy-color-item-2x {
+  flex: 2 1 0%;
+}
+
+
+.wy-color-surface {
+  padding: .5rem .75rem;
+  display: flex;
+  justify-content: space-between;
+  margin: .5rem 0;
+
+  > .wy-color-label {
+    font-weight: 500;
+    font-size: 12px;
+    display: inline-flex;
   }
 }

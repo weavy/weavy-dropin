@@ -3,17 +3,17 @@
 import { Application } from "@hotwired/stimulus";
 import AuthenticateController from "./controllers/authenticate-controller";
 import FilesController from "./controllers/files-controller";
-import PreviewController from "./controllers/preview-controller";
+import PreviewLinkController from "./controllers/preview-link-controller";
 import PaginationController from "./controllers/pagination-controller";
-import FilePickerController from "./controllers/file-picker-controller";
 import RenameController from "./controllers/rename-controller";
+import SheetController from "./controllers/sheet-controller";
 import 'bootstrap/js/dist/dropdown';
 
 const application = Application.start();
 application.register("authenticate", AuthenticateController);
 application.register("files", FilesController);
-application.register("preview", PreviewController);
+application.register("preview-link", PreviewLinkController);
 application.register("pagination", PaginationController);
-application.register("file-picker", FilePickerController);
 application.register("rename", RenameController);
+application.register("sheet", SheetController);
 

@@ -1,0 +1,11 @@
+@model IFollowable
+
+@if (Model.IsFollowed()) {
+  <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unfollow)" asp-route-id="@Model.Eid()">
+    <button type="submit" class="wy-dropdown-item"><icon name="bell-off" /> @T["Unsubscribe"]</button>
+  </form>
+} else {
+  <form id="@DomId(Model)" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Follow)" asp-route-id="@Model.Eid()">
+    <button type="submit" class="wy-dropdown-item"><icon name="bell" /> @T["Subscribe"]</button>
+  </form>
+}

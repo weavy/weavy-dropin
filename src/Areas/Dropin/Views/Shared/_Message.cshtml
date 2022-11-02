@@ -6,6 +6,7 @@
   var images = attachments.Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
   var files = attachments.Except(images);
   var me = Model.CreatedById == WeavyContext.Current.User.Id;
+  var options = Model.Options;
 
   // special styling when message contains only emoji
   var emoji = Model.Text != null && Model.AttachmentIds.IsNullOrEmpty() && Model.EmbedId == null && Model.MeetingId == null && string.IsNullOrWhiteSpace(Emojione.RemoveEmoji(Model.Text));
@@ -21,17 +22,12 @@
     }
   }
 
-  var NewMessageLabelBeforeId = ViewData["NewMessageLabelBeforeId"] as int?;
-  var conversation = ViewData["Conversation"] as Conversation;
-   
-  IEnumerable<Member> readBy = Array.Empty<Member>();
-  if (conversation != null) {
-    readBy = conversation.GetReadBy(Model);
+  // get data for "new messages" and "read by" indicators (get conversation from ViewData instead of Model.Parent when possible to avoid N+1 member lookup for every message)
+  var conversation = ViewData[nameof(Message.Parent)] as Conversation;
+  if (conversation == null) {
+    conversation = Model.Parent as Conversation;
   }
-}
-
-@if (NewMessageLabelBeforeId == Model.Id) {
-  <div id="message_toaster" data-controller="scroll" data-scroll-deferred-value="true" data-action="click->scroll#toBottom" class="wy-message-toaster">@T["New messages"]</div>
+  //var readBy = conversation.Members.Where(x => x.Id != WeavyContext.Current.User.Id && x.MarkedId == Model.Id);
 }
 
 <turbo-frame id="@DomId(Model)">
@@ -42,46 +38,55 @@
     }
     <div class="wy-message-content">
       <div class="wy-message-meta">
-        @if (!me && Model.Parent is ChatRoom) {
+        @if (!me && (Model.Parent is ChatRoom || Model.Parent is Chat)) {
           <text>@user.DisplayName ·</text>
         }
         <time datetime="@Model.CreatedAt" format="t" />
       </div>
-      <div class="wy-message-content-row">
-        <div class="wy-message-bubble">
-          @if (images.Any()) {  
-            <partial name="_ImageGrid" model="images" />
-          }
+      <div class="wy-message-bubble">
+        @if (images.Any()) {  
+          <partial name="_ImageGrid" model="images" />
+        }
 
-          @if (files.Any()) {
-            <partial name="_Attachments" model="files" />
-          }
+        @if (files.Any()) {
+          <partial name="_Attachments" model="files" />
+        }
 
-          @if (Model.Meeting != null) {
-            <partial name="_Meeting" model="Model.Meeting" />
-          }
+        @if (Model.Meeting != null) {
+          <partial name="_Meeting" model="Model.Meeting" />
+        }
 
-          @if (Model.Text != null) {
-            <div class="wy-message-text">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
-          }
-        </div>
-        <div class="wy-message-buttons">
+        @if (Model.Text != null) {
+          <div class="wy-content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
+        }
+
+        @if(options.Any()){
+          <partial name="_Poll" model="Model" />
+        }
+
+        <div class="wy-reactions-line">
+          <partial name="_Reactions" />
           <partial name="_ReactionMenu" />
         </div>
       </div>
-      <partial name="_Reactions" />
     </div>
   </div>
 
+  <partial name="_ReadBy" />
+
   @* status: sent, delivered, seen etc *@
-  @if (!isInitialLoad && WeavyContext.Current.User.Id != Model.CreatedById) {
+@*  @if (!isInitialLoad && WeavyContext.Current.User.Id != Model.CreatedById) {
     <avatar for="user" size="18" id="readby-@user.Id" title="@T["Seen by {0} {1}", user.DisplayName, Model.CreatedAt.When()]" data-controller="readby" data-readby-who-value="@user.Id" data-readby-when-value="@Model.CreatedAt.AsSortableDate()" />
   }
-  <div class="wy-readby-status" data-createdat="@Model.CreatedAt.AsSortableDate()">
+*@  @*<div class="wy-readby-status" data-createdat="@Model.CreatedAt.AsSortableDate()">
     @if (readBy.Any()) {
       foreach (var member in readBy) {
         <partial name="_ReadBy" model="member" />
       }
     }
-  </div>
+  </div>*@
 </turbo-frame>
+
+@if (conversation.IsUnread() && Model.Id == conversation.Member.MarkedId) {
+  <div id="message_toaster" data-controller="scroll" data-scroll-deferred-value="true" data-action="click->scroll#toBottom" class="wy-toast wy-toast-action">@T["New messages"]</div>
+}

@@ -15,12 +15,12 @@ export default class extends Controller {
   connection = null;
   eventTarget = null;
 
-  turboStream(html) {
+  readBy(html) {
     renderStreamMessage(html);
   }
 
   messageInserted(data) {
-    fetch("/dropin/chat/turbostream-insert-message/" + data.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+    fetch("/dropin/chat/turbostream-insert-message/" + data.message.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
       .then(response => response.text())
       .then(html => {
         renderStreamMessage(html);
@@ -28,7 +28,7 @@ export default class extends Controller {
   }
 
   messageUpdated(data) {
-    fetch("/dropin/chat/turbostream-update-message/" + data.parent.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+    fetch("/dropin/chat/turbostream-update-message/" + data.entity.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
       .then(response => response.text())
       .then(html => {
         renderStreamMessage(html);
@@ -54,14 +54,14 @@ export default class extends Controller {
         let group = that.groupValue;
 
         switch (event) {
-          case "turbo-stream":
-            callback = that.turboStream;
+          case "read_by":
+            callback = that.readBy;
             break;
-          case "message-inserted":
+          case "message_created":
             callback = that.messageInserted;
             break;
-          case "reaction-deleted":
-          case "reaction-inserted":
+          case "reaction_added":
+          case "reaction_removed":
             callback = that.messageUpdated;
             break;
           default:

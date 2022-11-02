@@ -1,0 +1,15 @@
+@model Posts
+<div class="wy-post" data-post-target="placeholder" data-id="@DomId(Model)" hidden>
+  <div class="wy-item wy-item-lg">
+    <avatar for="WeavyContext.Current.User" size="48" class="wy-placeholder" />
+    <div class="wy-item-body">
+      <div class="wy-item-title"><span class="wy-placeholder">@WeavyContext.Current.User.DisplayName></span></div>
+      <div class="wy-item-text"><time class="wy-placeholder" datetime="@DateTime.UtcNow"></time></div>
+    </div>
+  </div>
+  <div class="wy-post-body">
+    <div class="wy-content">
+      <span class="wy-placeholder">Lorem</span> <span class="wy-placeholder">ipsum</span> <span class="wy-placeholder">dolor</span> <span class="wy-placeholder">sit</span> <span class="wy-placeholder">amet.</span>
+    </div>
+  </div>
+</div>

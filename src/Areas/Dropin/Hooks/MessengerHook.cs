@@ -3,29 +3,32 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using Weavy.Core.Events;
 using Weavy.Core.Models;
+using Weavy.Core.Mvc;
 using Weavy.Core.Services;
 using Weavy.Core.Utils;
 
 namespace Weavy.Dropin.Areas.Dropin.Hooks;
 
 [Guid("0886F409-D12C-4DBE-9DCC-94FE2C915C21")]
-public class MessengerHook : IHook<AfterReadConversation> {
+public class MessengerHook : IHook<ConversationMarked> {
 
     /// <summary>
-    /// Updates the read-at indicator when a conversation is read / un-read.
+    /// Updates the "read by" indicator when a conversation is read/unread.
     /// </summary>
     /// <param name="e"></param>
-    public void Handle(AfterReadConversation e) {
+    public async void Handle(ConversationMarked e) {
         string template;
 
-        if (e.Member.ReadAt == null) {
-            // remove readat indicator
-            template = @$"<turbo-stream action=""remove"" target=""readby-{e.Member.Id}""></turbo-stream>";
+        if (e.MarkedId == null) {
+            // remove "read by" indicator
+            template = @$"<turbo-stream action=""remove"" target=""readby-{e.Actor.Id}""></turbo-stream>";
         } else {
-            // append new readat indicator, readby stimulus controller will move the indicator to the correct position
+            // append new "read by" indicator (stimulus controller will move the indicator to the correct position)
             // IMPORTANT: match content with the _ReadBy partial
-            template = @$"<turbo-stream action=""append"" target=""readby-append""><template><img id=""readby-{e.Member.Id}"" src=""{e.Member.AvatarUrl(18)}"" width=""18"" height=""18"" alt="""" class=""wy-avatar"" hidden title=""{string.Format(CultureInfo.InvariantCulture, "Seen by {0} {1}", e.Member.DisplayName, e.Member.ReadAt.Value.When())}"" data-controller=""readby"" data-readby-who-value=""{e.Member.Id}"" data-readby-when-value=""{e.Member.ReadAt.AsSortableDate()}""></template></turbo-stream>";
+            var domId = TurboStreamHelper.DomId("/Areas/dropin/Views/Shared/_ReadBy.cshtml", "m" + e.MarkedId.Value);
+
+            template = @$"<turbo-stream action=""append"" target=""{domId}""><template><img id=""readby-{e.Actor.Id}"" src=""{e.Actor.AvatarUrl(18)}"" width=""18"" height=""18"" alt="""" class=""wy-avatar"" hidden title=""{string.Format(CultureInfo.InvariantCulture, "Seen by {0} {1}", e.Actor.DisplayName, e.MarkedAt.Value.When())}"" data-controller=""readby"" data-readby-who-value=""{e.Actor.Id}""></template></turbo-stream>";
         }
-        PushService.PushToGroup(e.Conversation.Eid(), "turbo-stream", template);
+        await PushService.PushToGroupAsync(e.Conversation.Eid(), "read_by", template);
     }
 }

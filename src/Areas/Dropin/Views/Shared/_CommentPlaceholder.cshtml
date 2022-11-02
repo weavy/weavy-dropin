@@ -1,0 +1,20 @@
+@model ICommentable
+
+<div class="wy-comment" data-comment-target="placeholder" data-id="@DomId(Model)" hidden>
+  <div class="wy-item wy-comment-header">
+    <avatar for="@WeavyContext.Current.User" size="32" class="wy-placeholder" />
+    <div class="wy-item-body">
+      <div class="wy-item-title"><span class="wy-placeholder">@WeavyContext.Current.User.DisplayName</span></div>
+      <div class="wy-item-text">
+        <time class="wy-placeholder" datetime="@DateTime.UtcNow" format="t" />
+      </div>
+    </div>
+  </div>
+  <div class="wy-comment-body">
+    <div class="wy-comment-content">
+      <div class="wy-content">
+        <span class="wy-placeholder">Lorem</span> <span class="wy-placeholder">ipsum</span> <span class="wy-placeholder">dolor</span> <span class="wy-placeholder">sit</span> <span class="wy-placeholder">amet.</span>
+      </div>
+    </div>
+  </div>
+</div>

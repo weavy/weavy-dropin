@@ -19,8 +19,9 @@ export default class extends Controller {
       return sortOrder === "desc" ? bInt - aInt : aInt - bInt;
     });
 
-    for (let i = 0; i < toSort.length; i++) {
-      toSort[i].parentNode.appendChild(toSort[i]);
+    // NOTE: prepend instead of append - to prevent pager from ending up as the first item in the list
+    for (let i = toSort.length - 1; i >= 0 ; i--) {
+      toSort[i].parentNode.prepend(toSort[i]);
     }
   }
 

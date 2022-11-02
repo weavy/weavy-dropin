@@ -7,37 +7,33 @@
     <nav class="wy-appbar">
       <button class="wy-button wy-button-icon wy-close-back">@Svg.Icon("close")</button>
       <div class="wy-appbar-text">@T["Details"]</div>
-      <button class="wy-button invisible"></button>
     </nav>
   </header>
   <div class="wy-pane-body">
     <div class="wy-avatar-header">
       <avatar for="Model.Conversation" size="128" />
+      @if (Model.Conversation is PrivateChat) {
+        <h3 class="wy-headline">@Model.Name</h3>
+      }
     </div>
 
     @if (Model.Conversation is PrivateChat) {
-      <h4 class="wy-avatar-display-name">@Model.Name</h4>
       @* REVIEW: display profile details and, contact information? *@
     } else {
-      <form asp-action="@nameof(MessengerController.Update)" asp-route-id="@Model.Conversation.Id" data-turbo-frame="searchresult">
+      <form asp-action="@nameof(MessengerController.Update)" asp-route-id="@Model.Conversation.Id">
         <div class="wy-pane-group">
-          <label asp-for="Name" class="wy-label"></label>
-          <input asp-for="Name" type="text" class="wy-input">
+          <label asp-for="Name" class="wy-input-label"></label>
+          <input asp-for="Name" type="text" class="wy-input" value="@Model.Name" />
           <div asp-description-for="Name" class="wy-description"></div>
         </div>
-        <div class="wy-pane-group" data-controller="search" data-search-searching-class="searching">
-          <label class="wy-label">@T["Members"]</label>
-          <div class="wy-search-form">
-            <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close" size="20" /></button>
-            <button class="wy-button wy-button-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
-            <input type="search" name="text" class="wy-search-input" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
-          </div>
-          <partial name="_SearchUsersResult" model="new UserSearchResult()" />
+        <div class="wy-pane-group">
+          <label class="wy-input-label">@T["Members"]</label>
+          <partial name="_ConversationUsers" model="new UserSearchResult()" />
         </div>
         <div class="wy-footerbars wy-footerbars-fixed" data-adjust-scrollbar-bottom>
           <div class="wy-footerbar">
             <div class="wy-pane-group wy-buttons">
-              <input type="submit" class="wy-button wy-button-primary" value="@T["Save"]" data-turbo-frame="_top">
+              <input type="submit" class="wy-button wy-button-primary" value="@T["Save"]">
             </div>
           </div>
         </div>

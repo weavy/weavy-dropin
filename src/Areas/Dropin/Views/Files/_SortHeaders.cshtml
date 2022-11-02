@@ -1,0 +1,31 @@
+@model Query
+@{
+  var orderby = Model.SortItems?.FirstOrDefault() ?? new SortItem(Model.SortProperties[0]);
+  var headers = new Dictionary<string, string>() { { "Name", nameof(File.Name) }, { "Modified" , nameof(File.ModifiedAt) }, { "Kind", null }, { "Size", nameof(File.Blob.Size) } };
+}
+<thead>
+  <tr>
+    <th class="wy-table-cell-icon"></th>
+    @foreach (var header in headers) {
+      <th>
+        @if (header.Value != null) {
+          if (header.Value == orderby.Column) {
+            <a href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(header.Value, orderby.Direction == SortDirection.Descending ? SortDirection.Ascending : SortDirection.Descending).ToString().ToLower())" class="wy-table-sort-link">
+              @T[header.Key]
+              @if (orderby.Direction == SortDirection.Ascending) {
+                <icon name="menu-up" />
+              } else {
+                <icon name="menu-down" />
+              }
+            </a>
+          } else {
+            <a href="@Url.Rebuild("top", null, "skip", null, "orderby", new SortItem(header.Value, orderby.Direction).ToString().ToLower())">@T[header.Key]</a>
+          }
+        } else {
+          @T[header.Key]
+        }
+      </th>
+    }
+    <th class="wy-table-cell-icon"></th>
+  </tr>
+</thead>

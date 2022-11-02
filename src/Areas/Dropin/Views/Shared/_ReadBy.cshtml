@@ -1,3 +1,18 @@
-@model Member
-@* IMPORTANT: match content with html emitted from UiHook:AfterReadConversation *@
-<avatar for="Model" size="18" id="readby-@Model.Id" title="@T["Seen by {0} {1}", Model.DisplayName, Model.ReadAt.Value.When()]" data-readby-who-value="@Model.Id" data-readby-when-value="@Model.ReadAt.AsSortableDate()" />
+@model Message
+@{
+  // get data for "new messages" and "read by" indicators (get conversation from ViewData instead of Model.Parent when possible to avoid N+1 member lookup for every message)
+  var conversation = ViewData[nameof(Message.Parent)] as Conversation;
+  if (conversation == null) {
+    conversation = Model.Parent as Conversation;
+  }
+  var readBy = conversation.Members.Where(x => x.Id != WeavyContext.Current.User.Id && x.MarkedId == Model.Id);  
+}
+
+<div id="@DomId(Model)" class="wy-readby-status">
+  @if (readBy.Any()) {
+    foreach (var member in readBy) {
+      @* IMPORTANT: match content with html emitted from MessengerHook.Handle(ConversationMarked) *@
+      <avatar for="member" size="18" id="readby-@member.Id" data-controller="@Html.If(Context.Request.IsTurboStream(), "readby")" title="@T["Seen by {0} {1}", member.DisplayName, member.MarkedAt.Value.When()]" data-readby-who-value="@member.Id" />
+    }
+  }
+</div>

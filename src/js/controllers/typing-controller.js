@@ -14,17 +14,16 @@ export default class extends Controller {
   typingTimeout = null;
 
   typing(data) {
-
-    if (data.conversation.id === this.appValue && data.member.id.toString() !== document.querySelector("body").dataset.userId) {
+    if (data.conversation.id === this.appValue && data.actor.id.toString() !== document.querySelector("body").dataset.userId) {
       let typers = this.activeTypers;
       // remove existing typing events by this user (can only type in one conversation at a time)
       typers.forEach(function (item, index) {
-        if (item.member.id === data.member.id) {
+        if (item.member.id === data.actor.id) {
           typers.splice(index, 1);
         }
       });
      
-      let typingEvent = { member: data.member };
+      let typingEvent = { member: data.actor };
 
       // track time when we received this event
       typingEvent.time = Date.now();
@@ -36,12 +35,12 @@ export default class extends Controller {
 
   stopTyping(data) {
 
-    if (data.app_id === this.appValue) {
+    if (data.message.app_id === this.appValue) {
       let typers = this.activeTypers;
 
       // remove typing indicator for message sender
       typers.forEach(function (item, index) {
-        if (item.member.id === data.created_by.id) {
+        if (item.member.id === data.message.created_by_id) {
           typers.splice(index, 1);
         }
       });
@@ -104,15 +103,13 @@ export default class extends Controller {
     }
   }
 
-  async connect() {
-    //console.debug("typing:connected:", this.appValue);
+  connect() {
     subscribe("a" + this.appValue, "typing", this.typingHandler);
-    subscribe("a" + this.appValue, "message-inserted", this.stopTypingHandler);
+    subscribe("a" + this.appValue, "message_created", this.stopTypingHandler);
   }
 
   disconnect() {
-    //console.debug("typing:disconnected:", this.appValue);
     unsubscribe("a" + this.appValue, "typing", this.typingHandler);
-    unsubscribe("a" + this.appValue, "message-inserted", this.stopTypingHandler);
+    unsubscribe("a" + this.appValue, "message_created", this.stopTypingHandler);
   }
 }

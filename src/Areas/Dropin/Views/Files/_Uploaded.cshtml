@@ -1,5 +1,5 @@
 @model List<File>
 
 @foreach (var file in Model) {
-  <partial name="_File" model="file" />
+  <partial name="@($"~/Areas/Dropin/Views/File/_{ViewData["Layout"]}File.cshtml")" model="file" />
 }

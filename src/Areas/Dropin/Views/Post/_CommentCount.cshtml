@@ -1,0 +1,9 @@
+@model Message
+<turbo-frame id="@DomId(Model)" class="wy-comments-count">
+  <a href="#comments" class="wy-meta" data-action="click->post#toggleComments">@T.Plural(Model.CommentIds.Count(), "{0} comment", "{0} comments")</a>
+</turbo-frame>
+
+
+
+
+

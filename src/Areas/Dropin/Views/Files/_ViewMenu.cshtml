@@ -3,10 +3,19 @@
   var layout = Model.Layout ?? Weavy.Core.Models.Layout.List;
 }
 <div class="wy-dropdown">
-  <button class="wy-button wy-button-icon" data-bs-toggle="dropdown" title="@T["View options"]"><icon name="view-list-outline" /></button>
+  <button class="wy-button wy-button-icon" data-bs-toggle="dropdown" title="@T["View options"]">
+    
+
+    @if (layout == Weavy.Core.Models.Layout.List) {
+        <icon name="view-list-outline" />
+    } else {
+        <icon name="view-module-outline" />
+    }
+
+  </button>
   <div class="wy-dropdown-menu dropdown-menu">
     <a class="wy-dropdown-item wy-option @Html.If(layout == Weavy.Core.Models.Layout.List, " wy-selected")" href="@Url.Rebuild("layout", Weavy.Core.Models.Layout.List.ToString().ToLower())"><icon name="check" /> @T["List view"]</a>
-    @*<a class="wy-dropdown-item wy-option @Html.If(layout == Weavy.Core.Models.Layout.Grid, " wy-selected")" href="@Url.Rebuild("layout", Weavy.Core.Models.Layout.Grid.ToString().ToLower())"><icon name="check" /> @T["Grid view"]</a>*@
+    <a class="wy-dropdown-item wy-option @Html.If(layout == Weavy.Core.Models.Layout.Grid, " wy-selected")" href="@Url.Rebuild("layout", Weavy.Core.Models.Layout.Grid.ToString().ToLower())"><icon name="check" /> @T["Grid view"]</a>
     <hr class="wy-dropdown-divider" />
     <a class="wy-dropdown-item wy-option @Html.If(Model.Trashed == false, "wy-selected")" href="@Url.Rebuild("trashed", null)"><icon name="check" /> @T["Hide trashed"]</a>
     <a class="wy-dropdown-item wy-option @Html.If(Model.Trashed != false, "wy-selected")" href="@Url.Rebuild("trashed", "")"><icon name="check" /> @T["Show trashed"]</a>

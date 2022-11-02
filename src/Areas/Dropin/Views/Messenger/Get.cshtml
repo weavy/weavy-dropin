@@ -3,21 +3,26 @@
   Layout = "_Layout";
   BodyAttributes.Add("data-app-id", Model.Id.ToString());
   BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
-  ViewData["NewMessageLabelBeforeId"] = Model.IsUnread() ? Model.Messages.FirstOrDefault(x => x.CreatedAt > (Model.Member.ReadAt ?? DateTime.MinValue))?.Id : null;
-  ViewData["Conversation"] = Model;
-  ConversationsBadge badge = ViewData["Badge"] as ConversationsBadge;
+  ConversationBadges badge = ViewData["Badge"] as ConversationBadges;
   int? unreadConversationsCount = badge.Private + badge.Rooms == 0 ? null : badge.Private + badge.Rooms;
 }
-<main role="main" class="wy-pane" data-controller="scroll messenger" data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom" data-messenger-events-value="[&quot;message-inserted&quot;,&quot;turbo-stream&quot;,&quot;reaction-inserted&quot;,&quot;reaction-deleted&quot;]" data-messenger-group-value="@Model.Eid()">
+<main role="main"
+      class="wy-main wy-pane wy-pane-background"
+      data-controller="scroll messenger message pagination"
+      data-pagination-mode-value="reverse"
+      data-pagination-deferred-value="true"
+      data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom scroll:at-bottom->pagination#setup"
+      data-messenger-events-value="[&quot;message_created&quot;,&quot;read_by&quot;,&quot;reaction_added&quot;,&quot;reaction_removed&quot;]"
+      data-messenger-group-value="@Model.Eid()">
   <header class="wy-appbars" data-adjust-scrollbar-top>
     <nav class="wy-appbar">
       <div class="wy-appbar-buttons">
         <a class="wy-button wy-button-icon" asp-action="@nameof(MessengerController.Index)">
-          <icon name="arrow-left" />        
+          <icon name="arrow-left" />
         </a>
         <span data-controller="badge" class="wy-badge" data-badge-target="element" data-badge-userid-value="@WeavyContext.Current.User.Id">@unreadConversationsCount</span>
       </div>
-      <div data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
+      <div class="wy-appbar-text" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
         <div class="wy-typing-hide wy-appbar-text">
           @if (Model is PrivateChat chat && chat.Other != null) {
             <span class="wy-presence @Html.If(UserService.GetPresence(chat.Other.Id)?.Status == PresenceStatus.Active, "wy-presence-active")" data-presence-id="@chat.Other.Id"></span>
@@ -26,20 +31,33 @@
         </div>
         <span class="wy-typing-show wy-appbar-text" data-typing-target="indicator"></span>
       </div>
-      <a class="wy-button wy-button-icon" asp-action="@nameof(MessengerController.Details)" asp-route-id="@Model.Id" data-target="modal" title="@T["Details"]"><icon name="information-outline" /></a>
+      <div class="wy-dropdown">
+        <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown">
+          <icon name="dots-vertical" />
+        </button>
+        <div class="wy-dropdown-menu dropdown-menu">
+          <a class="wy-dropdown-item" asp-action="@nameof(MessengerController.Details)" asp-route-id="@Model.Id" data-target="modal" title="@T["Details"]"><icon name="information-outline" /><span>Details</span></a>
+          @if (Model is ChatRoom) {
+            <a class="wy-dropdown-item" asp-action="@nameof(MessengerController.AddUsers)" asp-route-id="@Model.Id" data-target="modal" title="@T["Manage members"]"><icon name="account-plus" /><span>Add people</span></a>
+            <form asp-action="@nameof(MessengerController.Leave)" asp-route-id="@Model.Id">
+              <button type="submit" class="wy-dropdown-item"><icon name="account-minus" /> @T["Leave conversation"]</button>
+            </form>
+          }
+        </div>
+      </div>
     </nav>
   </header>
   <div class="wy-pane-body">
-
-    <div id="messages" class="wy-messages" style="visibility: hidden;" data-controller="pagination">
+    <div id="messages" class="wy-messages" data-message-target="container" style="visibility: hidden;">
+      <div class="wy-avatar-header">
+        <avatar for="Model" size="128" />
+        <h3 class="wy-headline">@Model.DisplayName</h3>
+      </div>
+      <partial name="_MessagePlaceholder" />
       <partial name="_Messages" model="Model.Messages" />
     </div>
-
-    @* placeholder: cloned and placed in correct position on send *@
-    <partial name="_MessagePlaceholder" />
   </div>
   <div id="readby-append" hidden></div>
-
-  <partial name="_MessageForm" model="new MessageModel()" />
-  <turbo-frame id="modal"></turbo-frame>
+  <partial name="_MessageForm" model="new MessageModel { Parent = Model }" />
+  <turbo-frame id="sheet"></turbo-frame>
 </main>

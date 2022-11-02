@@ -7,28 +7,51 @@ const console = new WeavyConsole("file-picker");
 export default class extends Controller {
 
   static values = {
-    url: { type: String, default: "/dropin/externalblobs" }
+    url: { type: String, default: "/dropin/externalblobs" }    
   };
   static targets = ["list", "modal", "modalBody"];
-
+  
   handler = this.receiveFiles.bind(this);
+  closeHandler = this.close.bind(this);
   modal = null;
   conflicts = [];
+  isActive = false;
 
   connect() {
     console.debug("connected");
 
     // listen to messages from weavy client    
-    postal.on("addExternalBlobs", this.handler);
+    postal.on("add-external-blobs", this.handler);
+    postal.on("file-browser-closed", this.closeHandler);
+  }
+    
+  open(e) {
+    e.preventDefault();
+
+    // set current instance to active
+    this.isActive = true;
+    
+    // open file-browser
+    postal.postToParent({ name: "request:file-browser-open" });
+  }
+
+  close(e) {    
+    // reset active state    
+    this.isActive = false;
   }
 
   receiveFiles(e) {
-    console.debug("Files received from client: ", e.data);
+    console.debug("Files received from client: ", e.data, "Picker active = ", this.isActive);
+        
+    if (!this.isActive) return;
 
     this.attach(e.data.blobs, e.data.open);
 
     // close file browser
-    postal.postToParent({ name: "file-browser-close" });
+    postal.postToParent({ name: "request:file-browser-close" });
+
+    // reset active state    
+    this.isActive = false;
 
   }
 
@@ -135,12 +158,12 @@ ${(self.errors[i].type === 'conflict' ? '<div><button class="wy-button wy-button
     }
   }
 
-  open(e) {
-    e.preventDefault();
-
-    // open file-browser
-    postal.postToParent({ name: "file-browser-open" });
-  }
+  //open(e) {
+  //  e.preventDefault();
+  //  console.log("Open...")
+  //  // open file-browser
+  //  postal.postToParent({ name: "file-browser-open" });
+  //}
 
   replace(evt) {    
     let blobs = [this.conflicts[evt.params.index].blob];
@@ -169,6 +192,6 @@ ${(self.errors[i].type === 'conflict' ? '<div><button class="wy-button wy-button
 
   disconnect() {
     console.debug("disconnected");
-    postal.off("addExternalBlobs", this.handler);
+    postal.off("add-external-blobs", this.handler);
   }
 }

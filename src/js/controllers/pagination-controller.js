@@ -1,52 +1,73 @@
 import { Controller } from "@hotwired/stimulus"
-import { delay, nextFrame } from "../utils/timing-helpers"
 import { request } from "../utils/request-helpers"
 import WeavyConsole from '../utils/console';
-
+import { createScroller, createReverseScroller } from "../utils/infinite-scroll";
 const console = new WeavyConsole("pagination");
 
-// inspired by https://world.hey.com/daniel.colson/adventures-in-infinite-scrolling-9b4abaa4?ref=bestwebsite.gallery
 export default class extends Controller {
   static targets = ["pager"]
-  static values = { rootMargin: String }
+  static values = {
+    mode: {
+      type: String, default: "regular"
+    },
+    deferred: {
+      type: Boolean, default: false
+    }
+  }
 
   initialize() {
-    setTimeout(function (that) { that.observePager() }, 500, this);
+    this.currentPager = this.pager;
   }
 
   connect() {
     console.debug("connected");
+    if (!this.deferredValue) {
+      //console.debug("connect: Setting up infinite scroll: ", this.modeValue, this.pager)
+      this.setup();
+    }
   }
 
-  async loadNextPage(event) {
-    event?.preventDefault();
-    var url = this.pager.dataset.next;
-    console.debug("loading", url);
-    const html = await request.get(url);
-    await nextFrame();
-
-    // keep scroll position by scrolling one vertical pixel before appending html
-    if (window.scrollY === 0) {
-      window.scroll(0, 1);
+  pagerTargetConnected() {
+    if (this.pager !== this.currentPager) {
+      //console.debug("pagerTargetConnected: Setting up infinite scroll: ", this.modeValue, this.pager)
+      this.setup();
+      this.currentPager = this.pager;
     }
-
-    this.pager.outerHTML = html;    
-    await delay(500);
-    this.observePager();
   }
 
-  async observePager() {
-    await nextFrame();
-    const { pager, intersectionOptions } = this;
-    if (!pager) {
-      return;
-    }
+  pagerTargetDisconnected() {
+    this.scroller?.disconnect();
+  }
+  
+  setup() {
+    if (this.pager && !this.scroller || this.currentPager !== this.pager) {
+      //console.debug("Setting up infinite scroll: ", this.modeValue, this.pager)
 
-    if (pager.dataset.preload === "true") {
-      this.loadNextPage();
-    } else {
-      await nextIntersection(pager, intersectionOptions);
-      this.loadNextPage();
+      if (this.modeValue === "regular") {
+        this.scroller = createScroller(this.pager, async () => {
+          this.scroller?.disconnect();
+
+          //console.log("infinite-scroll: fetch next")
+          var url = this.pager.dataset.next;
+          const html = await request.get(url);
+          this.pager.outerHTML = html;
+          //console.log("infinite-scroll: fetch done")
+        })
+      } else if (this.modeValue === "reverse") {
+        let pagination = this;
+
+        pagination.scroller = createReverseScroller(pagination.pager, async () => {
+          pagination.scroller?.disconnect();
+
+          //console.log("infinite-scroll: fetch next")
+          var url = this.pager.dataset.next;
+          const html = await request.get(url);
+          pagination.pager.outerHTML = html;
+          //console.log("infinite-scroll: fetch done")
+        })
+      } else {
+        console.warn("Pagination mode must be either regular (default) or reverse");
+      }
     }
   }
 
@@ -58,34 +79,4 @@ export default class extends Controller {
     return pagers[pagers.length - 1];
   }
 
-  get intersectionOptions() {
-    const options = {
-      root: this.scrollableOffsetParent,
-      rootMargin: this.rootMarginValue
-    };
-    for (const [key, value] of Object.entries(options)) {
-      if (value) {
-        continue;
-      }
-      delete options[key];
-    }
-    return options;
-  }
-
-  get scrollableOffsetParent() {
-    const root = this.element.offsetParent;
-    return root && root.scrollHeight > root.clientHeight ? root : null;
-  }
-}
-
-function nextIntersection(element, options = {}) {
-  return new Promise(resolve => {
-    new IntersectionObserver(([entry], observer) => {
-      if (!entry.isIntersecting) {
-        return;
-      }
-      observer.disconnect();
-      resolve();
-    }, options).observe(element);
-  })
 }

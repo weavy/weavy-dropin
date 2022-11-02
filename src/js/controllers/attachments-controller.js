@@ -5,11 +5,77 @@ const console = new WeavyConsole("attachments");
 
 export default class extends Controller {
 
-  static targets = ["input", "list"];
-  static classes = ["uploading"];
+  static targets = ["input", "list", "dragzone", "dropzone"];
+  static classes = ["uploading", "dragging"];
 
   connect() {
     console.debug("connected");
+
+    let that = this;
+    let hightlightTimer = null;
+
+    if (this.hasDragzoneTarget && this.hasDropzoneTarget) {
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        this.dragzoneTarget.addEventListener(eventName, preventDefaults, false)
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        this.dragzoneTarget.addEventListener(eventName, highlight, false)
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        this.dragzoneTarget.addEventListener(eventName, unhighlight, false)
+      });
+
+      this.dropzoneTarget.addEventListener('drop', that.handleDrop.bind(this), false);
+    }
+
+    function preventDefaults(e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    function highlight(e) {
+
+      if (that.containsFiles(e)) {
+        that.dropzoneTarget.classList.add(that.draggingClass);
+        clearTimeout(hightlightTimer);
+      }
+
+    }
+
+    function unhighlight(e) {
+      hightlightTimer = setTimeout(() => that.dropzoneTarget.classList.remove(that.draggingClass), 50)
+    }
+  }
+
+  // check if drag and drop contains files
+  containsFiles(evt) {
+
+    if (evt.dataTransfer.types) {
+      for (let i = 0; i < evt.dataTransfer.types.length; i++) {
+        if (evt.dataTransfer.types[i] === "Files") {
+          return true;
+        }
+      }
+    }
+
+    return false;
+
+  }
+
+  // Dropped file(s)
+  handleDrop(evt) {
+    console.debug('File(s) dropped');
+
+    let dt = evt.dataTransfer;
+    let files = dt.files;
+
+    if (!files.length) { return; }
+
+    this.upload(evt, files);
+
   }
 
   // trigger file selection
@@ -19,20 +85,25 @@ export default class extends Controller {
   }
 
   // dispatched from editor
-  pasteImage(e) {
+  pasteFile(e) {
     if (e && e.detail) {
       this.upload(null, e.detail);
     }
   }
 
   // upload selected files
-  async upload(e, file) {
-    this.element.classList.add(this.uploadingClass);
+  async upload(e, files) {
 
-    const files = typeof file !== "undefined" ? [file] : this.inputTarget.files;
+    
+
+    files = typeof files !== "undefined" ? [...files] : this.inputTarget.files;
     const list = this.listTarget;
     let that = this;
     let count = 0;
+
+    if (files.length > 0) {
+      this.element.classList.add(this.uploadingClass);
+    }
 
     for (var i = 0; i < files.length; i++) {
       let data = new FormData();

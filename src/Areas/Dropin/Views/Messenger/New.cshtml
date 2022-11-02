@@ -11,10 +11,12 @@
 
 <main class="wy-search">
   <form id="newform" asp-action="@nameof(MessengerController.Create)" data-controller="form search" data-form-key-value="users" data-turbo-frame="searchresult" data-search-searching-class="wy-searching">
-    <div class="wy-search-form wy-pane-group">
-      <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
-      <button class="wy-button wy-button-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
-      <input type="search" value="@Model.Query.Text" name="text" class="wy-search-input" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
+    <div class="wy-pane-group wy-search-form">
+      <div class="wy-input-group">
+        <input type="search" value="@Model.Query.Text" name="text" class="wy-search-input wy-input wy-input-filled" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
+        <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
+        <button class="wy-button wy-button-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
+      </div>
     </div>
     <div class="wy-pane-group">
       <partial name="_SearchUsersResult" />

@@ -65,9 +65,9 @@ module.exports = (env, argv) => {
             path.resolve(__dirname, "js/")
           ],
           exclude: /node_modules/,
-          use: {
+          /*use: {
             loader: 'babel-loader',
-          }
+          }*/
         }        
       ]
     },

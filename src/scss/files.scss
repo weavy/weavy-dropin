@@ -1,23 +1,19 @@
-// weavy reboot
-@use "theme/root" as *;
-@use "theme/reboot";
+// dropin
+@use "reboot";
+@use "turbo";
 
-// weavy ui components
+// theme
+@use "theme/base/scroll";
 @use "theme/appbar";
 @use "theme/buttons";
 @use "theme/dropdown";
 @use "theme/files";
 @use "theme/icons";
-@use "theme/inputs";
+@use "theme/input";
 @use "theme/pager";
-@use "theme/scroll";
+@use "theme/pane";
 @use "theme/spinner";
 @use "theme/tables";
-@use "theme/turbo";
-
-// bootstrap reboot as baseline for drop-in ui
-@import "theme/bootstrap/reboot";
-
-// additional bootstrap components
-@import "theme/bootstrap/transitions";
-@import "theme/bootstrap/modal";
+@use "theme/card";
+@use "theme/grid";
+@use "theme/sheet";

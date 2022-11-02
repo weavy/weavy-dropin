@@ -1,0 +1,29 @@
+@model Message
+@{
+  var max = 4; // max number of voters to show
+}
+
+<div id="@DomId(Model)" class="wy-poll" data-controller="polls">
+  @foreach (var option in Model.Options) {
+    var more = option.Voters.Count() - max;
+    var percentage = (int)Math.Floor((option.VoteCount / (double)Model.VoteCount) * 100);
+
+    <div class="wy-item wy-poll-option" data-action="click->polls#vote" data-polls-id-param="@option.Id">
+      <input type="radio" value="@option.Id" id="option-@Model.Id-@option.Id" hidden @Html.If(option.HasVoted(), "checked") />
+      <div class=wy-progress style="width: @(percentage)%"></div>
+      <icon name="@(option.HasVoted() ? "check-circle" : "circle-outline")" />
+
+
+      <div class="wy-item-body">@option.Text</div>
+      <a asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Votes)" asp-route-id="@option.Id" data-turbo-frame="sheet" class="wy-facepile">
+        @if (option.VoteCount > max) {
+          <text>@(percentage)%</text>
+        } else {
+          @foreach (var voter in option.Voters.Take(max)) {
+            <avatar for="@voter" size="24" />
+          }
+        }
+      </a>
+    </div>
+  }
+</div>

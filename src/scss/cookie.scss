@@ -1,10 +1,12 @@
 @use "sass:map";
 
-// weavy reboot
-@use "theme/root" as *;
-@use "theme/reboot";
+// dropin 
+@use "reboot";
 
+// theme
+@use "theme/base/vars";
 @use "theme/buttons";
+@use "theme/type";
 
 // additional styling for the page
 html {
@@ -14,10 +16,6 @@ html {
 
 body {
   height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  font-family: $font-family-base;
 }
 
 
@@ -30,10 +28,4 @@ body {
     height: auto;
     margin-bottom: 1rem;
   }
-
-  h1 {
-    font-weight: $display-font-weight;
-    line-height: $display-line-height;
-    @include font-size(map.get($display-font-sizes, 5));
-  } 
 }

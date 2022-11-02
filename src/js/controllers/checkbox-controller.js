@@ -10,7 +10,7 @@ export default class extends Controller {
 
   toggle(event) {
     // find checkbox
-    var checkboxes = event.currentTarget.querySelectorAll("[type='checkbox']");
+    var checkboxes = event.currentTarget.querySelectorAll("[type='checkbox']:enabled");
     if (checkboxes.length > 0) {
       // toggle checkbox and trigger change event
       checkboxes[0].checked = !checkboxes[0].checked;

@@ -3,56 +3,51 @@
   var user = Model.CreatedBy();
   var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
   var files = Model.Attachments().Except(images);
+  var options = Model.Options;
+  var controller = Model.Parent.Type == EntityType.File ? typeof(FileController).ControllerName() : typeof(PostController).ControllerName();
+  var restoreAction = Model.Parent.Type == EntityType.File ? nameof(FileController.RestoreComment) : nameof(PostController.RestoreComment);
 }
 
-<turbo-frame id="@DomId(Model)">
 
-  @if (Model.IsTrashed() && Model.HasPermission(Permission.Delete)) {
-    <form class="alert alert-warning d-flex align-items-center justify-content-center my-3" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Restore)" asp-route-id="@Model.Eid()">
-      Comment was trashed. <button type="submit" class="btn alert-link p-0 ms-1">@T["Undo"]</button>.
+@if (Model.IsTrashed() && Model.HasPermission(Permission.Delete)) {
+  <turbo-frame id="@DomId(Model)" class="wy-comment">
+    <form class="wy-item" asp-controller="@controller" asp-action="@restoreAction" asp-route-id="@Model.Id" method="post">
+      <div class="wy-item-body">@T["Comment was trashed."]</div>
+      <button type="submit" class="wy-button wy-button-variant">@T["Undo"]</button>
     </form>
-  } else {
-    <div class="d-flex align-items-start mb-2">
-      <avatar for="@user" size="48" class="me-3 d-none d-sm-block" />
-      <div class="flex-grow-1">
-        <div class="d-flex align-items-center mb-2">
-          <div class="me-auto">
-            <avatar for="@user" size="24" class="me-1 d-sm-none" />
-            <strong>@user.DisplayName</strong>
-            <small class="text-lowercase text-muted">
-              @if (user.Username != null) {
-                <text>@@@user.Username ·</text>
-              }
-              <time datetime="@Model.CreatedAt" />
-              @if (Model.CreatedAt != Model.ModifiedAt) {
-                <text>·</text> <time datetime="@Model.ModifiedAt">edited</time>
-              }
-
-            </small>
-          </div>
-          <partial name="_StarButton" />
-          <div class="dropdown">
-            <button type="button" class="btn btn-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
-            <div class="dropdown-menu">
-              @if (Model.HasPermission(Permission.Update)) {
-                <a class="dropdown-item" asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Edit)" asp-route-id="@Model.Eid()"><icon name="pencil" /> @T["Edit"]</a>
-              }
-
-              <partial name="_StarMenuItem" />
-
-              @if (Model.HasPermission(Permission.Delete)) {
-                <hr class="dropdown-divider">
-                <form asp-controller="@typeof(CommentsController).ControllerName()" asp-action="@nameof(CommentsController.Trash)" asp-route-id="@Model.Eid()"><button type="submit" class="dropdown-item"><icon name="delete" /> @T["Trash"]</button></form>
-              }
-            </div>
-          </div>
+  </turbo-frame>
+} else {
+  <turbo-frame id="@DomId(Model)" class="wy-comment">
+    <div class="wy-item wy-item-sm wy-comment-header">
+      <avatar for="@user" size="32" />
+      <div class="wy-item-body">
+        <div class="wy-item-title">@user.DisplayName</div>
+        <div class="wy-item-text">
+          <time datetime="@Model.CreatedAt" format="t" />
+          @if (Model.ModifiedAt != Model.CreatedAt) {
+            <time datetime="@Model.ModifiedAt" format="t">· @T["Edited"]</time>
+          }
         </div>
-
+      </div>
+      <div class="wy-item-actions wy-item-actions-top">
+        <partial name="_CommentMenu" />
+      </div>
+    </div>
+    <div class="wy-comment-body">
+      <div class="wy-comment-content">
         @if (images.Any()) {
           <partial name="_ImageGrid" model="images" />
         }
 
-        <div class="content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
+        @if (Model.Embed != null) {
+          <partial name="_Embed" model="Model.Embed" />
+        }
+
+        <div class="wy-content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
+
+        @if (options.Any()) {
+          <partial name="_Poll" model="Model" />
+        }
 
         @if (files.Any()) {
           <partial name="_Attachments" model="files" />
@@ -61,9 +56,15 @@
         @if (Model.Meeting != null) {
           <partial name="_Meeting" model="Model.Meeting" />
         }
-        <partial name="_Reactions" />
       </div>
     </div>
-  }
-</turbo-frame>
+    <div class="wy-reactions-line">
+      <partial name="_Reactions" />
+      <partial name="_ReactionMenu" />
+    </div>
+
+
+  </turbo-frame>
+}
+
 

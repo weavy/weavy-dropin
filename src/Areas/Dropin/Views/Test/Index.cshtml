@@ -1,93 +1,451 @@
-<!DOCTYPE html>
-<html class="wy-scroll-y wy-scrollbars">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>@T["Test"]</title>
-  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
-  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
-  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
-  <link rel="stylesheet" href="~/css/test.css" asp-append-version="true" data-turbo-track="reload" />
-  <script src="~/js/test.js" asp-append-version="true" data-turbo-track="reload" async></script>
-</head>
-<body>
+@{
+  Layout = "_Layout";
+  var u = new User();
+}
 
-  <header class="wy-appbars">
-    <nav class="wy-appbar">
-      <div class="wy-appbar-buttons">
-        <a class="wy-button wy-button-icon" asp-action="Index"><icon name="weavy" class="wy-icon-native" /></a>
+<section class="wy-test-section">
+  <h1 class="wy-title">Title</h1>
+  <h2 class="wy-headline">Headline</h2>
+  <h3 class="wy-label">Label</h3>
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Avatars</h2>
+  <avatar for="WeavyContext.Current.User" size="48" />
+  <avatar for="WeavyContext.Current.User" size="32" />
+  <avatar for="WeavyContext.Current.User" size="24" />
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Buttons</h2>
+  <div class="wy-buttons">
+    <button class="wy-button wy-button-primary">Primary</button>
+    <button class="wy-button wy-button-variant">Variant</button>
+    <button class="wy-button">Default</button>
+    <button class="wy-button wy-button-link">Link</button>
+  </div>
+  <br />
+  <div class="wy-buttons">
+    <button class="wy-button wy-button-icon wy-button-primary"><icon name="close" /></button>
+    <button class="wy-button wy-button-icon wy-button-variant"><icon name="close" /></button>
+    <button class="wy-button wy-button-icon wy-button-primary-text"><icon name="close" /></button>
+    <button class="wy-button wy-button-icon"><icon name="close" color="primary" /></button>
+    <button class="wy-button wy-button-icon "><icon name="close" /></button>
+    <button class="wy-button wy-button-icon wy-button-primary"><icon name="google-drive" color="native" /></button>
+    <button class="wy-button wy-button-icon wy-button-primary-text"><icon name="google-drive" color="native" /></button>
+    <button class="wy-button wy-button-icon"><icon name="google-drive" color="native" /></button>
+    <button class="wy-button wy-button-icon wy-button-primary-text"><icon name="google-drive" /></button>
+    <button class="wy-button wy-button-icon "><icon name="google-drive" /></button>
+  </div>
+  <br />
+  <div class="wy-buttons">
+    <button class="wy-button wy-button-primary"><icon name="microsoft" color="native" /> <span>Primary</span></button>
+    <button class="wy-button"><icon name="microsoft" color="native" /> <span>Default</span></button>
+    <button class="wy-button wy-button-primary"><icon name="arrow-left" /> <span>Primary</span></button>
+    <button class="wy-button"><span>Default</span> <icon name="arrow-right" /></button>
+  </div>
+  <br />
+  <div class="wy-buttons">
+    <button class="wy-button wy-button-primary" disabled><icon name="microsoft" color="native" /> <span>Disabled</span></button>
+    <button class="wy-button" disabled><icon name="microsoft" color="native" /> <span>Default</span></button>
+    <button class="wy-button wy-button-link" disabled>Link</button>
+    <button class="wy-button wy-button-icon wy-button-primary" disabled><icon name="close" /></button>
+    <button class="wy-button wy-button-icon" disabled><icon name="close" /></button>
+  </div>
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Emoji</h2>
+  @Svg.Emoji(";)")
+  @Svg.Emoji(":smiley:", inline:true)
+  @Svg.Emoji("😎")
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Icons</h2>
+  @Svg.Icons() <icon name="spinner" class="wy-spin" />
+  <br /><br />
+
+  <icon name="check-circle" color="green" />
+  <icon name="information" color="blue" />
+  <icon name="alert" color="yellow" />
+  <icon name="close-circle" color="red" />
+
+  <br /><br />
+
+  <icon name="google-drive" color="native" size="48" />
+  <icon name="google-drive" color="native" size="32" />
+  <icon name="google-drive" color="native" size="24" />
+  <icon name="google-drive" color="native" size="20" />
+
+  <br /><br />
+
+  <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" size="48" />
+  <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" size="32" />
+  <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" size="24" />
+  <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" size="20" />
+
+</section>
+
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Inputs</h2>
+  <input type="text" class="wy-input" />
+  <br />
+  <input type="text" class="wy-input wy-input-filled" />
+  <br />
+  <form class="wy-search-form" role="search">
+    <div class="wy-input-group">
+      <input type="search" class="wy-search-input wy-input wy-input-filled" name="text" value="" placeholder="@T["Search..."]" autocomplete="off">
+      <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
+      <button type="submit" class="wy-button wy-button-icon" title="@T["Search"]" data-search-target="submit"><icon name="magnify" size="20" /></button>
+    </div>
+  </form>
+  <br />
+  <div class="wy-card">
+    <div class="wy-card-content">
+      <input type="text" class="wy-input" />
+      <br />
+      <input type="text" class="wy-input wy-input-filled" />
+      <br />
+      <form class="wy-search-form" role="search">
+        <div class="wy-input-group">
+          <input type="search" class="wy-search-input wy-input wy-input-filled" name="text" value="" placeholder="@T["Search..."]" autocomplete="off">
+          <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
+          <button type="submit" class="wy-button wy-button-icon" title="@T["Search"]" data-search-target="submit"><icon name="magnify" size="20" /></button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <br />
+  <div class="wy-toolbar">
+    <div class="wy-toolbar-text">Toolbar</div>
+    <div class="wy-toolbar-buttons">
+      <input type="text" class="wy-input" />
+      <input type="text" class="wy-input wy-input-filled" />
+    </div>
+    <div class="wy-toolbar-buttons wy-toolbar-buttons-last">
+      <form class="wy-search-form" role="search">
+        <div class="wy-input-group">
+          <input type="search" class="wy-search-input wy-input wy-input-filled" name="text" value="" placeholder="@T["Search..."]" autocomplete="off">
+          <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
+          <button type="submit" class="wy-button wy-button-icon" title="@T["Search"]" data-search-target="submit"><icon name="magnify" size="20" /></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</section>
+
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Cards</h2>
+  <h3 class="wy-label">List</h3>
+  <div class="wy-list">
+    <div class="wy-card"><div class="wy-card-content">card</div></div>
+    <div class="wy-card wy-card-primary"><div class="wy-card-content">card-primary</div></div>
+  </div>
+  <br />
+  <h3 class="wy-label">Grid</h3>
+  <div class="wy-grid">
+    <div class="wy-card wy-card-hover">
+      <div class="wy-card-actions">
+        <button class="wy-button wy-button-icon"><icon name="star" /></button>
       </div>
-      <div>@T["Test"]</div>
-      <div class="wy-appbar-buttons">
+      <div class="wy-card-content">card-hover</div>
+    </div>
+    <div class="wy-card wy-card-primary wy-card-hover"><div class="wy-card-content">card-primary card-hover</div></div>
+  </div>
+
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Reactions</h2>
+  <div class="wy-reactions-line">
+    @* reactions *@
+    <a href="#reactions" class="wy-button wy-reactions wy-button-icon">
+      <emoji name="😍" />
+      <emoji name="😆" />
+      <emoji name="👍" />
+      <emoji name="❤️" />
+      <small class="wy-reaction-count">1234</small>
+    </a>
+
+    @* reaction menu *@
+    <div class="wy-dropdown dropup">
+      <button type="button" class="wy-button wy-button-icon wy-reaction-menu-button" data-bs-toggle="dropdown" title="Add reaction"><icon name="emoticon-plus" size="20" /></button>
+      <div class="wy-reaction-menu wy-dropdown-menu dropdown-menu">
+        <form class="wy-reaction-picker">
+          <button type="submit" class="wy-button wy-button-icon"><emoji name="😍" /></button>
+          <button type="submit" class="wy-button wy-button-icon wy-active"><emoji name="😆" /></button>
+          <button type="submit" class="wy-button wy-button-icon"><emoji name="😮" /></button>
+          <button type="submit" class="wy-button wy-button-icon"><emoji name="😢" /></button>
+          <button type="submit" class="wy-button wy-button-icon"><emoji name="😡" /></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="wy-comment">
+    <div class="wy-comment-body">
+      &nbsp;<br />&nbsp;
+    </div>
+    <div class="wy-reactions-line">
+      @* reactions *@
+      <a href="#reactions" class="wy-button wy-button-icon wy-reactions">
+        <emoji name="😍" />
+        <emoji name="😆" />
+        <emoji name="👍" />
+        <emoji name="❤️" />
+        <small class="wy-reaction-count">1234</small>
+      </a>
+
+      @* reaction menu *@
+      <div class="wy-dropdown dropup">
+        <button type="button" class="wy-button wy-button-icon wy-reaction-menu-button" data-bs-toggle="dropdown" title="Add reaction"><icon name="emoticon-plus" size="20" /></button>
+        <div class="wy-reaction-menu wy-dropdown-menu dropdown-menu">
+          <form class="wy-reaction-picker">
+            <button type="submit" class="wy-button wy-button-icon"><emoji name="😍" /></button>
+            <button type="submit" class="wy-button wy-button-icon wy-active"><emoji name="😆" /></button>
+            <button type="submit" class="wy-button wy-button-icon"><emoji name="😮" /></button>
+            <button type="submit" class="wy-button wy-button-icon"><emoji name="😢" /></button>
+            <button type="submit" class="wy-button wy-button-icon"><emoji name="😡" /></button>
+          </form>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Items </h2>
+
+  <h3 class="wy-label">Regular items</h3>
+
+  <a href="#attachment" class="wy-item">
+    <icon name="file-pdf" class="wy-kind-document wy-ext-pdf" />
+    <div class="wy-item-body">testing-a-long-file-name.pdf</div>
+  </a>
+
+  <div class="wy-item wy-item-hover wy-disabled">
+    <icon name="file-excel" class="wy-kind-spreadsheet wy-ext-xlsx" />
+    <div class="wy-item-body">Disabled.xlsx</div>
+    <button type="button" class="wy-button wy-button-icon" onclick="return false;"><icon name="close-circle" /></button>
+  </div>
+
+  <div class="wy-item wy-item-hover wy-active">
+    <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" />
+    <div class="wy-item-body">A google document</div>
+    <button type="button" class="wy-button wy-button-icon"><icon name="close-circle" /></button>
+  </div>
+
+  <div class="wy-item wy-item-hover">
+    <icon name="file-word" class="wy-kind-document wy-ext-docx" />
+    <div class="wy-item-body">Word document.docx</div>
+    <div class="wy-item-actions">
+      <button type="button" class="wy-button wy-button-icon"><icon name="check" /></button>
+      <button type="button" class="wy-button wy-button-icon"><icon name="close" /></button>
+    </div>
+  </div>
+
+  <a href="#user" class="wy-item wy-item-hover">
+    <avatar for="WeavyContext.Current.User" size="32" />
+    <div class="wy-item-body">
+      <div class="wy-item-title">@WeavyContext.Current.User.DisplayName</div>
+    </div>
+    <emoji name=":heart_eyes:" />
+  </a>
+
+  <div class="wy-item wy-item-hover">
+    <avatar for="WeavyContext.Current.User" size="32" />
+    <div class="wy-item-body">@WeavyContext.Current.User.DisplayName</div>
+    <div class="wy-dropdown">
+      <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+      <div class="wy-dropdown-menu dropdown-menu">
+        <a href="#" class="wy-dropdown-item">Menu item</a>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <h3 class="wy-label">Items in list</h3>
+  <div class="wy-list">
+    <div class="wy-item wy-item-lg  wy-item-hover wy-active">
+      <avatar for="WeavyContext.Current.User" size="48" />
+      <div class="wy-item-body">
+        <div class="wy-item-row">
+          <div class="wy-item-title">@WeavyContext.Current.User.DisplayName</div>
+        </div>
+        <div class="wy-item-row">
+          <div class="wy-item-text"><time datetime="@DateTime.UtcNow"></time> · <time datetime="@DateTime.UtcNow">Edited</time></div>
+        </div>
+      </div>
+      <div class="wy-item-actions wy-item-actions-top">
         <div class="wy-dropdown">
           <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
           <div class="wy-dropdown-menu dropdown-menu">
-            <a class="wy-dropdown-item" href="#"><icon name="star" /> @T["Star"]</a>
-            <a class="wy-dropdown-item" href="#"><icon name="bell" /> @T["Subscribe"]</a>
-            <a class="wy-dropdown-item" href="#"><icon name="download" /> @T["Download"]</a>
+            <button class="wy-dropdown-item" type="button"><icon name="pencil" /> @T["Edit"]</button>
+            <button class="wy-dropdown-item" type="button"><icon name="delete" /> @T["Trash"]</button>
           </div>
         </div>
       </div>
-    </nav>
-  </header>
 
-  <article>
+    </div>
 
-    <section class="wy-test-section">
-      <h2>Avatars</h2>
-      <avatar for="WeavyContext.Current.User" size="64" />
+    <a href="#room" class="wy-item wy-item-hover wy-item-lg  wy-conversation ">
       <avatar for="WeavyContext.Current.User" size="48" />
-      <avatar for="WeavyContext.Current.User" size="32" />
-      <avatar for="WeavyContext.Current.User" size="24" />
-    </section>
-
-    <section class="wy-test-section">
-      <h3>Buttons</h3>
-      <div class="wy-buttons">
-        <button class="wy-button wy-button-primary">Primary</button>
-        <button class="wy-button">Default</button>
-        <button class="wy-button wy-button-link">Link</button>
+      <div class="wy-item-body">
+        <div class="wy-item-row">
+          <div class="wy-item-title">@WeavyContext.Current.User.DisplayName</div>
+          <time class="wy-meta" datetime="@DateTime.UtcNow"></time>
+        </div>
+        <div class="wy-item-row">
+          <div class="wy-item-text">
+            You: <icon name="attachment" />
+          </div>
+        </div>
       </div>
-      <br />
-      <div class="wy-buttons">
-        <button class="wy-button wy-button-icon wy-button-primary"><icon name="close" /></button>
-        <button class="wy-button wy-button-icon"><icon name="close" color="primary" /></button>
-        <button class="wy-button wy-button-icon "><icon name="close" /></button>
-        <button class="wy-button wy-button-primary wy-button-icon"><icon name="google-drive" color="native" /></button>
-        <button class="wy-button wy-button-icon"><icon name="google-drive" color="native" /></button>
-        <button class="wy-button wy-button-icon "><icon name="google-drive" /></button>
+      <div class="wy-item-actions wy-item-actions-bottom">
+        <div class="wy-dropdown">
+          <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+          <div class="wy-dropdown-menu dropdown-menu">
+            <button class="wy-dropdown-item" type="button"><icon name="message-badge" /> @T["Mark as unread"]</button>
+            <button class="wy-dropdown-item" type="button"><icon name="star" /> @T["Star"]</button>
+          </div>
+        </div>
       </div>
-      <br />
-      <div class="wy-buttons">
-        <button class="wy-button wy-button-primary"><icon name="microsoft" color="native" /> <span>Primary</span></button>
-        <button class="wy-button"><icon name="microsoft" color="native" /> <span>Default</span></button>
-        <button class="wy-button wy-button-primary"><icon name="arrow-left" /> <span>Primary</span></button>
-        <button class="wy-button"><span>Default</span> <icon name="arrow-right" /></button>
+    </a>
+
+    <a href="#conversation" class="wy-item wy-item-hover wy-item-lg wy-conversation wy-unread">
+      <avatar for="WeavyContext.Current.User" size="48" />
+      <div class="wy-item-body">
+        <div class="wy-item-row">
+          <div class="wy-item-title">@WeavyContext.Current.User.DisplayName</div>
+          <time class="wy-meta" datetime="@DateTime.UtcNow"></time>
+        </div>
+        <div class="wy-item-row">
+          <div class="wy-item-text">
+            You: Lorem ipsum dolor sit amet <emoji name=":smiley:" />
+          </div>
+        </div>
       </div>
-    </section>
+      <div class="wy-item-actions  wy-item-actions-bottom">
+        <button type="button" class="wy-button wy-button-icon" onclick="return false;"><icon name="star" color="yellow" /></button>
+        <div class="wy-dropdown">
+          <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+          <div class="wy-dropdown-menu dropdown-menu">
+            <button class="wy-dropdown-item" type="button"><icon name="check" /> @T["Mark as read"]</button>
+            <button class="wy-dropdown-item" type="button"><icon name="star" /> @T["Star"]</button>
+          </div>
+        </div>
+      </div>
 
-    <section class="wy-test-section">
-      <h2>Emoji</h2>
-      @Svg.Emoji(";)")
-      @Svg.Emoji(":smiley:", inline:true)
-      @Svg.Emoji("😎")
-    </section>
+    </a>
 
-    <section class="wy-test-section">
-      <h2>Icons</h2>
-      @Svg.Icons()
-      <br /><br />
-      <icon name="microsoft" color="native" />
-      <icon name="microsoft" color="primary " />
-      <icon name="microsoft" />
-      <br /><br />
-      <icon name="file-document-box+google-drive" color="native" />
-      <icon name="file-document-box+google-drive" color="primary" />
-      <icon name="file-document-box+google-drive" />
+  </div>
 
-    </section>
+  <br />
 
-  </article>
+  <h3 class="wy-label">Items in bordered list</h3>
 
-</body>
-</html>
+  <div class="wy-list wy-list-bordered">
+    <a href="#file" class="wy-item wy-item-hover wy-item-lg">
+      <icon name="file-pdf" class="wy-kind-document wy-ext-pdf" size="48" />
+      <div class="wy-item-body">
+        <div class="wy-item-title">testing-a-ridiculously-long-file-name-that-should-hopefully-truncate-somewhere-at-some-point.pdf</div>
+        <div class="wy-item-text">8.14 KB</div>
+      </div>
+
+      <div class="wy-dropdown">
+        <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+        <div class="wy-dropdown-menu dropdown-menu">
+          <button class="wy-dropdown-item" type="button"><icon name="download" /> @T["Download"]</button>
+          <button class="wy-dropdown-item" type="button"><icon name="pencil" /> @T["Edit"]</button>
+          <hr class="wy-dropdown-divider">
+          <button class="wy-dropdown-item" type="button"><icon name="delete" /> @T["Trash"]</button>
+        </div>
+      </div>
+
+    </a>
+    <div class="wy-item wy-item-lg">
+      <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" size="48" />
+      <div class="wy-item-body">
+        <div class="wy-item-title">Cloudy weather at google</div>
+        <div class="wy-item-text">-8&deg;C</div>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <h3 class="wy-label">Items in card</h3>
+
+  <div class="wy-card wy-card-primary">
+    <div class="wy-card-content">
+      <div class="wy-list wy-list-bordered ">
+        <div class="wy-item wy-item-hover wy-item-lg">
+          <icon name="file-pdf" class="wy-kind-document wy-ext-pdf" size="48" />
+          <div class="wy-item-body">
+            <div class="wy-item-title">testing-a-ridiculously-long-file-name-that-should-hopefully-truncate-somewhere-at-some-point.pdf</div>
+            <div class="wy-item-text">8.14 KB</div>
+          </div>
+          <div class="wy-dropdown">
+            <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+            <div class="wy-dropdown-menu dropdown-menu">
+              <button class="wy-dropdown-item" type="button"><icon name="download" /> @T["Download"]</button>
+              <button class="wy-dropdown-item" type="button"><icon name="pencil" /> @T["Edit"]</button>
+              <hr class="wy-dropdown-divider">
+              <button class="wy-dropdown-item" type="button"><icon name="delete" /> @T["Trash"]</button>
+            </div>
+          </div>
+        </div>
+        <a href="#file" class="wy-item wy-item-lg">
+          <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" size="48" />
+          <div class="wy-item-body">
+            <div class="wy-item-title">A google doc</div>
+            <div class="wy-item-text">8.14 KB</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <h3 class="wy-label">Trashed items</h3>
+
+  <div class="wy-item">
+    <div class="wy-item-body">Post was trashed</div>
+    <button type="button" class="wy-button wy-button-variant">@T["Undo"]</button>
+  </div>
+</section>
+
+<section class="wy-test-section">
+  <h2 class="wy-headline">Poll</h2>
+  <div class="wy-poll">
+    <div class="wy-item wy-poll-option">
+      <div class=wy-progress style="width:30%"></div>
+      <icon name="check-circle" />
+      <div class="wy-item-body">Red</div>
+      <a href="#votes" class="wy-facepile"><avatar for="u" size="24" /><avatar for="u" size="24" /><avatar for="u" size="24" /></a>
+    </div>
+    <div class="wy-item wy-poll-option">
+      <div class=wy-progress style="width:50%"></div>
+      <icon name="circle-outline" />
+      <div class="wy-item-body">Green</div>
+      <a href="#votes" class="wy-facepile">50%</a>
+    </div>
+    <div class="wy-item wy-poll-option">
+      <div class=wy-progress style="width:20%"></div>
+      <icon name="circle-outline" />
+      <div class="wy-item-body">Blue</div>
+      <a href="#votes" class="wy-facepile"><avatar for="u" size="24" /><avatar for="u" size="24" /></a>
+    </div>
+  </div>
+</section>
+

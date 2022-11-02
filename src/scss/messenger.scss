@@ -1,38 +1,54 @@
-// weavy reboot
-@use "theme/root" as *;
-@use "theme/reboot";
+// dropin
+@use "reboot";
+@use "turbo";
 
-// weavy ui components
+// thheme components
+@use "theme/base/vars";
+@use "theme/base/scroll";
 @use "theme/appbar";
-@use "theme/attachments";
 @use "theme/avatar";
 @use "theme/badge";
 @use "theme/buttons";
 @use "theme/checkbox";
-@use "theme/cm-editor";
-@use "theme/code";
 @use "theme/content";
 @use "theme/conversations";
 @use "theme/dropdown";
 @use "theme/emoji";
+@use "theme/facepile";
 @use "theme/icons";
 @use "theme/image-grid";
-@use "theme/inputs";
-@use "theme/messages";
+@use "theme/input";
+@use "theme/list";
+@use "theme/item";
 @use "theme/message-editor";
+@use "theme/message-editor-cm";
+@use "theme/messages";
+@use "theme/meta";
 @use "theme/pager";
 @use "theme/pane";
 @use "theme/picker-list";
+@use "theme/placeholder";
+@use "theme/poll";
 @use "theme/reactions";
-@use "theme/search";
-@use "theme/scroll";
+@use "theme/sheet";
 @use "theme/spinner";
-@use "theme/turbo";
+@use "theme/tables";
+@use "theme/type";
+@use "theme/toasts";
 @use "theme/typing";
+@use "theme/meeting";
 
-// bootstrap reboot as baseline for drop-in ui
-@import "theme/bootstrap/reboot";
+/*html {
+  height: 100%;
+}*/
 
-// additional bootstrap components
-@import "theme/bootstrap/transitions";
-@import "theme/bootstrap/modal";
+/*body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}*/
+
+.wy-main {
+  min-height: 100vh;
+}
+

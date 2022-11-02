@@ -1,0 +1,21 @@
+@model File
+@{
+  var thumburl = Model.IsTrashed() ? null : Model.ThumbUrl(256, 256);
+}
+
+<div id="@DomId(Model)" @Html.If(Model.IsTrashed(), @"class=""wy-card wy-card-trashed""", $@"class=""wy-card wy-card-hover"" data-controller=""rename"" data-action=""click->preview-link#open"" data-preview-link-url-param=""{Url.Action(nameof(FileController.Get), typeof(FileController).ControllerName(), new { id = Model.Id })}"" data-preview-link-title-param=""{Model.Name}""")>
+  <div class="wy-card-actions">
+    <partial name="~/Areas/Dropin/Views/File/_FileMenu.cshtml" model="Model" />
+  </div>
+  @if (thumburl != null) {
+    <img class="wy-card-top wy-card-content @(Model.Kind == "image" ? "wy-card-top-image" : "")" src="@thumburl" loading="lazy">
+  } else {
+    <div class="wy-content-icon wy-card-top wy-card-content">
+      <icon for="Model.Blob" Size="64" />
+    </div>
+  }
+  <div class="wy-card-label wy-card-content wy-filename">
+    <partial name="~/Areas/Dropin/Views/File/_Rename.cshtml" model="Model" />
+  </div>
+</div>
+

@@ -1,0 +1,113 @@
+@model Message
+@{
+  var user = Model.CreatedBy();
+  var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
+  var files = Model.Attachments().Except(images);
+  var comments = Model.Comments();
+  var options = Model.Options;
+}
+
+<turbo-frame id="@DomId(Model)" class="wy-post" data-controller="post comment">
+  @if (Model.IsTrashed() && Model.HasPermission(Permission.Delete)) {
+
+    <form asp-controller="@typeof(PostController).ControllerName()" asp-action="@nameof(PostController.Restore)" asp-route-id="@Model.Id" class="wy-item wy-item-lg">
+      <div class="wy-item-body">@T["Post was trashed."]</div>
+      <button type="submit" class="wy-button wy-button-variant">@T["Undo"]</button>
+    </form>
+
+  } else {
+    <div>
+
+      <div class="wy-item wy-item-lg">
+        <avatar for="@user" size="48" />
+        <div class="wy-item-body">
+          <div class="wy-item-row">
+            <div class="wy-item-title">@user.DisplayName</div>
+
+          </div>
+
+          <div class="wy-item-row">
+            <div class="wy-item-text">
+              <time datetime="@Model.CreatedAt" format="t"></time>
+              @if (Model.ModifiedAt != Model.CreatedAt) {
+                <time datetime="@Model.ModifiedAt" format="t">· @T["Edited"]</time>
+              }
+            </div>
+          </div>
+        </div>
+        @if (Model.HasPermission(Permission.Read)) {
+
+          <div class="wy-item-actions wy-item-actions-top">
+            <div class="wy-dropdown">
+              <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="@(Model.IsPinned() ? "pin" : "dots-vertical")" /></button>
+              <div class="wy-dropdown-menu dropdown-menu">
+                @if (Model.Parent.HasPermission(Permission.Update)) {
+                  @if (Model.IsPinned()) {
+                    <form asp-controller="@typeof(PostController).ControllerName()" asp-action="@nameof(PostController.Unpin)" asp-route-id="@Model.Id">
+                      <button type="submit" class="wy-dropdown-item"><icon name="pin-off" /> @T["Unpin"]</button>
+                    </form>
+                  } else {
+                    <form asp-controller="@typeof(PostController).ControllerName()" asp-action="@nameof(PostController.Pin)" asp-route-id="@Model.Id">
+                      <button type="submit" class="wy-dropdown-item"><icon name="pin" /> @T["Pin"]</button>
+                    </form>
+                  }
+                }
+
+                <partial name="_FollowMenuItem" />
+
+                @if (Model.HasPermission(Permission.Update)) {
+                  <a class="wy-dropdown-item" asp-controller="@typeof(PostController).ControllerName()" asp-action="@nameof(PostController.Edit)" asp-route-id="@Model.Id"><icon name="pencil" /> @T["Edit"]</a>
+                }
+                @if (Model.HasPermission(Permission.Delete)) {
+                  <form asp-controller="@typeof(PostController).ControllerName()" asp-action="@nameof(PostController.Trash)" asp-route-id="@Model.Id"><button type="submit" class="wy-dropdown-item"><icon name="delete" /> @T["Trash"]</button></form>
+                }
+
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (images.Any()) {
+        <partial name="_ImageGrid" model="images" />
+      }
+
+      @if (Model.Embed != null) {
+        <partial name="_Embed" model="Model.Embed" />
+      }
+
+      <div class="wy-post-body">
+        @if (!Model.Text.IsNullOrWhiteSpace()) {
+          <div class="wy-content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
+        }
+
+        @if (options.Any()) {
+          <partial name="_Poll" model="Model" />
+        }
+
+        @if (files.Any()) {
+          <partial name="~/Areas/Dropin/Views/Post/_Attachments.cshtml" model="files" />
+        }
+
+        @if (Model.Meeting != null) {
+          <partial name="_Meeting" model="Model.Meeting" />
+        }
+      </div>
+
+      <div class="wy-post-footer">
+        <div class="wy-reactions-line">
+          <partial name="_Reactions" />
+          <partial name="_ReactionMenu" />
+        </div>
+        <partial name="~/Areas/Dropin/Views/Post/_CommentCount.cshtml" />
+      </div>
+
+      <partial name="~/Areas/Dropin/Views/Post/_Comments.cshtml" />
+
+    </div>
+  }
+</turbo-frame>
+
+
+
+

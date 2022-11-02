@@ -1,0 +1,22 @@
+@use "theme/base/colors";
+
+.turbo-progress-bar {
+  background-color: colors.$primary;
+  height: .25rem;
+}
+
+[data-turbo-link] {
+  cursor: pointer;
+}
+
+
+html[data-turbo-preview] {
+  main {
+    opacity: .6;
+  }
+}
+
+.turbo-stream-content {
+  display: contents;
+}
+

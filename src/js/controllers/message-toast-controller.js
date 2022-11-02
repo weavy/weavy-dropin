@@ -7,17 +7,21 @@ const console = new WeavyConsole("message-toast");
 export default class extends Controller {
 
   static values = {
-    id: String
+    id: String,
+    messageId: Number
   }
 
+  focusCallback;
+
   connect() {
+
     console.debug("connected:" + this.idValue);
 
     let modifier = 28;
     let toasterId = "message_toaster";
     let messageReference = document.getElementById(this.idValue);
     let documentHeight = document.body.scrollHeight;
-    let elementHeight = 0; 
+    let elementHeight = 0;
 
     // TODO: turbo-frame reports offsetHeight = 0
     for (let i = 0; i < messageReference.children.length; i++) {
@@ -42,12 +46,11 @@ export default class extends Controller {
             let parent = messageReference.parentNode;
             // create new toast
             let toast = document.createElement("div");
-            toast.className = "wy-message-toaster";
+            toast.className = "wy-toast wy-toast-action";
             toast.id = toasterId;
             toast.innerHTML = lastToast.innerHTML;
             toast.addEventListener("click", () => {
               this.toBottom();
-              this.setRead();
             });
             // insert toast before last new message
             parent.insertBefore(toast, messageReference);
@@ -57,21 +60,21 @@ export default class extends Controller {
     }
 
     if (document.hasFocus()) {
-      this.setRead();
+      this.setRead(this.messageIdValue);
     } else {
       let that = this;
-      window.addEventListener("focus", that.setRead, { once: true });
+      this.focusCallback = function () { that.setRead(that.messageIdValue) };
+      window.addEventListener("focus", this.focusCallback, { once: true });
     }
   }
 
   async toBottom() {
     await delay();
-
     document.scrollingElement.scrollTop = 99999999999;
   }
 
-  setRead() {
-    fetch("/dropin/messenger/" + document.querySelector("body").dataset.appId + "/read", {
+  setRead(messageId) {
+    fetch("/dropin/messenger/" + document.querySelector("body").dataset.appId + "/read/" + messageId, {
       method: "POST", headers: {
         "Content-Type": "application/json"
       }
@@ -80,5 +83,11 @@ export default class extends Controller {
         throw Error(response.statusText);
       }
     })
+  }
+
+  disconnect() {
+    if (this.focusCallback !== null) {
+      window.removeEventListener("focus", this.focusCallback);
+    }
   }
 }

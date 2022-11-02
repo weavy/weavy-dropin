@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="wy-scroll-y wy-scrollbars">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>@(Title ?? "Test")</title>
+  <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
+  <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
+  <link rel="icon" type="image/png" href="@Url.Favicon(32, ".png")" />
+  <link rel="stylesheet" href="~/css/test.css" asp-append-version="true" data-turbo-track="reload" />
+  <script src="~/js/test.js" asp-append-version="true" data-turbo-track="reload" async></script>
+</head>
+<body>
+
+  <header class="wy-appbars">
+    <nav class="wy-appbar">
+      <div class="wy-appbar-buttons">
+        <a class="wy-button wy-button-icon" asp-action="Index"><icon name="weavy" color="native" /></a>
+      </div>
+      <div>@(Title ?? "Test")</div>
+      <div class="wy-appbar-buttons">
+        <a asp-action="@nameof(TestController.Theme)" class="wy-button wy-button-icon"><icon name="palette" /></a>
+        <button type="button" class="wy-button wy-button-icon" onclick="document.documentElement.classList.toggle('wy-dark');"><icon name="lightbulb" /></button>
+      </div>
+    </nav>
+  </header>
+
+  <article class="me-3">
+    @RenderBody()
+  </article>
+
+</body>
+</html>

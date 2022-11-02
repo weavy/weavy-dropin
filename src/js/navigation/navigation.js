@@ -186,7 +186,13 @@ document.addEventListener("click", delegate("a[href], [data-href]", function (e)
         e.preventDefault();
         e.stopPropagation();
         if (nearestDropdown) {
-          nearestDropdown.classList.remove("show")
+          nearestDropdown.classList.remove("show");
+          try {
+            let dropdownButton = nearestDropdown.parentElement.querySelector("[data-bs-toggle='dropdown']");
+            dropdownButton.classList.remove("show");
+            dropdownButton.setAttribute("aria-expanded", "false");
+
+          } catch (e) { /* no worries */ }
         }
       } else {
         // If url is a download-url
@@ -197,7 +203,13 @@ document.addEventListener("click", delegate("a[href], [data-href]", function (e)
           }
           e.stopPropagation();
           if (nearestDropdown) {
-            nearestDropdown.classList.remove("show")
+            nearestDropdown.classList.remove("show");
+            try {
+              let dropdownButton = nearestDropdown.parentElement.querySelector("[data-bs-toggle='dropdown']");
+              dropdownButton.classList.remove("show");
+              dropdownButton.setAttribute("aria-expanded", "false");
+
+            } catch (e) { /* no worries */ }
           }
         }
       }

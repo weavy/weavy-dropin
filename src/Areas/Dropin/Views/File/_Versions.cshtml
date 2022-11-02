@@ -1,0 +1,42 @@
+@model VersionsModel
+@{
+  var count = Model.Versions.Count();
+}
+
+<turbo-frame id="versions" class="wy-pane-body wy-pane-group">
+  <div class="wy-list wy-versions">
+    @for (int i=0; i < count; i++) {
+      var file = Model.Versions.ElementAt(i);
+      var num = count - i;
+
+      <div class="wy-item wy-item-hover wy-item-lg @(file.Version == Model.Current.Version ? "wy-active" : "")" data-action="click->version#load" data-version-id-param="@Model.Current.Id" data-version-v-param="@file.Version">
+        <icon for="file.Blob" size="48" />
+        <div class="wy-item-body">
+          <div class="wy-item-title">@num. @file.Name</div>
+          <div class="wy-item-text"><time datetime="file.ModifiedAt"></time> · @file.ModifiedBy().DisplayName </div>
+        </div>
+
+        <div class="wy-dropdown">
+          <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
+          <div class="wy-dropdown-menu dropdown-menu">
+            <a class="wy-dropdown-item" href="@file.Url(download: true)"><icon name="download" /> @T["Download"]</a>
+            @if (!file.IsCurrent()) {
+              <hr class="wy-dropdown-divider">
+              @if (Model.Current.HasPermission(Permission.Update)) {
+                <form asp-controller="@typeof(FileController).ControllerName()" asp-action="@nameof(FileController.Revert)" asp-route-id="@Model.Current.Id" asp-route-version="@file.Version">
+                  <button type="submit" class="wy-dropdown-item" data-action="click->version#revert" data-version-id-param="@Model.Current.Id" data-version-v-param="@file.Version"><icon name="restore" />@T["Revert"]</button>
+                </form>
+              }
+              @if (Model.Current.HasPermission(Permission.Delete)) {
+                <form asp-controller="@typeof(FileController).ControllerName()" asp-action="@nameof(FileController.DeleteVersion)" asp-route-id="@Model.Current.Id" asp-route-version="@file.Version">
+                  @Html.HttpMethodOverride(HttpMethod.Delete)
+                  <button type="submit" class="wy-dropdown-item"><icon name="delete" />@T["Remove"]</button>
+                </form>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</turbo-frame>

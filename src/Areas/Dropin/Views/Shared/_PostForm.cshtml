@@ -1,0 +1,167 @@
+@model MessageModel
+
+@{
+  var edit = Model.Message != null;  
+  var controller = edit ? typeof(PostController).ControllerName() : typeof(PostsController).ControllerName();
+  var action = edit ? nameof(PostController.Update) : nameof(PostsController.Insert);
+  var domId = edit ? DomId("_Post", Model.Message) : DomId(Model.Parent);
+  var method = edit ? HttpMethod.Put : HttpMethod.Post;
+  var id = edit ? Model.Message.Id : Model.Parent.Id;
+  var buttonText = edit ? T["Update"] : T["Post"];
+  var buttonTitle = edit ? T["Update the post"] : T["Create the post"];
+
+  bool attachments = true;
+  bool cloudfiles = ConfigurationService.BlobProviders.Any();
+  bool embeds = true;
+  bool meetings = false;
+  bool polls = true;
+
+  var formAttributes = new Dictionary<string, object>();
+  formAttributes["data-controller"] = "editor";
+  formAttributes["data-editor-placeholder-value"] = @T["Create a post..."];
+  formAttributes["data-editor-target"] = "form";
+  formAttributes["data-editor-draft-value"] = false;
+  formAttributes["data-action"] = "submit->editor#prepare";
+
+  if (!edit) {
+    formAttributes["data-action"] += " editor:placeholder->post#showPlaceholder";
+  }
+  if (attachments) {
+    formAttributes["data-controller"] += " attachments";
+    formAttributes["data-attachments-uploading-class"] = "wy-uploading";
+    formAttributes["data-attachments-dragging-class"] = "wy-post-editor-dragging";
+    formAttributes["data-attachments-target"] = "dragzone";
+    formAttributes["data-action"] += " editor:filePasted->attachments#pasteFile";
+  }
+  if (cloudfiles) {
+    formAttributes["data-controller"] += " file-picker";
+  }
+
+  if (embeds) {
+    formAttributes["data-controller"] += " embed";
+    formAttributes["data-embed-choose-class"] = "wy-embed-show-cycle";
+    formAttributes["data-embed-target"] = "form";
+    formAttributes["data-action"] += " editor:updated->embed#updated";
+  }
+
+  if (meetings) {
+    formAttributes["data-controller"] += " meetings";
+    formAttributes["data-meetings-uploading-class"] = "wy-uploading";
+    if (ConfigurationService.TeamsMeetings) {
+      formAttributes["data-meetings-teams-authentication-url-value"] = ConfigurationService.TeamsAuthenticationUrl;
+    }
+    if (ConfigurationService.ZoomMeetings) {
+      formAttributes["data-meetings-zoom-authentication-url-value"] = ConfigurationService.ZoomAuthenticationUrl;
+    }
+  }
+
+  if (polls) {
+    formAttributes["data-controller"] += " polls";
+  }
+}
+
+<turbo-frame id="@domId" class="wy-post">
+
+  @if (edit) {
+    <nav class="wy-item">
+      <div class="wy-item-body">
+        <div class="wy-item-title">@T["Edit post"]</div>
+      </div>
+      <a asp-controller="@typeof(PostController).ControllerName()" asp-action="@nameof(PostController.Get)" asp-route-id="@Model.Message.Id" class="wy-button wy-button-icon"><icon name="close" /></a>
+    </nav>
+  }
+
+  <form asp-controller="@controller" asp-action="@action" asp-route-id="@id" asp-attributes="@formAttributes" class="wy-post-editor" method="@method" autocomplete="off" novalidate>
+
+    @* text editor + buttons *@
+    <div class="wy-post-editor-text">
+      <input type="hidden" asp-for="Text" data-editor-target="control" />
+      <div class="wy-post-editor-container" data-editor-target="container"></div>
+    </div>
+
+    <div class="wy-post-editor-inputs" data-attachments-target="dropzone">
+      @if (attachments) {
+        <div>
+          <button type="button" class="wy-button wy-button-icon wy-icon-active-stack" data-action="attachments#select" title="@T["Add file from device"]"><icon name="attachment" />@Svg.Spinner(size: 20, spin: true)</button>
+          <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
+        </div>
+      }
+      @if (cloudfiles) {
+        <button type="button" class="wy-button wy-button-icon" data-action="click->file-picker#open" title="@T["Add file from cloud"]"><icon name="cloud" /></button>
+      }
+      @if (meetings) {
+        @if (ConfigurationService.TeamsMeetings) {
+          <button type="button" class="wy-button wy-button-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams" title="@T["Add Teams meeting"]"><icon name="microsoft-teams" color="native" /></button>
+        }
+        @if (ConfigurationService.ZoomMeetings) {
+          <button type="button" class="wy-button wy-button-icon" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom" title="@T["Add Zoom meeting"]"><icon name="zoom" color="native" /></button>
+        }
+      }
+      @if (polls) {
+        <button type="button" class="wy-button wy-button-icon" data-polls-target="button" data-action="polls#addPoll" title="@T["Add poll"]"><icon name="poll-box" /></button>
+      }
+      <button type="submit" class="wy-button wy-button-primary" data-editor-target="button" title="@buttonTitle">@buttonText</button>
+    </div>
+
+    @* polls *@
+    @if (polls) {
+      <div data-polls-target="list" data-editor-target="polls" class="wy-poll-form" @(Model?.Message?.Options.Any() ?? false ? "" : "hidden")>
+        @if (Model?.Message?.Options.Any() ?? false) {
+          var options = Model?.Message?.Options.ToList();
+          <div data-polls-target="list" data-editor-target="polls" class="wy-poll-form">
+            @if (options != null) {
+              @for (int i = 0; i < options.Count(); i++) {
+                <input type="hidden" name="Options[@i].Id" value="@options[i].Id" />
+                <input class="wy-input" type="text" name="Options[@i].Text" value="@options[i].Text" placeholder="@T["+ add an option"]" />
+              }
+              @if (options.Any()) {
+                <input class="wy-input" type="text" name="Options[@options.Count()].Text" placeholder="@T["+ add an option"]" data-action="focus->polls#addOption" />
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @* attachments *@
+    @if (attachments) {
+      <div data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list">
+        @if (Model != null && Model.Message != null) {
+          @foreach (var attachment in Model.Message.Attachments()) {
+            <div class="wy-item">
+              <icon for="@attachment.Blob" />
+              <span class="wy-item-body">@attachment.Name</span>
+              <button type="button" class="wy-button wy-button-icon" data-action="attachments#remove"><icon name="close-circle" /></button>
+              <input type="hidden" name="attachments" value="@attachment.Id" />
+            </div>
+          }
+        }
+      </div>
+    }
+
+    @* meetings *@
+    @if (meetings) {
+      <div data-editor-target="meetings" data-meetings-target="list">
+        @if (Model != null && Model.Message != null && Model.Message.Meeting != null) {
+          <turbo-frame id="@DomId($"meeting{Model.Message.MeetingId}")">
+            <div class="wy-item">
+              <icon name="@Model.Message.Meeting.Icon" />
+              <span class="wy-item-body">@Model.Message.Meeting.Title</span>
+              <button type="button" class="wy-button wy-button-icon" data-action="meetings#remove"><icon name="close-circle" /></button>
+              <input type="hidden" name="MeetingId" value="@Model.Message.MeetingId" />
+            </div>
+          </turbo-frame>
+        }
+      </div>
+    }
+
+    @* embeds *@
+    @if (embeds) {
+      <div class="wy-embed-preview" data-embed-target="results">
+        @if(Model.Message != null && Model.Message.Embed != null){
+          <partial name="_Embed" model="Model.Message.Embed" />
+        }
+      </div>
+    }
+  </form>
+</turbo-frame>

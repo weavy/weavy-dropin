@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Weavy.Core" Version="13.0.0" />
+    <PackageReference Include="Weavy.Core" Version="14.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +22,25 @@
     <None Include="..\..\..\assets\weavy-128.png" Pack="true" PackagePath="" />
     <!-- Do not copy these to output -->
     <Content Remove="package.json" />
+    <None Remove="js\lib\editor\autocomplete.js" />
+    <None Remove="js\lib\editor\mentions.js" />
+    <None Remove="js\utils\infinite-scroll.js" />
+    <Content Include="js\lib\editor\autocomplete.js" />
+    <Content Include="js\lib\editor\mentions.js" />
+    <Content Include="js\utils\infinite-scroll.js" />
     <None Include="package.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="js\controllers\sidebar-controller.js">
+      <SubType>Code</SubType>
+    </None>
+    <None Update="js\controllers\version-controller.js">
+      <SubType>Code</SubType>
+    </None>
+    <None Update="js\controllers\tabs-controller.js">
+      <SubType>Code</SubType>
+    </None>
   </ItemGroup>
 
 </Project>

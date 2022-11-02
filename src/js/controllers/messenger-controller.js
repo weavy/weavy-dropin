@@ -15,15 +15,13 @@ export default class extends Controller {
   connection = null;
   eventTarget = null;
 
-  turboStream(html) {
+  readBy(html) {
     renderStreamMessage(html);
   }
 
   appUpserted(data) {
-    //var app = event.app ? event.app : event;
-
-    if (data.member_ids.some((id) => id === parseInt(document.body.dataset.userId) && (data.type === "edb400ac-839b-45a7-b2a8-6a01820d1c44" || data.type === "7e14f418-8f15-46f4-b182-f619b671e470"))) {
-      fetch("/dropin/messenger/turbostream-insert-conversation/" + data.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+    if (data.app.member_ids.some((id) => id === parseInt(document.body.dataset.userId) && (data.app.type === "edb400ac-839b-45a7-b2a8-6a01820d1c44" || data.app.type === "7e14f418-8f15-46f4-b182-f619b671e470"))) {
+      fetch("/dropin/messenger/turbostream-get-conversation/" + data.app.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
         .then(response => response.text())
         .then(html => {
           renderStreamMessage(html);
@@ -41,8 +39,27 @@ export default class extends Controller {
     }
   }
 
+  reactionChanged(data) {
+    fetch("/dropin/turbostream-toggle-reaction/m" + data.entity.id + "/react", { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+      .then(response => response.text())
+      .then(html => {
+        renderStreamMessage(html);
+      });
+  }
+
   messageInserted(data) {
-    fetch("/dropin/messenger/turbostream-insert-message/" + data.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+
+    // TODO: only in messages view
+    fetch("/dropin/messenger/turbostream-insert-message/" + data.message.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+      .then(response => response.text())
+      .then(html => {
+        renderStreamMessage(html);
+      });
+
+
+    // TODO: only in conversation view
+    
+    fetch("/dropin/messenger/turbostream-get-conversation/" + data.message.app_id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
       .then(response => response.text())
       .then(html => {
         renderStreamMessage(html);
@@ -50,7 +67,7 @@ export default class extends Controller {
   }
 
   messageUpdated(data) {
-    fetch("/dropin/messenger/turbostream-update-message/" + data.parent.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
+    fetch("/dropin/messenger/turbostream-update-message/" + data.entity.id, { headers: { Accept: "text/vnd.turbo-stream.html" }, method: "GET" })
       .then(response => response.text())
       .then(html => {
         renderStreamMessage(html);
@@ -75,28 +92,25 @@ export default class extends Controller {
         let group = that.groupValue;
 
         switch (event) {
-          case "turbo-stream":
-            callback = that.turboStream;
+          case "read_by":
+            callback = that.readBy;
             break;
-          case "app-updated":
+          case "member_added":
             callback = that.appUpserted;
             break;
-          case "member-added":
-            callback = that.appUpserted;
-            break;
-          case "member-removed":
+          case "member_removed":
             callback = that.memberRemoved;
             break;
-          case "app-inserted":
+          case "app_created":
             callback = that.appUpserted;
             group = null;
             break;
-          case "message-inserted":
+          case "message_created":
             callback = that.messageInserted;
             break;
-          case "reaction-deleted":
-          case "reaction-inserted":
-            callback = that.messageUpdated;
+          case "reaction_added":
+          case "reaction_removed":
+            callback = that.reactionChanged;
             break;
           default:
             console.error("Missing handler for event: " + event);

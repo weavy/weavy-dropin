@@ -1,12 +1,16 @@
 @model Posts
 @{
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
+  BodyAttributes.Add("data-app-uid", Model.Eid());
+  BodyAttributes.Add("data-app-id", Model.Id.ToString());
+  BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
 }
 <!DOCTYPE html>
-<html data-controller="authenticate turbo-stream" data-turbo-stream-app-value="@Model.Id">
+<html data-controller="post authenticate presence" class="wy-scroll-y">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="turbo-cache-control" content="no-cache">
   <title>@Model.DisplayName</title>
   <link rel="apple-touch-icon" href="@Url.AppleTouchIcon(180)" />
   <link rel="icon" type="image/svg+xml" href="@Url.Favicon()" />
@@ -16,10 +20,12 @@
   <script src="~/js/posts.js" asp-append-version="true" data-turbo-track="reload" async></script>
 </head>
 <body>
-  <main role="main" class="m-3" data-controller="pagination">
-    <partial name="_PostForm" model="new MessageModel()" />
-    <partial name="_Posts" model="Model.Items" />
-  </main>
-  <turbo-frame id="modal"></turbo-frame>
+  <partial name="_PostForm" model="new MessageModel{Parent = Model}"/>
+  <div id="posts" data-controller="pagination">
+    <partial name="_PostPlaceholder" />
+    <partial name="_Posts" model="Model.Messages" />
+  </div>
+  <turbo-frame id="sheet"></turbo-frame>
 </body>
 </html>
+

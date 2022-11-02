@@ -1,188 +1,106 @@
-import utils from './utils';
 
-// prevent browser from automatically restoring scroll position on back, forward, reload
-//window.history.scrollRestoration = "manual";
+/**
+ * Gets the next positioned child relative to the element.
+ * 
+ * @param {Element} el - Reference element in the scrollable area
+ * @returns Element
+ */
+export function getNextPositionedChild(el) {
+  while (el) {
+    el = el.nextElementSibling;
+    if (/absolute|sticky|fixed/.test(getComputedStyle(el).position) === false) {
+      return el;
+    }
+  }
+}
 
-var keepStates = [];
-var scrollSleep = true;
+/**
+ * Finds the nearest scrollable area. Defaults to document.scrollingElement.
+ * 
+ * @param {Element?} element - Reference element in the scrollable area
+ * @param {boolean} [includeHidden=false] - Treat elements with `overflow: hidden` as scrollable areas.
+ * @returns Element
+ */
+export function getScrollParent(element, includeHidden) {
+  if (element) {
+    var style = getComputedStyle(element);
+    var excludeStaticParent = style.position === "absolute";
+    var overflowRegex = includeHidden ? /(auto|scroll|overlay|hidden)/ : /(auto|overlay|scroll)/;
 
-function keepScroll() {
-  //keepStates = [];
+    if (style.position === "fixed") {
+      return document.scrollingElement;
+    }
 
-  document.querySelectorAll("[data-scroll-keep]").forEach(function (scrollY) {
-    if (utils.isVisible(scrollY)) {
-      let scrollId = scrollY.dataset.scrollKeep || scrollY.id;
-      if (scrollId) {
-        let isReversed = "scrollToBottom" in scrollY.dataset;
-        //console.log("keeping " + (isReversed ? "reversed " : "") + "scroll-y", scrollId, isReversed ? scrollY.scrollHeight - scrollY.scrollTop - scrollY.clientHeight : scrollY.scrollTop);
+    for (var parent = element; (parent = parent.parentElement);) {
+      style = getComputedStyle(parent);
 
-        keepStates[scrollId] = isReversed ? scrollY.scrollHeight - scrollY.scrollTop - scrollY.clientHeight : scrollY.scrollTop;
-      } else {
-        console.error("[data-scoll-keep] is missing id");
+      if (excludeStaticParent && style.position === "static") {
+        continue;
+      }
+      if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) {
+        return parent;
       }
     }
-  });
+  }
+
+  return document.scrollingElement;
 }
 
-export function removeScroll(scrollId) {
-  // keepstates
-  if (scrollId in keepStates) {
-    delete keepStates[scrollId];
-  }
+/**
+ * Checks if a parent scroll container is scrolled to bottom
+ * @param {Element?} element 
+ * @param {number} [bottomThreshold=32] - Nearby limit for the bottom. Needs to be at least 1 to catch float calculation errors.
+ * @returns boolean
+ */
+export function isParentAtBottom(element, bottomThreshold) {
+  if (element) {
+    bottomThreshold ??= 32; // Minimum 1 to catch float errors
 
-  // scrollstates
-  var historyState = window.history.state || {};
-  var scrollStates = historyState.scrolling || [];
-
-  if (scrollId in scrollStates) {
-    delete scrollStates[scrollId];
-    historyState.scrolling = scrollStates;
-    window.history.replaceState(historyState, document.title);
+    let area = getScrollParent(element);
+    //console.log("isParentAtBottom", area.scrollTop, area.clientHeight, area.scrollHeight, Math.abs((area.scrollTop + area.clientHeight) - area.scrollHeight) <= bottomThreshold)
+    // We need to account for scrollTop being a float
+    return Math.abs((area.scrollTop + area.clientHeight) - area.scrollHeight) <= bottomThreshold;
   }
+  return false;
 }
 
-export function saveScroll() {
-  if (scrollSleep) {
-    return;
-  }
+/**
+ * Scrolls a parent scroll container to the bottom using a reference element in the scrollable area.
+ * 
+ * @param {Element?} element - Element in the scroll area
+ * @param {boolean} [smooth] - Use smooth scrolling instead of instant scrolling
+ */
+export async function scrollParentToBottom(element, smooth) {
+  if (element) {
+    let area = getScrollParent(element);
+    //console.log("scrolling to bottom", area.scrollHeight);
 
-  var historyState = window.history.state || {};
-  var scrollStates = historyState.scrolling || [];
-  var doScrollSave = false;
-
-  document.querySelectorAll("[data-scroll-save]").forEach(function (scrollY) {
-    if (utils.isVisible(scrollY)) {
-      let scrollId = scrollY.dataset.scrollSave || scrollY.id;
-      if (scrollId) {
-        let isReversed = "scrollToBottom" in scrollY.dataset;
-
-        //console.log("saving scroll-y", scrollId, scrollY.scrollTop);
-        doScrollSave = true;
-        scrollStates[scrollId] = isReversed ? scrollY.scrollHeight - scrollY.scrollTop - scrollY.clientHeight : scrollY.scrollTop;
+    // Don't bother if the scroll already is correct
+    if (area.scrollTop + area.clientHeight !== area.scrollHeight) {
+      if (smooth) {
+        area.scrollTo({
+          top: area.scrollHeight,
+          left: 0,
+          behavior: 'smooth'
+        });
       } else {
-        console.error("[data-scoll-save] is missing id");
+        area.scrollTop = area.scrollHeight;
       }
     }
-  });
 
-  if (doScrollSave) {
-    //console.log("save scroll-y state", scrollStates, window.location.href);
-
-    historyState.scrolling = scrollStates;
-    window.history.replaceState(historyState, document.title);
-
-  }
-}
-
-export function restoreScroll(noDelete) {
-  var scrollStates = window.history.state && window.history.state.scrolling || [];
-
-  for (let scrollId in keepStates) {
-    let scrollY = document.querySelector("[data-scroll-keep=" + scrollId + "], #" + scrollId + "[data-scroll-keep]");
-    if (scrollY) {
-      let isReversed = "scrollToBottom" in scrollY.dataset;
-      let hasChanged = (isReversed ? scrollY.scrollHeight - scrollY.clientHeight - scrollY.scrollTop : scrollY.scrollTop) !== keepStates[scrollId];
-      let isAvailable = !!scrollY.scrollHeight;
-      let isWithinLimits = scrollY.scrollHeight - scrollY.clientHeight >= keepStates[scrollId];
-
-      //console.log("trying keep scroll-y", scrollId, { isReversed, hasChanged, isAvailable, isWithinLimits })
-      if (isAvailable) {
-        if (isWithinLimits || noDelete) {
-          if (hasChanged) {
-            //console.debug("restoring keep scroll-y", scrollId, keepStates[scrollId])
-            scrollY.scrollTop = isReversed ? scrollY.scrollHeight - scrollY.clientHeight - keepStates[scrollId] : keepStates[scrollId];
-          }
+    // Check when the scroll is done
+    await new Promise((resolve) => {
+      let scrollCheck = () => {
+        if (area.scrollTop + area.clientHeight !== area.scrollHeight) {
+          requestAnimationFrame(scrollCheck);
         } else {
-          if (!noDelete) {
-            console.warn("Invalid keep scroll-y range.", scrollId);
-            delete keepStates[scrollId];
-          }
+          resolve();
         }
       }
-    }
+
+      requestAnimationFrame(scrollCheck);
+    })
   }
 
-  for (let scrollId in scrollStates) {
-    let scrollY = document.querySelector("[data-scroll-save=" + scrollId + "], #" + scrollId + "[data-scroll-save]");
-    if (scrollY) {
-      let isReversed = "scrollToBottom" in scrollY.dataset;
-      let hasChanged = (isReversed ? scrollY.scrollHeight - scrollY.clientHeight - scrollY.scrollTop : scrollY.scrollTop) !== scrollStates[scrollId];
-      let isAvailable = !!scrollY.scrollHeight;
-      let isWithinLimits = scrollY.scrollHeight - scrollY.clientHeight >= scrollStates[scrollId];
 
-      if (isAvailable) {
-        if (isWithinLimits || noDelete) {
-          if (hasChanged) {
-            //console.debug("restoring scroll-y", scrollId, scrollStates[scrollId]);
-            scrollY.scrollTop = isReversed ? scrollY.scrollHeight - scrollY.clientHeight - scrollStates[scrollId] : scrollStates[scrollId];
-          }
-        } else {
-          if (!noDelete) {
-            console.warn("Invalid scroll-y range.", scrollId);
-            delete scrollStates[scrollId];
-          }
-        }
-      }
-    }
-  }
-
-  let scrollToBottoms = document.querySelectorAll("[data-scroll-to-bottom]");
-
-  scrollToBottoms.forEach((scrollY) => {
-    let hasKeep = "scrollKeep" in scrollY.dataset && (scrollY.dataset.scrollKeep || scrollY.id) in keepStates;
-    let hasScroll = "scrollSave" in scrollY.dataset && (scrollY.dataset.scrollSave || scrollY.id) in scrollStates;
-
-    if (!hasKeep && !hasScroll) {
-      if (scrollY.scrollTop === 0 && scrollY.scrollTop + scrollY.clientHeight !== scrollY.scrollHeight) {
-        //console.log("scroll-y to bottom", scrollY.id, scrollY.scrollHeight - scrollY.clientHeight);
-        scrollY.scrollTop = scrollY.scrollHeight - scrollY.clientHeight;
-      }
-    }
-  })
 }
-
-
-
-
-var finalRestore = () => {
-  restoreScroll();
-  scrollSleep = false;
-};
-
-// Save scroll positions to turbolinks cache
-window.addEventListener("unload", saveScroll);
-document.addEventListener("turbo:visit", saveScroll);
-document.addEventListener("turbo:before-render", keepScroll);
-document.addEventListener("turbo:render", () => {
-  scrollSleep = true;
-  queueMicrotask(() => restoreScroll(true));
-  requestAnimationFrame(finalRestore);
-});
-
-requestAnimationFrame(restoreScroll);
-
-utils.ready(() => {
-  restoreScroll(true);
-  requestAnimationFrame(finalRestore)
-});
-
-// Handles scroll restoration with responsive layouts
-window.addEventListener("resize", utils.debounce(() => {
-  restoreScroll()
-}, 1), { passive: true })
-
-// TODO: use this resizeobserver instead of resize event
-// register scrollbar detection
-//try {
-//  var ro = new ResizeObserver(utils.debounce(() => {
-//    restoreScroll()
-//  }));
-//  ro.observe(someElement);
-//} catch (e) {
-//  // fallback check
-//}
-
-export function sleep() {
-  scrollSleep = true;
-}
-

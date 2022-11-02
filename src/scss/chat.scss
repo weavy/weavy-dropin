@@ -1,32 +1,46 @@
-// weavy reboot
-@use "theme/root" as *;
-@use "theme/reboot";
+// dropin
+@use "reboot";
+@use "turbo";
 
-// weavy ui components 
-@use "theme/attachments";
+// theme
+@use "theme/base/scroll";
+@use "theme/base/vars";
+@use "theme/appbar";
 @use "theme/avatar";
 @use "theme/buttons";
-@use "theme/cm-editor";
-@use "theme/code";
 @use "theme/content";
 @use "theme/dropdown";
 @use "theme/emoji";
 @use "theme/icons";
 @use "theme/image-grid";
-@use "theme/messages";
+@use "theme/input";
+@use "theme/item";
+@use "theme/list";
 @use "theme/message-editor";
+@use "theme/message-editor-cm";
+@use "theme/messages";
+@use "theme/meta";
 @use "theme/pager";
 @use "theme/pane";
 @use "theme/picker-list";
+@use "theme/placeholder";
+@use "theme/poll";
 @use "theme/reactions";
-@use "theme/scroll";
+@use "theme/sheet";
 @use "theme/spinner";
-@use "theme/turbo";
 @use "theme/typing";
+@use "theme/meeting";
 
-// bootstrap reboot as baseline for drop-in ui
-@import "theme/bootstrap/reboot";
+/*html {
+  height: 100%;
+}*/
 
-// additional bootstrap components
-@import "theme/bootstrap/transitions";
-@import "theme/bootstrap/modal";
+/*body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}*/
+
+.wy-main {
+  min-height: 100vh;
+}

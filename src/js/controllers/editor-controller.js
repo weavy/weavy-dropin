@@ -1,20 +1,24 @@
 import { Controller } from "@hotwired/stimulus"
-import { EditorView, keymap, placeholder } from "@codemirror/view"
+import { EditorView, keymap, placeholder, dropCursor } from "@codemirror/view"
 import { EditorState } from "@codemirror/state"
-import { classHighlightStyle, defaultHighlightStyle } from "@codemirror/highlight"
-import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
+import { markdown } from "@codemirror/lang-markdown"
+import { languages } from "@codemirror/language-data"
 import { weavyKeymap } from "../lib/editor/commands"
-import { b64toBlob } from "../utils/conversion-helpers"
-import WeavyConsole from '../utils/console';
-import throttle from "underscore/modules/throttle";
-
-const console = new WeavyConsole("editor");
+import { defaultHighlightStyle, syntaxHighlighting } from "@codemirror/language"
+import throttle from "underscore/modules/throttle"
+import { autocompletion } from "@codemirror/autocomplete"
+import { autocomplete } from "../lib/editor/autocomplete"
+import { mentions } from "../lib/editor/mentions"
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 
 export default class extends Controller {
 
-  static targets = ["container", "control", "form", "button", "attachments", "meetings"];
+  static targets = ["container", "control", "form", "button", "attachments", "meetings", "polls", "placeholder"];
   static values = {
-    typing: Boolean
+    autofocus: { type: Boolean, default: false },
+    placeholder: { type: String, default: "" },
+    draft: { type: Boolean, default: true },
+    typing: { type: Boolean, default: false }
   };
 
   appId = document.querySelector("body").dataset.appId;
@@ -22,61 +26,83 @@ export default class extends Controller {
   throttledTyping;
 
   connect() {
-    console.debug("connected");
-
-    // define extensions
-    var extensions = [
-      placeholder(this.controlTarget.getAttribute("placeholder")),
-      classHighlightStyle,
-      defaultHighlightStyle,
-      EditorView.lineWrapping,
-      keymap.of([...weavyKeymap]),
-      EditorView.domEventHandlers({
-        paste(e, original, f) {
-          var matchType = /image*/;
-          var clipboardData = event.clipboardData;
-
-          Array.prototype.forEach.call(clipboardData.types, function (type, i) {
-
-            // if is image
-            if (type.match(matchType) || clipboardData.items[i].type.match(matchType)) {
-              var file = clipboardData.items[i].getAsFile();
-              var reader = new FileReader();
-              reader.onload = function (evt) {
-                var contents = evt.target.result;
-                var block = contents.split(";");
-                // get the content type of the image
-                var contentType = block[0].split(":")[1];// In this case "image/gif"
-                // get the real base64 content of the file
-                var realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
-                // convert it to a blob to upload
-                var blob = b64toBlob(realData, contentType);
-                var fileOfBlob = new File([blob], file.name, { type: contentType });
-                // dispatch event
-                window.dispatchEvent(new CustomEvent("imagePasted", { detail: fileOfBlob }));
-              };
-              reader.readAsDataURL(file);
-            }
-          });
-        }
-      }),
-      markdown({
-        base: markdownLanguage
-      })];
-
     let that = this;
 
-    // hook up typing
-    if (this.typingValue) {
-      this.throttledTyping = throttle(function () { that.sendTyping() }, 2000);
+    // define extensions
+    let extensions = [
+      autocompletion({
+        override: [autocomplete],
+        closeOnBlur: false,
+        icons: false,
+        addToOptions: [
+          {
+            render: function (completion, state) {
+              let div = document.createElement("div");
+              div.classList.add("wy-item");
+              div.classList.add("wy-item-hover");
 
-      extensions.push(EditorView.updateListener.of(update => {
-        // REVIEW: should probably reset state or something to stop typing after a message has been submitted, instead of checking if text is empty
-        if (update.docChanged && this.editor.state.doc.toString().length > 0) {
+              if (!completion.item.is_member) {
+                div.classList.add("wy-disabled");
+              }
+
+              let img = document.createElement("img");
+              img.classList.add("wy-avatar");
+              img.src = completion.item.avatar_url;
+
+              let name = document.createElement("div");
+              name.classList.add("wy-item-body");
+              name.innerText = (completion.item.display_name);
+
+              div.appendChild(img);
+              div.appendChild(name);
+              return div;
+            },
+            position: 10
+          }
+        ]
+      }),
+      history(),
+      dropCursor(),
+      mentions,
+      placeholder(this.placeholderValue),
+      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      EditorView.lineWrapping,
+      keymap.of([...weavyKeymap]),
+      markdown({ codeLanguages: languages }),
+      keymap.of([
+        ...defaultKeymap,
+        ...historyKeymap
+      ]),
+      EditorView.domEventHandlers({
+        paste(e, original, f) {
+          let files = [];
+          const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+          for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file') {
+              files = [...files, item.getAsFile()];
+            }
+          }
+
+          that.dispatch("filePasted", { detail: files })
+        }
+      })
+    ];
+
+    // hook up typing
+    this.throttledTyping = throttle(function () { that.sendTyping() }, 2000);
+
+    extensions.push(EditorView.updateListener.of(update => {
+      // REVIEW: should probably reset state or something to stop typing after a message has been submitted, instead of checking if text is empty
+      let content = this.editor.state.doc.toString();
+
+      if (update.docChanged && content.length > 0) {
+        if (this.typingValue) {
           this.throttledTyping();
         }
-      }));
-    }
+        this.sendDocUpdated(content);
+      }
+    }));
 
     // create editor
     this.editor = new EditorView({
@@ -93,7 +119,9 @@ export default class extends Controller {
     this.restoreDraft();
 
     // set focus to editor
-    this.editor.focus();
+    if (this.autofocusValue) {
+      this.editor.focus();
+    }
 
     // listen for custom event (ctrl+enter)
     this.containerTarget.querySelector(".cm-editor").addEventListener("Weavy-SoftSubmit", this.submitForm.bind(this));
@@ -106,8 +134,11 @@ export default class extends Controller {
   }
 
   sendTyping() {
-    console.debug("sendtyping")
     fetch("/dropin/messenger/" + this.appId + "/typing", { method: "POST" }).catch(err => { /* deal with error */ });
+  }
+
+  sendDocUpdated(content) {
+    this.dispatch("updated", { detail: { content: content } })
   }
 
   submitForm() {
@@ -115,10 +146,12 @@ export default class extends Controller {
   }
 
   saveDraft() {
+
+    if (!this.draftValue) return;
     // save text
     // TODO: should also persist blobs, meetings etc.
-    var key = "text:" + this.appId;
-    var value = this.editor.state.doc.toString();
+    let key = "text:" + this.appId;
+    let value = this.editor.state.doc.toString();
 
     if (value && value.length) {
       localStorage.setItem(key, value);
@@ -127,24 +160,13 @@ export default class extends Controller {
     }
   }
 
-  showPlaceholder(text) {
-    // show placeholder
-    let placeHolder = document.getElementById("message-placeholder");
-    let clone = placeHolder.cloneNode(true);
-    clone.querySelector('.wy-message-text').innerText = text;
-    clone.hidden = false;
-    clone.id = "message-ph";
-
-    let messages = document.getElementById("messages");
-    messages.appendChild(clone);
-    document.scrollingElement.scrollTop = 99999999999;
-  }
-
   restoreDraft() {
+    if (!this.draftValue) return;
+
     // restore text
     // TODO: should also restore blobs, meetings etc.
-    var key = "text:" + this.appId;
-    var value = localStorage.getItem(key);
+    let key = "text:" + this.appId;
+    let value = localStorage.getItem(key);
 
     if (value && value.length) {
       this.editor.dispatch({ changes: { from: 0, to: this.editor.state.doc.length, insert: value } });
@@ -152,11 +174,11 @@ export default class extends Controller {
   }
 
   prepare() {
-    console.debug("prepare");
+
     this.controlTarget.value = this.editor.state.doc.toString();
 
-    if (this.controlTarget.value !== "" || this.attachmentsTarget.hasChildNodes() || this.meetingsTarget.hasChildNodes()) {
-      this.showPlaceholder(this.controlTarget.value);
+    if (this.controlTarget.value !== "" || this.attachmentsTarget.children.length > 0 || (this.hasMeetingsTarget && this.meetingsTarget.children.length > 0) || (this.hasPollsTarget && this.pollsTarget.children.length > 0)) {
+      this.dispatch("placeholder", { detail: { content: this.controlTarget.value } })
     }
 
     // clear text
@@ -168,7 +190,6 @@ export default class extends Controller {
   }
 
   disconnect() {
-    console.debug("disconnect");
     this.editor.destroy();
     this.saveDraft();
   }

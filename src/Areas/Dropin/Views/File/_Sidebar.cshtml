@@ -1,0 +1,38 @@
+@model File
+@{
+  long? version = null;
+  if (long.TryParse(ViewContext.RouteData.Values["version"]?.ToString(), out var v)) {
+    version = v;
+  }
+}
+
+@if (!Model.IsAttachment()) {
+  <aside class="wy-sidebar" id="tab-comments" data-controller="sidebar comment" data-sidebar-maximize-class="wy-maximized" hidden>
+    <nav class="wy-item">
+      <div class="wy-item-body">
+        <div class="wy-item-title">@T["Comments"]</div>
+      </div>
+      <button type="button" class="wy-button wy-button-icon" data-action="tabs#close sidebar#restore">@Svg.Icon("close")</button>
+      <button data-sidebar-target="maximize" class="wy-sidebar-handle"></button>
+    </nav>
+
+    <div class="wy-pane wy-scroll-y">
+      <partial name="_Comments" />
+    </div>
+    <turbo-frame id="sheet"></turbo-frame>
+    </aside>
+  <aside class="wy-sidebar" id="tab-versions" data-controller="sidebar" data-sidebar-maximize-class="wy-maximized" hidden>
+    <nav class="wy-item">
+      <div class="wy-item-body">
+        <div class="wy-item-title">@T["Versions"]</div>
+      </div>
+      <button type="button" class="wy-button wy-button-icon" data-action="tabs#close sidebar#restore">@Svg.Icon("close")</button>
+      <button data-sidebar-target="maximize" class="wy-sidebar-handle"></button>
+    </nav>
+    <div class="wy-pane wy-scroll-y">
+      <turbo-frame loading="lazy" class="wy-pane-body wy-pane-group" id="versions" src="@Url.Action(nameof(FileController.Versions), typeof(FileController).ControllerName(), new { id = Model.Id, version = version })">
+        @Svg.Spinner(spin: true)
+      </turbo-frame>
+    </div>
+  </aside>
+}

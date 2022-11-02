@@ -1,7 +1,7 @@
 @model IReactable
 
 <div class="wy-dropdown dropup">
-  <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown" title="Reactions"><icon name="emoticon-plus" size="20" /></button>
+  <button type="button" class="wy-button wy-button-icon wy-reaction-menu-button" data-bs-toggle="dropdown" title="@T["Add reaction"]"><icon name="emoticon-plus" size="20" /></button>
   <div class="wy-reaction-menu wy-dropdown-menu dropdown-menu">
     <turbo-frame id="@DomId("_ReactionForm", Model)" src="@Url.Action(nameof(EntityController.ReactionForm), typeof(EntityController).ControllerName(), new { id = Model.Eid()} )" loading="lazy">
       @* render placeholder with same size as final result (replaced when turbo-frame loads) *@

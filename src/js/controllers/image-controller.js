@@ -8,15 +8,18 @@ const console = new WeavyConsole("image-controller");
 
 export default class extends Controller {
 
+  static targets = ["image"];
+
   initialize() {
-    this.name = this.element.id;
+    this.image = this.hasImageTarget ? this.imageTarget : this.element;
+    this.name = this.image.id;
     console.log("init", this.element.id);
   }
 
   connect() {
-    console.log("connect", this.element.id)
-    this.checkImageLoad(this.element);
-    this.element.addEventListener('load', this.imageLoaded, true); // needs capturing
+    console.log("connect", this.name)
+    this.checkImageLoad(this.image);
+    this.image.addEventListener('load', this.imageLoaded, true); // needs capturing
   }
 
   checkImageLoad(img) {
@@ -31,7 +34,7 @@ export default class extends Controller {
           img.classList.add("wy-loaded");
         })
       }
-
+      this.imageSize(img);
       
     } else {
       console.debug("image is loading")
@@ -39,11 +42,21 @@ export default class extends Controller {
     }
   }
 
+  imageSize(img) {
+    console.log("image size", this.element.style.getPropertyValue("--width"), img.naturalWidth)
+    if (!this.element.style.getPropertyValue("--width") && img.naturalWidth) {
+      this.element.style.setProperty("--width", img.naturalWidth);
+      this.element.style.setProperty("--height", img.naturalHeight);
+    }
+  }
+
   imageLoaded(event) {
     var img = event.target;
     if (img.tagName === 'IMG' && img.classList.contains("wy-loading") && !img.classList.contains("wy-loaded")) {
-      console.debug("load event"); img.classList.add("wy-loaded")
-      }
+      console.debug("load event", this);
+      img.classList.add("wy-loaded");
+      this.imageSize(img);
+    }
   }
 
   disconnect() {
