@@ -3,11 +3,18 @@ import { pickedCompletion } from "@codemirror/autocomplete";
 let typed = null;
 
 export async function autocomplete(context) {
-  let before = context.matchBefore(/(?<!\]\()@[^@]+/);
+
+  // match @mention except when preceeded by ](
+  // regex lookbehind is unfortunately not supported in safari
+  // let before = context.matchBefore(/(?<!\]\()@[^@]+/);
+  let before = context.matchBefore(/(?!\]\(@)(^[^@]{0,1}|[^@]{2})@([^@]+)/);
 
   // If completion wasn't explicitly started and there
   // is no word before the cursor, don't open completions.
   if (!context.explicit && !before) return null
+
+  // if valid, rematch (only when not using regex lookbehind)
+  before = context.matchBefore(/@[^@]+/);
 
   typed = before.text.substring(1);
 

@@ -172,11 +172,10 @@ public class MessengerController : AreaController {
     [HttpGet("new")]
     public IActionResult New() {
         // perform initial search
-        // TODO: a "smart" algoritm for default users? maybe most recently contacted?
         var query = new UserQuery() {
             Suspended = false,
             Trashed = false,
-            OrderBy = nameof(Core.Models.User.Name),
+            OrderBy = nameof(Core.Models.User.DisplayName),
             Count = true,
             Top = PageSizeMedium
         };
@@ -264,7 +263,7 @@ public class MessengerController : AreaController {
         query.Autocomplete = true;
         query.Suspended = false;
         query.Trashed = false;
-        query.OrderBy = nameof(Core.Models.User.Name);
+        query.OrderBy = nameof(Core.Models.User.DisplayName);
         query.Count = true;
         query.Top = Math.Clamp(query.Top ?? PageSizeMedium, 1, PageSizeMedium);
         var model = UserService.Search(query);
