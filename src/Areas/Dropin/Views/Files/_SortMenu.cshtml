@@ -1,6 +1,6 @@
 @model Query
 @{
-    var orderby = Model.SortItems?.FirstOrDefault() ?? new SortItem(Model.SortProperties[0]);
+    var orderby = Model.GetSortOrder(Model.SortProperties[0]).FirstOrDefault();    
 }
 <div class="wy-dropdown">
     <button class="wy-button wy-button-icon" data-bs-toggle="dropdown" title="@T["Sort items by"]"><icon name="sort" /></button>

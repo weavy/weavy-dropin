@@ -6,7 +6,7 @@
 <div id="@DomId(Model)" class="wy-poll" data-controller="polls">
   @foreach (var option in Model.Options) {
     var more = option.Voters.Count() - max;
-    var percentage = (int)Math.Floor((option.VoteCount / (double)Model.VoteCount) * 100);
+    var percentage = (int)Math.Floor((option.VoteCount / (double)Model.VoteCount()) * 100);
 
     <div class="wy-item wy-poll-option" data-action="click->polls#vote" data-polls-id-param="@option.Id">
       <input type="radio" value="@option.Id" id="option-@Model.Id-@option.Id" hidden @Html.If(option.HasVoted(), "checked") />

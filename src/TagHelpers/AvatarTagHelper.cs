@@ -57,7 +57,7 @@ public class AvatarTagHelper : TagHelper {
             img.AddCssClass("wy-avatar");
 
             if (Presence) {
-                var userId = For is User user ? user.Id : For is PrivateChat chat ? chat.Other?.Id : null;
+                var userId = For is User user ? user.Id : For is PrivateChat chat ? chat.User?.Id : null;
                 if (userId != null) {
                     var presence = UserService.GetPresence(userId.Value);
 

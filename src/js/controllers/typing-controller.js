@@ -14,7 +14,7 @@ export default class extends Controller {
   typingTimeout = null;
 
   typing(data) {
-    if (data.conversation.id === this.appValue && data.actor.id.toString() !== document.querySelector("body").dataset.userId) {
+    if (data.entity.id === this.appValue && data.actor.id.toString() !== document.querySelector("body").dataset.userId) {
       let typers = this.activeTypers;
       // remove existing typing events by this user (can only type in one conversation at a time)
       typers.forEach(function (item, index) {

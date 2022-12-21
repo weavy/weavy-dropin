@@ -24,8 +24,8 @@
       </div>
       <div class="wy-appbar-text" data-controller="typing" data-typing-app-value="@Model.Id" data-typing-is-typing-class="wy-typing-active" data-typing-target="element">
         <div class="wy-typing-hide wy-appbar-text">
-          @if (Model is PrivateChat chat && chat.Other != null) {
-            <span class="wy-presence @Html.If(UserService.GetPresence(chat.Other.Id)?.Status == PresenceStatus.Active, "wy-presence-active")" data-presence-id="@chat.Other.Id"></span>
+          @if (Model is PrivateChat chat && chat.User != null) {
+            <span class="wy-presence @Html.If(UserService.GetPresence(chat.User.Id)?.Status == PresenceStatus.Active, "wy-presence-active")" data-presence-id="@chat.User.Id"></span>
           }
           <a asp-controller="@typeof(MessengerController).ControllerName()" asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id">@Model.DisplayName</a>
         </div>
@@ -36,9 +36,9 @@
           <icon name="dots-vertical" />
         </button>
         <div class="wy-dropdown-menu dropdown-menu">
-          <a class="wy-dropdown-item" asp-action="@nameof(MessengerController.Details)" asp-route-id="@Model.Id" data-target="modal" title="@T["Details"]"><icon name="information-outline" /><span>Details</span></a>
+          <a class="wy-dropdown-item" asp-action="@nameof(MessengerController.Details)" asp-route-id="@Model.Id" data-target="modal"><icon name="information-outline" /><span>@T["Details"]</span></a>
           @if (Model is ChatRoom) {
-            <a class="wy-dropdown-item" asp-action="@nameof(MessengerController.AddUsers)" asp-route-id="@Model.Id" data-target="modal" title="@T["Manage members"]"><icon name="account-plus" /><span>Add people</span></a>
+            <a class="wy-dropdown-item" asp-action="@nameof(MessengerController.Members)" asp-route-id="@Model.Id" data-target="modal"><icon name="account-plus" /><span>@T["Add members"]</span></a>
             <form asp-action="@nameof(MessengerController.Leave)" asp-route-id="@Model.Id">
               <button type="submit" class="wy-dropdown-item"><icon name="account-minus" /> @T["Leave conversation"]</button>
             </form>

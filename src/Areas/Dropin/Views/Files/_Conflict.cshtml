@@ -1,0 +1,13 @@
+@model Blob
+@{
+  Model.Metadata.TryGetValue("uuid", out var uuid);
+}
+
+<div id="upload-@uuid" class="wy-item" data-files-target="uploadError">
+  <icon name="alert" color="yellow"/>
+  <div class="wy-item-body">@Model.Name: <em>@T["Replace existing file?"]</em></div>
+  <div class="wy-item-actions">
+    <button class="wy-button wy-button-icon" title="@T["Replace"]" data-file data-action="click->files#replace" data-files-blob-param="@Model.Id"><icon name="check" /></button>
+    <button class="wy-button wy-button-icon" title="@T["Skip"]" data-action="click->files#dismiss"><icon name="close" /></button>
+  </div>
+</div>

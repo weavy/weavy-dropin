@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Weavy.Core.Models;
 
 namespace Weavy.Dropin.Models;
@@ -16,11 +17,8 @@ public class UpdateConversationModel {
     /// <summary>
     /// Gets or sets the name of the room.
     /// </summary>
+    [Display(Name = "Conversation name", Description = "Changing the name of a group chat changes it for everyone.")]
     public string Name { get; set; }
 
-    /// <summary>
-    /// Gets or sets the user ids.
-    /// </summary>
-    public int[] Users { get; set; } = Array.Empty<int>();
 
 }

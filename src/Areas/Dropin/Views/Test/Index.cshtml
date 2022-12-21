@@ -3,6 +3,8 @@
   var u = new User();
 }
 
+
+
 <section class="wy-test-section">
   <h1 class="wy-title">Title</h1>
   <h2 class="wy-headline">Headline</h2>
@@ -63,7 +65,14 @@
 
 <section class="wy-test-section">
   <h2 class="wy-headline">Icons</h2>
-  @Svg.Icons() <icon name="spinner" class="wy-spin" />
+  @Svg.Icons() 
+  <br /><br />
+
+
+  <icon name="spinner" class="wy-spin" />
+  <icon name="progress" color="primary" data-controller="progress" data-progress-percent-value="30" />
+  <icon name="progress" color="primary" data-controller="progress" data-progress-percent-value="60" />
+  <icon name="progress" color="primary" data-controller="progress" data-progress-percent-value="90" />
   <br /><br />
 
   <icon name="check-circle" color="green" />
@@ -226,29 +235,47 @@
 
   <h3 class="wy-label">Regular items</h3>
 
-  <a href="#attachment" class="wy-item">
+  <a href="#attachment" class="wy-item wy-item-hover">
     <icon name="file-pdf" class="wy-kind-document wy-ext-pdf" />
     <div class="wy-item-body">testing-a-long-file-name.pdf</div>
+    <button type="button" class="wy-button wy-button-icon" onclick="return false;"><icon name="close-circle" /></button>
   </a>
 
   <div class="wy-item wy-item-hover wy-disabled">
     <icon name="file-excel" class="wy-kind-spreadsheet wy-ext-xlsx" />
     <div class="wy-item-body">Disabled.xlsx</div>
-    <button type="button" class="wy-button wy-button-icon" onclick="return false;"><icon name="close-circle" /></button>
+    <button type="button" class="wy-button wy-button-icon" onclick="return false;"><icon name="dots-vertical" /></button>
   </div>
 
   <div class="wy-item wy-item-hover wy-active">
     <icon name="file-document-box+google-drive" class="wy-kind-document wy-ext-gdoc" />
-    <div class="wy-item-body">A google document</div>
-    <button type="button" class="wy-button wy-button-icon"><icon name="close-circle" /></button>
+    <div class="wy-item-body">An active item</div>
+    <button type="button" class="wy-button wy-button-icon"><icon name="dots-vertical" /></button>
   </div>
 
-  <div class="wy-item wy-item-hover">
-    <icon name="file-word" class="wy-kind-document wy-ext-docx" />
+  <div class="wy-item">
+    <icon name="file-word" class="wy-kind-document wy-ext-docx wy-icon" />
     <div class="wy-item-body">Word document.docx</div>
+    <button type="button" class="wy-button wy-button-icon"><icon name="check" /></button>
+  </div>
+  
+  <div class="wy-item">
+    <icon name="spinner" class="wy-spin" />
+    <div class="wy-item-body">Word document.docx</div>
+  </div>
+
+  <div class="wy-item">
+    <icon name="close-circle" class="wy-icon-error" />
+    <div class="wy-item-body">Error uploading "Word document.docx": <em>File type not allowed.</em></div>
+    <button type="button" class="wy-button wy-button-icon"><icon name="close" /></button>
+  </div>
+
+  <div class="wy-item">
+    <icon name="alert" class="wy-icon-yellow" />
+    <div class="wy-item-body">The destination already has a file named "Word document.docx"</div>
     <div class="wy-item-actions">
-      <button type="button" class="wy-button wy-button-icon"><icon name="check" /></button>
-      <button type="button" class="wy-button wy-button-icon"><icon name="close" /></button>
+      <button type="button" class="wy-button wy-button-icon" title="Replace"><icon name="check" /></button>
+      <button type="button" class="wy-button wy-button-icon" title="Skip"><icon name="close" /></button>
     </div>
   </div>
 
@@ -262,7 +289,7 @@
 
   <div class="wy-item wy-item-hover">
     <avatar for="WeavyContext.Current.User" size="32" />
-    <div class="wy-item-body">@WeavyContext.Current.User.DisplayName</div>
+    <div class="wy-item-body">@WeavyContext.Current.User.DisplayName  <icon name="shield-star" size="18" /></div>
     <div class="wy-dropdown">
       <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown"><icon name="dots-vertical" /></button>
       <div class="wy-dropdown-menu dropdown-menu">

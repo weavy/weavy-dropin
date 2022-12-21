@@ -1,0 +1,51 @@
+@model Member
+@{
+  var conversation = ViewData[nameof(Conversation)] as Conversation;
+}
+
+<div id="@DomId(Model)" class="wy-item">
+  <avatar for="@Model" size="32" />
+  <div class="wy-item-body">
+    @Model.DisplayName @if (Model.Access == Access.Admin) {
+      <icon name="shield-star" size="18" />
+    }
+  </div>
+
+
+  @if (conversation.HasPermission(Permission.Admin)) {
+    <div class="wy-dropdown">
+      <button type="button" class="wy-button wy-button-icon" data-bs-toggle="dropdown">
+        <icon name="dots-vertical" />
+      </button>
+      <div class="wy-dropdown-menu dropdown-menu">
+        @if (Model.Access == Access.Admin) {
+          <form method="put" asp-action="@nameof(MessengerController.UpdateMember)" asp-route-id="@conversation.Id" asp-route-uid="@Model.Id">
+            <button type="submit" class="wy-dropdown-item" href=""><icon name="shield-off" /> @T["Remove as admin"]</button>
+            <input type="hidden" name="@nameof(Access)" value="@Access.Write" />
+          </form>
+        } else {
+          <form method="put" asp-action="@nameof(MessengerController.UpdateMember)" asp-route-id="@conversation.Id" asp-route-uid="@Model.Id">
+            <button type="submit" class="wy-dropdown-item" href=""><icon name="shield-star" /> @T["Make admin"]</button>
+            <input type="hidden" name="@nameof(Access)" value="@Access.Admin" />
+          </form>
+        }
+
+        @if (Model.Id == WeavyContext.Current.User.Id) {
+          <form asp-action="@nameof(MessengerController.Leave)" asp-route-id="@conversation.Id">
+            <button type="submit" class="wy-dropdown-item"><icon name="account-minus" /> @T["Leave conversation"]</button>
+          </form>
+
+        } else {
+          <form method="delete" asp-action="@nameof(MessengerController.RemoveMember)" asp-route-id="@conversation.Id" asp-route-uid="@Model.Id">
+            <button type="submit" class="wy-dropdown-item" href=""><icon name="account-minus" /> @T["Remove member"]</button>
+          </form>
+        }
+      </div>
+    </div>
+  } else if (Model.Id == WeavyContext.Current.User.Id) {
+    <form asp-action="@nameof(MessengerController.Leave)" asp-route-id="@conversation.Id">
+      <button type="submit" class="wy-button wy-button-icon" title="@T["Leave conversation"]"><icon name="account-minus" /></button>
+    </form>
+  }
+</div>
+

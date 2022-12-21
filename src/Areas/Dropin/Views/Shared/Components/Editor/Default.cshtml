@@ -7,7 +7,7 @@
 
   <div class="mb-2" data-attachments-target="list" data-file-picker-target="list">
     @if (Model != null && Model.Message != null) {
-      @foreach (var attachment in Model.Message.Attachments()) {
+      @foreach (var attachment in Model.Message.Attachments) {
         var icon = FileUtils.GetIcon(attachment);
         <div class="d-flex align-items-center">
           <icon name="@icon" class="mx-1" />

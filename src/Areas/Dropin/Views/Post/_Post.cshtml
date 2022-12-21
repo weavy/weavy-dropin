@@ -1,9 +1,8 @@
 @model Message
 @{
   var user = Model.CreatedBy();
-  var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
-  var files = Model.Attachments().Except(images);
-  var comments = Model.Comments();
+  var images = Model.Attachments.Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
+  var files = Model.Attachments.Except(images);
   var options = Model.Options;
 }
 
@@ -78,7 +77,7 @@
 
       <div class="wy-post-body">
         @if (!Model.Text.IsNullOrWhiteSpace()) {
-          <div class="wy-content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
+          <div class="wy-content">@Html.Raw(Model.Html)</div>
         }
 
         @if (options.Any()) {
@@ -86,7 +85,7 @@
         }
 
         @if (files.Any()) {
-          <partial name="~/Areas/Dropin/Views/Post/_Attachments.cshtml" model="files" />
+          <partial name="_Attachments" model="files" />
         }
 
         @if (Model.Meeting != null) {

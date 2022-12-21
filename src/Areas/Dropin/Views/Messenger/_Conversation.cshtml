@@ -3,7 +3,7 @@
   // get snippet of last message
   var snippet = "";
   if (Model.LastMessage != null) {
-    snippet = MarkdownUtils.ToPlain(Model.LastMessage.Text);
+    snippet = Model.LastMessage.Plain;
     snippet = Emojione.ToImage(snippet);
     if (string.IsNullOrWhiteSpace(snippet)) {
       if (Model.LastMessage.AttachmentIds.Any()) {

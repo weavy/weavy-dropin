@@ -3,7 +3,7 @@
   var count = Model.Versions.Count();
 }
 
-<turbo-frame id="versions" class="wy-pane-body wy-pane-group">
+<turbo-frame id="versions" class="wy-pane-body">
   <div class="wy-list wy-versions">
     @for (int i=0; i < count; i++) {
       var file = Model.Versions.ElementAt(i);

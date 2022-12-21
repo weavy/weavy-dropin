@@ -127,7 +127,7 @@
     @if (attachments) {
       <div data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list">
         @if (Model != null && Model.Message != null) {
-          @foreach (var attachment in Model.Message.Attachments()) {
+          @foreach (var attachment in Model.Message.Attachments) {
             <div class="wy-item">
               <icon for="@attachment.Blob" />
               <span class="wy-item-body">@attachment.Name</span>

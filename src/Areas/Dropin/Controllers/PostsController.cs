@@ -56,8 +56,8 @@ public class PostsController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var post = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId  };
-            post = MessageService.Insert(post, app, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
+            var post = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
+            post = MessageService.Insert(post, app, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {                              
                 var result = new TurboStreamsResult();

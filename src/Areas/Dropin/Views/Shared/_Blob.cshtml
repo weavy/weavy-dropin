@@ -1,0 +1,11 @@
+@model Blob
+
+<div class="wy-item">
+  <icon for="Model" />
+  <div class="wy-item-body">@Model.Name</div>
+  <button type="button" class="wy-button wy-button-icon" data-action="attachments#remove"><icon name="close-circle" /></button>
+  <input type="hidden" name="blobs" value="@Model.Id" />
+</div>
+
+
+

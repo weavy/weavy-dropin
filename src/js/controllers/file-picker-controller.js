@@ -7,7 +7,7 @@ const console = new WeavyConsole("file-picker");
 export default class extends Controller {
 
   static values = {
-    url: { type: String, default: "/dropin/externalblobs" }    
+    url: { type: String, default: "/dropin/external" }    
   };
   static targets = ["list", "modal", "modalBody"];
   
@@ -41,11 +41,11 @@ export default class extends Controller {
   }
 
   receiveFiles(e) {
-    console.debug("Files received from client: ", e.data, "Picker active = ", this.isActive);
+    console.debug("File(s) received");
         
     if (!this.isActive) return;
 
-    this.attach(e.data.blobs, e.data.open);
+    this.attach(e.data.blobs);
 
     // close file browser
     postal.postToParent({ name: "request:file-browser-close" });
@@ -55,32 +55,23 @@ export default class extends Controller {
 
   }
 
-  async attach(blobs, open = false, force = false) {
-    console.debug("attach");
-
+  async attach(blobs) {
     let self = this;
-
 
     try {
       var uploaded = await Promise.all(blobs.map(async (b, i) => {
         try {
-          let data = JSON.stringify([b]);
-          let response = await fetch(`${this.urlValue}?force=${force}`, {
-            method: "POST", body: data, headers: {
+          let data = JSON.stringify(b);
+          let response = await fetch(this.urlValue, {
+            method: "POST",
+            headers: {
               'Content-Type': 'application/json'
-            }
+            },
+            body: data            
           });
 
           if (response.ok) {
-            // remove existing file row if replacing file
-            if (force) {
-              var existing = self.listTarget.querySelector(`[data-preview-title-param="${b.name}" i]`);
-              if (existing) {
-                self.listTarget.removeChild(existing);
-              }
-            }
-
-            // add row
+            
             var html = await response.text();
             self.listTarget.insertAdjacentHTML('beforeend', html);
 
@@ -165,7 +156,7 @@ ${(self.errors[i].type === 'conflict' ? '<div><button class="wy-button wy-button
   //  postal.postToParent({ name: "file-browser-open" });
   //}
 
-  replace(evt) {    
+  replace(evt) {
     let blobs = [this.conflicts[evt.params.index].blob];
     this.attach(blobs, false, true);
 
@@ -183,7 +174,7 @@ ${(self.errors[i].type === 'conflict' ? '<div><button class="wy-button wy-button
     // remove row
     var modalBody = this.modalBodyTarget;
     modalBody.removeChild(evt.target.parentElement.parentElement);
-    
+
     // close modal if no more errors
     if (modalBody.children.length === 0) {
       this.modal.hide();

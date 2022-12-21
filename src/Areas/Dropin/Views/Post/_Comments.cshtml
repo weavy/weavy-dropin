@@ -3,13 +3,12 @@
 @if (Context.Request.IsTurboFrame() && Action == nameof(PostController.Comments)) {
   // render turbo-frame with comments
   <turbo-frame id="@DomId(Model)">
-    <div class="wy-comments">      
-      @foreach (var comment in Model.Comments()) {
+    <div class="wy-comments">
+      @foreach (var comment in Model.Comments) {
         <partial name="_Comment" model="comment" />
       }
       <partial name="_CommentPlaceholder" />
     </div>
-
     <partial name="_CommentForm" model="new MessageModel { Parent = Model }" />
   </turbo-frame>
 } else {

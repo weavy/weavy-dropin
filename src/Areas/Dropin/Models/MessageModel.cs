@@ -48,7 +48,7 @@ public class MessageModel : IValidatableObject {
     /// <summary>
     /// Gets or sets poll options.
     /// </summary>
-    public List<PollOptionModel> Options { get; set; }
+    public List<OptionModel> Options { get; set; }
 
     /// <summary>
     /// Gets or sets the message text.
@@ -65,3 +65,18 @@ public class MessageModel : IValidatableObject {
         }
     }
 }
+
+public class AttachmentModel {
+
+    public int Id { get; set; }
+
+    public int? BlobId { get; set; }
+}
+
+public class OptionModel {
+
+    public int Id { get; set; }
+
+    public string Text { get; set; }
+}
+

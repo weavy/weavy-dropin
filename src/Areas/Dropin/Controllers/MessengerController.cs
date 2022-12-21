@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Weavy.Core;
 using Weavy.Core.Http;
-using Weavy.Core.Localization;
 using Weavy.Core.Models;
 using Weavy.Core.Mvc;
 using Weavy.Core.Services;
@@ -75,17 +74,23 @@ public class MessengerController : AreaController {
         }
 
         // mark conversation as read (if needed)
-        if (model.Member?.MarkedId == null && model.LastMessage != null) {
-            model = ConversationService.SetRead(model.Id, model.Member.Id, model.LastMessage.Id);
-        } else if (model.Member?.MarkedId != model.LastMessage?.Id) {
-            // NOTE: do not assign the read conversation to model since that will prevent rendering of the "New messages" separator
-            _ = ConversationService.SetRead(model.Id, model.Member.Id, model.LastMessage.Id);
+        if (model.IsUnread()) {
+            var member = model.Member();
+            if (member.MarkedId == null) {
+                // user has never read this conversation, mark as read and assign the model property to avoid rendering the "New messages" separator
+                model = ConversationService.Mark(model.Id, model.LastMessageId.Value);
+            } else {
+                // mark as read, but do not assign the read conversation -> this will render the "New messages" separator in the correct place
+                _ = ConversationService.Mark(model.Id, model.LastMessageId.Value);
+            }
         }
 
         // get first page of messages (and reverse them for easier rendering in correct order)
         model.Messages = ConversationService.GetMessages(model.Id, query);
         model.Messages.Reverse();
-        ViewData["Badge"] = ConversationService.GetBadge(model.Member.Id);
+
+        // get number of unread conversations
+        ViewData["Badge"] = ConversationService.GetBadge(WeavyContext.Current.User.Id);
 
         return View(model);
     }
@@ -191,7 +196,7 @@ public class MessengerController : AreaController {
     public IActionResult Create(List<int> users) {
         Conversation conversation = null;
         if (users?.Count == 1) {
-            conversation = ConversationService.CreatePrivateChat(WeavyContext.Current.User.Id, users[0]);
+            conversation = ConversationService.GetOrCreatePrivateChat(WeavyContext.Current.User.Id, users[0]);
         } else if (users?.Count > 1) {
             users.Add(WeavyContext.Current.User.Id);
             conversation = ConversationService.CreateRoom(null, users);
@@ -218,8 +223,8 @@ public class MessengerController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var message = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId };
-            message = MessageService.Insert(message, conversation, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
+            var message = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
+            message = MessageService.Insert(message, conversation, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 var result = new TurboStreamsResult();
@@ -247,7 +252,7 @@ public class MessengerController : AreaController {
     }
 
     /// <summary>
-    /// Search for users.
+    /// Search for users (when creating new message and when adding members).
     /// </summary>
     /// <returns></returns>
     [HttpPost("users")]
@@ -283,8 +288,6 @@ public class MessengerController : AreaController {
             return NotFound();
         }
 
-        ViewBag.Selected = UserService.Get(conversation.MemberIds);
-
         var model = new UpdateConversationModel() {
             Conversation = conversation,
             Name = conversation.DisplayName
@@ -294,29 +297,6 @@ public class MessengerController : AreaController {
         if (conversation.Name == null && conversation is ChatRoom) {
             model.Name = null;
         }
-
-        return View(model);
-    }
-
-
-    /// <summary>
-    /// Display a form to add people to the the conversation.
-    /// </summary>
-    /// <param name="id">The id of the conversation to get details for.</param>
-    /// <returns></returns>
-    [HttpGet("{id:int}/add")]
-    public IActionResult AddUsers(int id) {
-        var conversation = ConversationService.Get(id);
-        if (conversation == null) {
-            return NotFound();
-        }
-
-        ViewBag.Selected = UserService.Get(conversation.MemberIds);
-        
-        var model = new UpdateConversationModel() {
-            Conversation = conversation,
-            Name = conversation.DisplayName
-        };
 
         return View(model);
     }
@@ -341,48 +321,94 @@ public class MessengerController : AreaController {
             return SeeOtherAction(nameof(Get), new { id });
         }
 
-        ViewBag.Selected = UserService.Get(room.MemberIds);
-
         return View(nameof(Details), model);
     }
 
     /// <summary>
-    /// Updates the conversation members.
+    /// Display list for adding conversation members.
     /// </summary>
-    /// <param name="id">Id of the conversation to update.</param>
-    /// <param name="model">The updated members and the name of the room.</param>
+    /// <param name="id">Conversation id.</param>
+    /// <returns></returns>
+    [HttpGet("{id:int}/members")]
+    public IActionResult Members(int id) {
+        var conversation = ConversationService.Get(id);
+        if (conversation == null) {
+            return NotFound();
+        }
+
+        // initial query
+        var q = new UserQuery { NotAppId = conversation.Id, OrderBy = nameof(Core.Models.User.DisplayName) };
+        var model = UserService.Search(q);
+        return View(model);
+    }
+
+    /// <summary>
+    /// Add new conversation members.
+    /// </summary>
+    /// <param name="id">Conversation id.</param>
+    /// <param name="users">Ids of users to add.</param>
     /// <returns></returns>
     [HttpPost("{id:int}/members")]
-    public IActionResult UpdateMembers(int id, UpdateConversationModel model) {
-        // NOTE: only rooms can be updated 
-        var room = ConversationService.Get<ChatRoom>(id);
-        if (room == null) {
+    public IActionResult Members(int id, IEnumerable<int> users) {
+        var conversation = ConversationService.Get(id);
+        if (conversation == null) {
             return NotFound();
         }
 
         if (ModelState.IsValid) {
-            var add = model.Users.Where(x => !room.MemberIds.Any(y => x == y));
-            var remove = room.MemberIds.Where(x => !model.Users.Any(y => x == y));
-
-            foreach (var userid in add) {
-                AppService.AddMember(room.Id, userid);
+            foreach (var userid in users) {
+                AppService.AddMember(id, userid);
             }
-
-            foreach (var userid in remove) {
-                AppService.RemoveMember(room.Id, userid);
-            }
-
-            // if current user was removed
-            if (remove.Any(x=>x == WeavyContext.Current.User.Id)) {
-                return SeeOtherAction(nameof(Index));
-            } else {
-                return SeeOtherAction(nameof(Get), new { id });
-            }            
         }
 
-        ViewBag.Selected = model.Users;        
-        model.Conversation = room;
-        return View(nameof(AddUsers), model);
+        return SeeOtherAction(nameof(Get), new { id });
+    }
+
+    /// <summary>
+    /// Remove conversation member.
+    /// </summary>
+    /// <param name="id">Conversation id.</param>
+    /// <param name="uid">Id of user to remove.</param>
+    /// <returns></returns>
+    [HttpDelete("{id:int}/members/{uid:int}")]
+    public IActionResult RemoveMember(int id, int uid) {
+        var conversation = ConversationService.Get(id);
+        if (conversation == null) {
+            return NotFound();
+        }
+
+        var member = AppService.RemoveMember(id, uid);
+
+        if (Request.IsTurboStream()) {
+            ViewData[nameof(Conversation)] = conversation;
+            return TurboStream.Remove("_Member", member);
+        }
+
+        return SeeOtherAction(nameof(Get), new { id });
+    }
+
+    /// <summary>
+    /// Update conversation member.
+    /// </summary>
+    /// <param name="id">Conversation id.</param>
+    /// <param name="uid">Id of user to update.</param>
+    /// <param name="access">The access rights to set for the user.</param>
+    /// <returns></returns>
+    [HttpPut("{id:int}/members/{uid:int}")]
+    public IActionResult UpdateMember(int id, int uid, Access access) {
+        var conversation = ConversationService.Get(id);
+        if (conversation == null) {
+            return NotFound();
+        }
+
+        var member = AppService.AddMember(id, uid, access);
+
+        if (Request.IsTurboStream()) {
+            ViewData[nameof(Conversation)] = conversation;
+            return TurboStream.Replace("_Member", member);
+        }
+
+        return SeeOtherAction(nameof(Get), new { id });
     }
 
     /// <summary>
@@ -397,7 +423,7 @@ public class MessengerController : AreaController {
             return NotFound();
         }
 
-        conversation = ConversationService.SetPinned(conversation.Id, WeavyContext.Current.User.Id, DateTime.UtcNow);
+        conversation = ConversationService.SetPinned(conversation.Id, DateTime.UtcNow);
         return TurboStream.Replace("_Conversation", conversation);
     }
 
@@ -413,7 +439,7 @@ public class MessengerController : AreaController {
             return NotFound();
         }
 
-        conversation = ConversationService.SetPinned(conversation.Id, WeavyContext.Current.User.Id, null);
+        conversation = ConversationService.SetPinned(conversation.Id, null);
         return TurboStream.Replace("_Conversation", conversation);
     }
 
@@ -429,7 +455,7 @@ public class MessengerController : AreaController {
         if (conversation == null) {
             return NotFound();
         }
-        conversation = ConversationService.SetRead(conversation.Id, WeavyContext.Current.User.Id, messageId);
+        conversation = ConversationService.Mark(conversation.Id, messageId);
 
         if (Request.IsTurboStream()) {
             // post from menu item
@@ -452,7 +478,7 @@ public class MessengerController : AreaController {
             return NotFound();
         }
 
-        conversation = ConversationService.SetRead(conversation.Id, WeavyContext.Current.User.Id, null);
+        conversation = ConversationService.Unmark(conversation.Id);
         return TurboStream.Replace("_Conversation", conversation);
     }
 
@@ -480,7 +506,11 @@ public class MessengerController : AreaController {
     [HttpPost]
     [Route("{id:int}/typing")]
     public IActionResult Typing(int id) {
-        ConversationService.Typing(id, WeavyContext.Current.User.Id);
+        var conversation = ConversationService.Get(id);
+        if (conversation == null) {
+            return NotFound();
+        }
+        EntityService.Typing(conversation);
         return Ok(id);
     }
 }

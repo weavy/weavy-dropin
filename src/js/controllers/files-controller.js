@@ -8,12 +8,12 @@ const console = new WeavyConsole("files");
 export default class extends Controller {
 
   static values = {
-    externalUrl: { type: String, default: "/dropin/externalblobs" },
+    externalUrl: { type: String, default: "/dropin/external" },
     selector: { type: String, default: "" },
     app: { type: Number, default: 0 }
   };
 
-  
+
   static targets = [
     "input", "content", "modal",
     "dragzone", "dropzone",
@@ -28,12 +28,10 @@ export default class extends Controller {
   closeHandler = this.closeExternalPicker.bind(this);
 
   connect() {
-    console.debug("connected");
-
     // listen to messages from weavy client
     postal.on("add-external-blobs", this.handler);
     postal.on("file-browser-closed", this.closeHandler);
-        
+
     document.addEventListener("paste", this.handlePaste.bind(this));
   }
 
@@ -84,7 +82,6 @@ export default class extends Controller {
 
   // check if drag and drop contains files
   containsFiles(evt) {
-
     if (evt.dataTransfer.types) {
       for (let i = 0; i < evt.dataTransfer.types.length; i++) {
         if (evt.dataTransfer.types[i] === "Files") {
@@ -94,33 +91,28 @@ export default class extends Controller {
     }
 
     return false;
-
   }
 
   // Selected file(s) from file dialog
   handleSelect() {
+    console.debug("File(s) selected");
     this.handleFiles(this.inputTarget.files);
     this.inputTarget.value = '';
   }
 
   // Dropped file(s)
   handleDrop(evt) {
-    console.debug('File(s) dropped');
-
+    console.debug("File(s) dropped");
     let dt = evt.dataTransfer;
     let files = dt.files;
-
-    if (!files.length) { return; }
-
-    this.handleFiles(files);
-
+    if (files.length) {
+      this.handleFiles(files);
+    }
   }
 
   // Pasted file(s)
   handlePaste(evt) {
-
-    console.debug('File(s) pasted');
-
+    console.debug("File(s) pasted");
     let files = [];
     const items = (evt.clipboardData || evt.originalEvent.clipboardData).items;
     for (let index in items) {
@@ -129,58 +121,49 @@ export default class extends Controller {
         files = [...files, item.getAsFile()];
       }
     }
-
-    if (!files.length) { return; }
-
-    this.handleFiles(files);
-
+    if (files.length) {
+      this.handleFiles(files);
+    }
   }
 
-
-  // Prepare for upload
-  async handleFiles(files, force = false) {
+  
+  handleFiles(files) {
 
     files = [...files];
     this.initProgress(files);
 
-    try {
-      await Promise.all(files.map(async (f, i) => {
-        try {
-          let response = await this.upload(f, force);
-          renderStreamMessage(response.target.responseText);
-          this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
-        } catch (error) {
-          this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
-          this.uploadProgress.find((up) => up.uuid === error.uuid).error = true;
-
-          switch (error.statuscode) {
-            case 409:
-              renderStreamMessage(error.message);
-              break;
-
-            default: {
-              const message = JSON.parse(error.message);
-              let response = await fetch(`/dropin/files/error`, {
-                method: "POST",
-                body: JSON.stringify({ uuid: error.uuid, name: f.name, message: message.detail || message.title }),
-                headers: {
-                  "Content-Type": "application/json",
-                  "Accept": "text/vnd.turbo-stream.html"
-                }
+    files.map((f, i) => {
+      this.upload(f).then(async (response) => {
+        renderStreamMessage(response.target.responseText);
+        this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
+      }).catch((error) => {
+        this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
+        this.uploadProgress.find((up) => up.uuid === f.uuid).error = true;
+        switch (error.statuscode) {
+          case 409:
+            renderStreamMessage(error.message);
+            break;
+          default: {
+            const message = JSON.parse(error.message);
+            console.warn(`Error uploading ${f.name}: ${message.detail || message.title}`);
+            fetch(`/dropin/files/error`, {
+              method: "POST",
+              body: JSON.stringify({ uuid: f.uuid, name: f.name, message: message.detail || message.title }),
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/vnd.turbo-stream.html"
+              }
+            }).then((r) => r.text())
+              .then((html) => {
+                renderStreamMessage(html);
               });
-              let html = await response.text();
-              renderStreamMessage(html);
-            }
           }
-        } finally {
-          this.setUploadStatus();
         }
-      })
-      );
+      }).finally(() => {
+        this.setUploadStatus();
+      });
+    });
 
-    } catch (error) {
-      console.error("Some files could not be uploaded:", error)
-    }
   }
 
   // trigger file selection
@@ -194,64 +177,55 @@ export default class extends Controller {
 
     // check if any upload in progress
     let uploading = this.uploadProgress.filter((up) => up.value !== 100);
-    if (uploading.length === 0) {      
+    if (uploading.length === 0) {
       this.clearUploadProgress();
     }
-    
+
     for (let i = 0; i < files.length; i++) {
+      // generate uuid for progress tracking
       let uuid = S4();
       files[i].uuid = uuid;
-
       this.uploadProgress.push({ uuid: uuid, value: 0, completed: false, error: false });
 
+      // insert progress item for the file being uploaded
       let div = document.createElement('div');
-      div.innerHTML = `<div id="file-upload-progress-${uuid}" class="wy-upload-progress-item">
-  <span class="wy-upload-progress-item-content">${files[i].name}</span>
-  <div class="wy-upload-progress">
-      <progress value="0" max="100" data-files-target="progressItem" data-uuid="${uuid}"></progress>
-    </div>
+      div.innerHTML = `<div id="upload-${uuid}" class="wy-item" data-files-target="progressItem">
+  <svg class="wy-icon wy-icon-primary" data-icon="progress" data-controller="progress" data-progress-percent-value="0" viewBox="0 0 24 24" width="24" height="24" transform="rotate(-90)" ><circle cx="12" cy="12" r="10" stroke-linecap="butt" stroke-width="2" fill="none" stroke="#eee"></circle><circle cx="12" cy="12" r="10" stroke-dasharray="100" stroke-dashoffset="70" stroke-linecap="butt" stroke-width="2" fill="none" stroke="currentColor" pathLength="100"></circle></svg>
+  <div class="wy-item-body">${files[i].name}</div>
 </div>`.trim();
       this.progressContainerTarget.append(div.firstElementChild)
     }
 
-    //this.updateUploadCounter();
-
     this.uploadButtonTarget.hidden = false;
     // cannot toggle svg.hidden property so we add/remove attribute instead
-    //this.iconCompleteTarget.hidden = true;
-    //this.iconErrorTarget.hidden = true;
-    //this.iconUploadingTarget.hidden = false;
     this.iconCompleteTarget.setAttribute("hidden", "");
     this.iconErrorTarget.setAttribute("hidden", "");
     this.iconUploadingTarget.removeAttribute("hidden");
-    
   }
-
-  //updateUploadCounter() {
-    //let uploadsInProgress = this.uploadProgress.filter((u) => u.value < 100 && !u.error);
-    //this.progressCountTarget.innerHTML = `(${uploadsInProgress.length})`
-  //}
 
   // update progress bar
-  updateProgress(uuid, progress) {
-    this.uploadProgress.find((up) => up.uuid === uuid).value = progress
-    //let total = this.uploadProgress.reduce((tot, curr) => tot + curr, 0) / this.uploadProgress.length;    
-    this.progressItemTargets.find((pi) => pi.dataset.uuid === uuid).value = progress;
+  updateProgress(uuid, value) {
+    // update progress array
+    this.uploadProgress.find((up) => up.uuid === uuid).value = value;
+    // update progress icon
+    this.progressItemTargets.find((pi) => pi.id === "upload-" + uuid).querySelector("[data-icon]").dataset.progressPercentValue = value;
   }
 
-  upload(file, force = false) {
+  upload(file) {
     let that = this;
 
     return new Promise(function (resolve, reject) {
 
+      // XMLHttpRequest instead of fetch because we want to track progress
       let xhr = new XMLHttpRequest();
-      let url = `/dropin/files/${that.appValue}/upload?force=${force}&uuid=${file.uuid}`;
+      let url = `/dropin/files/${that.appValue}`;
       let data = new FormData();
+      data.append("uuid", file.uuid); // posting the uuid will add it to the blob metadata which allows us to keep track of the blob and report upload progress/status
       data.append("blob", file);
       xhr.open('POST', url, true);
       xhr.setRequestHeader("Accept", "text/vnd.turbo-stream.html");
       xhr.upload.addEventListener("progress", function (e) {
-        that.updateProgress(file.uuid, (e.loaded * 100.0 / e.total) || 100)
+        that.updateProgress(file.uuid, (e.loaded / e.total) * 100 || 100)
       })
 
       xhr.onload = (evt) => {
@@ -263,8 +237,8 @@ export default class extends Controller {
     });
   }
 
-  async replaceFile(id, uuid) {
-    let response = await fetch(`/dropin/files/${this.appValue}/replace/${id}?uuid=${uuid}`, {
+  async replaceFile(blobId) {
+    let response = await fetch(`/dropin/files/${this.appValue}/replace/${blobId}`, {
       method: "PUT",
       headers: {
         "Accept": "text/vnd.turbo-stream.html"
@@ -275,19 +249,17 @@ export default class extends Controller {
   }
 
   replace(evt) {
-    this.replaceFile(evt.params.id, evt.params.uuid);
-
-    // remove item
+    this.replaceFile(evt.params.blob);
     this.removeProgressItem(evt)
   }
 
-  skip(evt) {
-    // remove item
+  dismiss(evt) {
     this.removeProgressItem(evt)
   }
+
 
   removeProgressItem(evt) {
-    let item = evt.target.parentElement.parentElement;
+    let item = evt.target.closest(".wy-item");
     item.remove();
 
     let errors = this.uploadErrorTargets.length;
@@ -300,9 +272,6 @@ export default class extends Controller {
       this.uploadButtonTarget.hidden = false;
 
       // cannot toggle svg.hidden property so we add/remove attribute instead
-      //this.iconUploadingTarget.hidden = true;
-      //this.iconErrorTarget.hidden = true;
-      //this.iconCompleteTarget.hidden = false;
       this.iconUploadingTarget.setAttribute("hidden", "");
       this.iconErrorTarget.setAttribute("hidden", "");
       this.iconCompleteTarget.removeAttribute("hidden");
@@ -315,17 +284,15 @@ export default class extends Controller {
     let errorsOrCompleted = false;
 
     if (completed.length > 0) {
-      //this.iconCompleteTarget.hidden = true;
       this.iconCompleteTarget.setAttribute("hidden", "");
       errorsOrCompleted = true;
       for (var i = 0; i < completed.length; i++) {
         completed[i].remove();
       }
     }
-    
+
     let errors = this.uploadErrorTargets;
     if (errors.length === 0) {
-      //this.iconErrorTarget.hidden = true;
       this.iconErrorTarget.setAttribute("hidden", "");
     } else {
       errorsOrCompleted = true;
@@ -340,7 +307,6 @@ export default class extends Controller {
 
   setUploadStatus() {
     // update counter
-    //this.updateUploadCounter();
 
     // set upload finished          
     let completed = this.uploadProgress.filter((up) => up.completed);
@@ -348,24 +314,18 @@ export default class extends Controller {
 
     // update upload status
     if (completed.length === this.uploadProgress.length) {
-      // check if uploadProgress contains errors
-
-      if (errors.length > 0) {        
-        //this.iconErrorTarget.hidden = false;
+      if (errors.length > 0) {
         this.iconErrorTarget.removeAttribute("hidden");
         const sheetController = this.application.getControllerForElementAndIdentifier(this.uploadSheetTarget, 'sheet');
-        sheetController.open();        
-        
+        sheetController.open();
       } else {
-        //this.iconCompleteTarget.hidden = false;
         this.iconCompleteTarget.removeAttribute("hidden");
       }
-      //this.iconUploadingTarget.hidden = true;
       this.iconUploadingTarget.setAttribute("hidden", "");
     }
   }
 
-  toggleSheet() {    
+  toggleSheet() {
     const sheetController = this.application.getControllerForElementAndIdentifier(this.uploadSheetTarget, 'sheet');
     sheetController.toggle();
   }
@@ -386,11 +346,11 @@ export default class extends Controller {
   }
 
   receiveExternalFiles(e) {
-    console.debug("Files received from client: ", e.data, "Picker active = ", this.isActive);
+    console.debug("File(s) received");
 
     if (!this.isActiveExteralPicker) return;
 
-    this.attachExternalFiles(e.data.blobs, e.data.open);
+    this.attachExternalFiles(e.data.blobs);
 
     // close file browser
     postal.postToParent({ name: "request:file-browser-close" });
@@ -400,65 +360,59 @@ export default class extends Controller {
 
   }
 
-  async attachExternalFiles(blobs, open = false, force = false) {
+  attachExternalFiles(blobs) {
 
     let files = [...blobs];
     this.initProgress(files);
-    
-    await Promise.all(files.map(async (f, i) => {
-      try {
-        let data = JSON.stringify([f]);
-        let response = await fetch(`${this.externalUrlValue}?force=${force}&uuid=${f.uuid}`, {
-          method: "POST", body: data, headers: {
-            'Content-Type': 'application/json'
+
+    files.map((f, i) => {
+      // pass in uuid as metadata 
+      f.metadata = { uuid: f.uuid };
+
+      fetch(this.externalUrlValue, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(f)
+      })
+        .then(async (response) => {
+
+          this.updateProgress(f.uuid, 100);
+          if (response.status === 200) {
+            this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
+            const html = await response.text();
+            renderStreamMessage(html);
+          } else {
+            this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
+            this.uploadProgress.find((up) => up.uuid === f.uuid).error = true;
+            switch (response.status) {
+              case 409: {
+                const html = await response.text();
+                renderStreamMessage(html);
+                break;
+              }
+              default: {
+                const message = await response.json();
+                console.warn(`Error uploading ${f.name}: ${message.detail || message.title}`);
+                fetch(`/dropin/files/error`, {
+                  method: "POST",
+                  body: JSON.stringify({ uuid: f.uuid, name: f.name, message: message.detail || message.title }),
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "text/vnd.turbo-stream.html"
+                  }
+                }).then((r) => r.text())
+                  .then((html) => {
+                    renderStreamMessage(html);
+                  });
+              }
+            }
           }
+        }).finally(() => {
+          this.setUploadStatus();
         });
-
-        this.updateProgress(f.uuid, 100);
-        
-        if (response.status === 200) {
-          var html = await response.text();    
-          renderStreamMessage(html);
-          this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
-        } else {
-          this.uploadProgress.find((up) => up.uuid === f.uuid).completed = true;
-          this.uploadProgress.find((up) => up.uuid === f.uuid).error = true;
-          switch (response.status) {
-            case 409: {
-              const html = await response.text();              
-              renderStreamMessage(html);              
-              break;
-            }
-            default: {
-              const message = "Error uploading the file";
-              let response = await fetch(`/dropin/files/error`, {
-                method: "POST",
-                body: JSON.stringify({ uuid: f.uuid, name: f.name, message: message}),
-                headers: {
-                  "Content-Type": "application/json",
-                  "Accept": "text/vnd.turbo-stream.html"
-                }
-              });
-              let html = await response.text();
-              renderStreamMessage(html);
-            }
-          }
-        }
-        
-      } catch (error) {
-        console.error("Error uploding file...")
-      } finally {
-        this.setUploadStatus();
-      }
-    }));
+    });
   }
 
-  isJsonString(str) {
-    try {
-      JSON.parse(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
 }

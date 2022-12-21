@@ -1,5 +1,10 @@
-@model List<File>
-
-@foreach (var file in Model) {
-  <partial name="@($"~/Areas/Dropin/Views/File/_{ViewData["Layout"]}File.cshtml")" model="file" />
+@model File
+@{
+  Model.Blob.Metadata.TryGetValue("uuid", out var uuid);
 }
+
+<div id="upload-@uuid" class="wy-item" data-files-target="uploadSuccess">
+  <icon for="Model.Blob" />
+  <div class="wy-item-body">@Model.Name</div>
+  <button class="wy-button wy-button-icon" data-action="click->files#dismiss"><icon name="check" /></button>
+</div>

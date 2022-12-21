@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Weavy.Core.Http;
@@ -27,37 +26,48 @@ public class ChatController : AreaController {
     }
 
     /// <summary>
-    /// Display specified chat app.
+    /// Display specified chat.
     /// </summary>
     /// <param name="id">App id.</param>
     /// <param name="query">Query options for paging etc.</param>
     /// <returns></returns>
     [HttpGet("{id:int}")]
     public IActionResult Get(int id, MessageQuery query) {
-        var chat = ConversationService.Get<Chat>(id);
-        if (chat == null) {
+        var model = ConversationService.Get<Chat>(id);
+        if (model == null) {
             return BadRequest();
         }
 
-        query.AppId = chat.Id;
-        query.Parent = chat;
-        query.OrderBy = "Id DESC";
         // limit page size to [1,25]
         query.Top = Math.Clamp(query.Top ?? PageSizeMedium, 1, PageSizeMedium);
 
-        var result = MessageService.Search(query);
-        result.Reverse();
-        chat.Messages = result;
-
         // add app to viewdata so that we can avoid lazy-loading Message.Parent when rendering messages
-        ViewData[nameof(Message.Parent)] = chat;
+        ViewData[nameof(Message.Parent)] = model;
 
         if (Request.IsAjaxRequest()) {
-            // infinite scroll, return partial view                
-            return PartialView("_Messages", chat.Messages);
+            // infinite scroll, return partial view
+            var result = ConversationService.GetMessages(model.Id, query);
+            result.Reverse();
+            return PartialView("_Messages", result);
         }
 
-        return View(chat);
+        // mark conversation as read (if needed)
+        if (model.IsUnread()) {
+            var member = model.Member();
+            if (member.MarkedId == null) {
+                // user has never read this conversation, mark as read and assign the model property to avoid rendering the "New messages" separator
+                model = ConversationService.Mark(model.Id, model.LastMessageId.Value) as Chat;
+            } else {
+                // mark as read, but do not assign the read conversation -> this will render the "New messages" separator in the correct place
+                _ = ConversationService.Mark(model.Id, model.LastMessageId.Value);
+            }
+        }
+
+        // get first page of messages (and reverse them for easier rendering in correct order)
+        model.Messages = ConversationService.GetMessages(model.Id, query);
+        model.Messages.Reverse();
+
+        return View(model);
     }
 
     /// <summary>
@@ -74,8 +84,8 @@ public class ChatController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var message = new Message { Text = model.Text, MeetingId = model.MeetingId };
-            message = MessageService.Insert(message, conversation, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
+            var message = new Message { Text = model.Text, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
+            message = MessageService.Insert(message, conversation, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 var result = new TurboStreamsResult();

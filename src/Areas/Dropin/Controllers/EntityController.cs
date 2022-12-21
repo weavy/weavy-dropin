@@ -20,36 +20,29 @@ namespace Weavy.Dropin.Controllers;
 public class EntityController : AreaController {
 
     /// <summary>
-    /// Uploads new blob(s). The request format is expected to be multipart/form-data.
-    /// After upload the blob(s) can be used as references when creating attachments. 
+    /// Upload a blob. The request format is expected to be multipart/form-data.
+    /// After upload the blob can be used as reference when creating attachments. 
     /// </summary>
-    /// <returns>The uploaded blobs(s).</returns>
+    /// <returns>The uploaded blobs.</returns>
     [HttpPost("attachments")]
     public async Task<IActionResult> Upload() {
-        var blobs = await Request.SaveBlobsAsync();
-        if (blobs.Any()) {
-            return PartialView("_Blobs", blobs);
-        } else {
-            // most likely file type was not allowed...
-            return StatusCode(StatusCodes.Status415UnsupportedMediaType);
+        var blob = await Request.SaveBlobAsync();
+        if (blob == null) {
+            return BadRequest();
         }
+        return PartialView("_Blob", blob);
     }
 
     /// <summary>
-    /// 
+    /// Insert an external blob.
+    /// After insert the blob can be used as reference when creating attachments. 
     /// </summary>
-    /// <param name="external"></param>
+    /// <param name="model"></param>
     /// <returns></returns>
-    [HttpPost("externalblobs")]
-    public IActionResult ExternalBlobs([FromBody] IEnumerable<ExternalBlob> external) {
-        var blobs = new List<Blob>();
-        foreach (var eb in external) {
-            var blob = BlobService.Insert(eb);
-            blobs.Add(blob);
-        }
-
-        var uploadedBlobs = BlobService.Get(blobs.Select(x => x.Id));
-        return PartialView("_Blobs", uploadedBlobs);
+    [HttpPost("external")]
+    public IActionResult ExternalBlobs([FromBody] ExternalBlob model) {
+        var blob = BlobService.Insert(model);
+        return PartialView("_Blob", blob);
     }
 
     /// <summary>
@@ -118,12 +111,13 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/vote")]
     public IActionResult Vote(int id) {
-        var poll = MessageService.Vote(id);
-        return TurboStream.Replace("_Poll", poll);        
+        var option = MessageService.Vote(id);
+        var poll = MessageService.Get(option.MessageId);
+        return TurboStream.Replace("_Poll", poll);
     }
 
     /// <summary>
-    /// Get who voted for a scpecific poll option.
+    /// Get who voted for a specific poll option.
     /// </summary>
     /// <param name="id">Poll option id.</param>
     /// <returns></returns>

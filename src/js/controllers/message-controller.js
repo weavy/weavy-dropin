@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { scrollParentToBottom } from "../utils/scroll-position";
 
 export default class extends Controller {
 
@@ -32,7 +33,8 @@ export default class extends Controller {
     clone.hidden = false;
 
     // scroll to bottom
-    document.scrollingElement.scrollTop = 99999999999;
+    //document.scrollingElement.scrollTop = 99999999999;
+    scrollParentToBottom(clone, true);
   }
 
 }

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using Weavy.Core.Http;
 using Weavy.Core.Models;
 using Weavy.Core.Mvc;
@@ -255,8 +254,7 @@ public class FileController : AreaController {
 
 
         if (ModelState.IsValid) {
-            var comment = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId };
-            comment = MessageService.Insert(comment, file, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
+            var comment = MessageService.Insert(new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) }, file, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 var result = new TurboStreamsResult();
@@ -369,16 +367,12 @@ public class FileController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            // remove attachments that should no longer be associated with the comment
-            foreach (var attachmentId in comment.AttachmentIds.Except(model.Attachments)) {
-                FileService.Trash(attachmentId);
-            }
-
-            // update comment and attach additional blobs (if any)
+            comment.AttachmentIds = model.Attachments;
             comment.EmbedId = model.EmbedId;
             comment.Text = model.Text;
             comment.MeetingId = model.MeetingId;
-            comment = MessageService.Update(comment, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
+            comment.Options = model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text });
+            comment = MessageService.Update(comment, blobs: model.Blobs);
 
             return PartialView("_Comment", comment);
         }

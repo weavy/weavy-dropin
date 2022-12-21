@@ -1,8 +1,8 @@
 @model Chat
 @{
-  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
-  BodyAttributes.Add("data-app-uid", Model.Eid());
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);  
   BodyAttributes.Add("data-app-id", Model.Id.ToString());
+  BodyAttributes.Add("data-app-uid", Model.Eid());
   BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
 }
 <!DOCTYPE html>
@@ -21,10 +21,9 @@
 </head>
 <body>
 
-  <main
-    role="main"
+  <main role="main"
     class="wy-main wy-pane wy-pane-background"
-    data-controller="chat pagination scroll message"
+    data-controller="scroll chat message pagination"
     data-pagination-mode-value="reverse"
     data-pagination-deferred-value="true"
     data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom scroll:at-bottom->pagination#setup"

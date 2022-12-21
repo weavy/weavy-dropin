@@ -1,28 +1,26 @@
-@model UpdateConversationModel
+@model UserSearchResult
 @{
   Layout = "_Layout";
-  var userSearchResult = new UserSearchResult();
-  userSearchResult.Query.NotAppId = Model.Conversation.Id;
 }
 <main class="wy-pane">
   <header class="wy-appbars" data-adjust-scrollbar-top>
     <nav class="wy-appbar">
       <button class="wy-button wy-button-icon wy-close-back">@Svg.Icon("close")</button>
-      <div class="wy-appbar-text">@T["Manage members"]</div>
+      <div class="wy-appbar-text">@T["Add members"]</div>
     </nav>
   </header>
   <div class="wy-search">
-    <form asp-action="@nameof(MessengerController.UpdateMembers)" asp-route-id="@Model.Conversation.Id" data-turbo-frame="searchresult">
+    <form asp-action="@nameof(MessengerController.Members)" asp-route-id="@Model.Query.NotAppId" data-turbo-frame="searchresult">
       <div class="wy-pane-group wy-search-form" data-controller="search" data-search-searching-class="searching">
         <div class="wy-input-group">
           <input type="search" name="text" class="wy-search-input wy-input wy-input-filled" placeholder="@T["Search..."]" autocomplete="off" data-search-target="input">
-          <input type="hidden" name="NotAppId" value="@Model.Conversation.Id" />
+          <input type="hidden" name="NotAppId" value="@Model.Query.NotAppId" />
           <button type="reset" class="wy-button wy-button-icon" title="@T["Clear"]" data-search-target="reset"><icon name="close-circle" size="20" /></button>
           <button class="wy-button wy-button-icon" type="submit" title="@T["Search"]" data-search-target="submit" formaction="@Url.Action(nameof(MessengerController.SearchUsers))"><icon name="magnify" size="20" /></button>
         </div>
       </div>
       <div class="wy-pane-group">
-        <partial name="_SearchUsersResult" model="userSearchResult" />
+        <partial name="_SearchUsersResult" />
       </div>
       <div class="wy-footerbars wy-footerbars-fixed" data-adjust-scrollbar-bottom>
         <div class="wy-footerbar">

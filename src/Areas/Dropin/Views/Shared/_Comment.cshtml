@@ -1,8 +1,8 @@
 @model Message
 @{
   var user = Model.CreatedBy();
-  var images = Model.Attachments().Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
-  var files = Model.Attachments().Except(images);
+  var images = Model.Attachments.Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);
+  var files = Model.Attachments.Except(images);
   var options = Model.Options;
   var controller = Model.Parent.Type == EntityType.File ? typeof(FileController).ControllerName() : typeof(PostController).ControllerName();
   var restoreAction = Model.Parent.Type == EntityType.File ? nameof(FileController.RestoreComment) : nameof(PostController.RestoreComment);
@@ -43,7 +43,7 @@
           <partial name="_Embed" model="Model.Embed" />
         }
 
-        <div class="wy-content">@Html.Raw(MarkdownUtils.ToHtml(Model.Text))</div>
+        <div class="wy-content">@Html.Raw(Model.Html)</div>
 
         @if (options.Any()) {
           <partial name="_Poll" model="Model" />

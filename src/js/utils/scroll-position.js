@@ -5,9 +5,9 @@
  * @param {Element} el - Reference element in the scrollable area
  * @returns Element
  */
-export function getNextPositionedChild(el) {
+export function getNextPositionedChild(el, reverse = false) {
   while (el) {
-    el = el.nextElementSibling;
+    el = reverse ? el.previousElementSibling : el.nextElementSibling;
     if (/absolute|sticky|fixed/.test(getComputedStyle(el).position) === false) {
       return el;
     }
@@ -57,7 +57,7 @@ export function isParentAtBottom(element, bottomThreshold) {
     bottomThreshold ??= 32; // Minimum 1 to catch float errors
 
     let area = getScrollParent(element);
-    //console.log("isParentAtBottom", area.scrollTop, area.clientHeight, area.scrollHeight, Math.abs((area.scrollTop + area.clientHeight) - area.scrollHeight) <= bottomThreshold)
+
     // We need to account for scrollTop being a float
     return Math.abs((area.scrollTop + area.clientHeight) - area.scrollHeight) <= bottomThreshold;
   }
@@ -73,10 +73,9 @@ export function isParentAtBottom(element, bottomThreshold) {
 export async function scrollParentToBottom(element, smooth) {
   if (element) {
     let area = getScrollParent(element);
-    //console.log("scrolling to bottom", area.scrollHeight);
 
-    // Don't bother if the scroll already is correct
-    if (area.scrollTop + area.clientHeight !== area.scrollHeight) {
+    // Don't bother if the scroll already is correct, diff by 1px to avoid float errors
+    if (Math.abs((area.scrollTop + area.clientHeight) - area.scrollHeight) > 1) {
       if (smooth) {
         area.scrollTo({
           top: area.scrollHeight,
@@ -90,8 +89,16 @@ export async function scrollParentToBottom(element, smooth) {
 
     // Check when the scroll is done
     await new Promise((resolve) => {
+      let lastScrollTop = area.scrollTop;
       let scrollCheck = () => {
-        if (area.scrollTop + area.clientHeight !== area.scrollHeight) {
+        if (smooth && area.scrollTop === lastScrollTop) {          
+          area.scrollTop = area.scrollHeight;
+        }
+
+        lastScrollTop = area.scrollTop;
+
+        // We need to account for scrollTop being a float by using 1px diff
+        if (Math.abs((area.scrollTop + area.clientHeight) - area.scrollHeight) > 1) {
           requestAnimationFrame(scrollCheck);
         } else {
           resolve();
@@ -101,6 +108,4 @@ export async function scrollParentToBottom(element, smooth) {
       requestAnimationFrame(scrollCheck);
     })
   }
-
-
 }

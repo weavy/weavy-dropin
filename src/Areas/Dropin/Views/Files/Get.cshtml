@@ -3,6 +3,7 @@
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
   BodyAttributes.Add("data-app-id", Model.Id.ToString());
   BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
+  var archiveUrl = Model.ArchiveUrl(trashed: Model.Items.Query.Trashed ?? true, verify: true);
 }
 <!DOCTYPE html>
 <html data-controller="authenticate files preview-link" data-files-uploading-class="wy-uploading" class="wy-scroll-y" data-files-app-value="@Model.Id" data-files-external-url-value="@($"/dropin/files/{Model.Id}/external")" data-files-target="dragzone">
@@ -33,12 +34,11 @@
           </ul>
         </div>
       </div>
-      <div></div>
       <div class="wy-toolbar-buttons wy-toolbar-buttons-last">
         <button class="wy-button wy-button-icon" data-action="click->files#toggleSheet" data-files-target="uploadButton" hidden>
           <icon name="spinner" class="wy-spin" data-files-target="iconUploading" hidden />
-          <icon name="check" data-files-target="iconComplete" hidden/>
-          <icon name="alert" color="error" data-files-target="iconError" hidden/>
+          <icon name="check" data-files-target="iconComplete" hidden />
+          <icon name="alert" color="yellow" data-files-target="iconError" hidden />
         </button>
         <partial name="_SortMenu" model="Model.Items.Query" />
         <partial name="_ViewMenu" model="Model.Items.Query" />
@@ -48,13 +48,13 @@
           <div class="wy-dropdown-menu dropdown-menu">
               @*<a class="wy-dropdown-item" href="#"><icon name="star" /> @T["Star/Unstar"]</a>*@
             <partial name="_FollowMenuItem" />
-              @if (Model.CanDownloadChildrenAsArchive()) {
-              <a class="wy-dropdown-item" data-turbo="false" asp-controller="@typeof(FilesController).ControllerName()" asp-action="@nameof(FilesController.GetArchive)" asp-route-id="@Model.Id"><icon name="download" /> @T["Download files"]</a>
+              @if (archiveUrl != null) {
+              <a class="wy-dropdown-item" href="@archiveUrl" data-turbo="false" download><icon name="download" /> @T["Download files"]</a>
               }
           </div>
         </div>
       </div>
-    </nav>  
+    </nav>
   </header>
 
     @if (Model.Items.Query.Layout == null || Model.Items.Query.Layout == Weavy.Core.Models.Layout.List) {
@@ -68,20 +68,10 @@
     }
 
     @if (Model.Items.Query.Layout == Weavy.Core.Models.Layout.Grid) {
-      <div class="wy-grid wy-pane-group" data-controller="pagination" data-files-target="content" data-file-picker-target="list" id="file-list">
-        <partial name="_Grid" model="Model.Items" />
-      </div>
-    }
-
-  @*<div class="wy-sheet" data-files-target="modal" data-files--target="modal" hidden>
-    <div class="wy-appbar">
-      <div></div>
-      <div class="appbar-text">Upload failed</div>
-      <button type="button" class="wy-button wy-button-icon" data-action="click->sheet#close"><icon name="close" /></button>
+    <div class="wy-grid wy-pane-group" data-controller="pagination" data-files-target="content" data-file-picker-target="list" id="file-list">
+      <partial name="_Grid" model="Model.Items" />
     </div>
-    <div class="wy-sheet-body wy-file-upload-errors wy-scroll-y" data-files-target="modalBody" data-file-picker-target="modalBody"></div>
-  </div>*@
-
+    }
 
   <div class="wy-sheet" data-controller="sheet" hidden data-sheet-open-on-connect-value="false" data-files-target="uploadSheet">
     <div class="wy-appbar">

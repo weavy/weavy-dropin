@@ -1,0 +1,8 @@
+@model FileUploadErrorModel
+
+<div id="upload-@Model.Uuid" class="wy-item" data-files-target="uploadError">
+  <icon name="close-circle" color="error" />
+  <div class="wy-item-body" title="@Model.Message">@Model.Name: <em>@Model.Message</em></div>
+  <button class="wy-button wy-button-icon" data-action="click->files#dismiss"><icon name="close" /></button>
+</div>
+

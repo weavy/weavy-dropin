@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using Serilog;
 using Weavy.Core.Http;
 using Weavy.Core.Models;
 using Weavy.Core.Mvc;
@@ -20,8 +17,6 @@ namespace Weavy.Dropin.Controllers;
 /// Controller for the <see cref="Files"/> app.
 /// </summary>
 public class FilesController : AreaController {
-
-    private static readonly ILogger _log = Log.ForContext(typeof(HttpRequestExtensions));
 
     /// <summary>
     /// Display files for specified app.
@@ -59,159 +54,104 @@ public class FilesController : AreaController {
     }
 
     /// <summary>
-    /// Upload file(s) to the app using multipart/form-data.
+    /// Upload file to the app using multipart/form-data.
     /// </summary>
-    /// <param name="id">App id</param>    
-    /// <param name="force"></param>
+    /// <param name="id">App id</param>
     /// <returns></returns>
-    [HttpPost("{id:int}/upload")]
+    [HttpPost("{id:int}")]
     [DisableFormValueModelBinding]
-    public async Task<IActionResult> Upload(int id, string uuid, bool force) {
+    public async Task<IActionResult> Upload(int id) {
         var app = AppService.Get<Files>(id);
+        if (!app.HasPermission(Permission.Create)) {
+            return Forbid();
+        }
 
-        var blobs = await Request.SaveBlobsAsync();
-
-        return HandleFiles(app, blobs.ToList(), uuid, force);
+        // upload and try to insert blob
+        var blob = await Request.SaveBlobAsync();
+        return TryInsert(app, blob);
     }
 
     /// <summary>
-    /// Replaces an existing blob.
+    /// Replaces the content of an existing file with the specified blob.
     /// </summary>
     /// <param name="id">App id</param>    
     /// <param name="bid">Blob id</param>
     /// <returns></returns>
     [HttpPut("{id:int}/replace/{bid:int}")]
-    [DisableFormValueModelBinding]
-    public IActionResult Replace(int id, int bid, string uuid) {
+    public IActionResult Replace(int id, int bid) {
         var app = AppService.Get<Files>(id);
-        var layout = GetLayout(app.Id);
-
-        var files = new List<File>();
         var blob = BlobService.Get(bid);
-        var existing = FileService.Get(app, blob.Name, sudo: true, trashed: true);
-        existing.Blob = blob;
-        existing = FileService.Update(existing, backup: true);
-        files.Add(existing);
+        var file = FileService.Get(app, blob.Name, sudo: true, trashed: true);
+        file.Blob = blob;
+        file = FileService.Update(file, backup: true);
 
+        blob.Metadata.TryGetValue("uuid", out var uuid);
+        var layout = GetLayout(app.Id);
         var result = new TurboStreamsResult();
-        result.Streams.Add(TurboStream.Replace($"~/Areas/Dropin/Views/File/_{layout}File.cshtml", existing));
-        result.Streams.Add(TurboStream.Replace($"file-upload-progress-{uuid}", "_UploadProgress", files));
+        result.Streams.Add(TurboStream.Remove($"upload-{uuid}"));
+        result.Streams.Add(TurboStream.Replace($"~/Areas/Dropin/Views/File/_{layout}File.cshtml", file));        
         return result;
     }
 
     /// <summary>
-    /// Add file(s) external cloud provider file(s) to the app.
+    /// Add cloud file to the app.
     /// </summary>
     /// <param name="id">App id</param>
     /// <returns></returns>
     [HttpPost("{id:int}/external")]
-    [DisableFormValueModelBinding]
-    public IActionResult AddExternal(int id, bool force, string uuid, [FromBody] IEnumerable<ExternalBlob> external) {
+    public IActionResult AddExternal(int id, [FromBody] ExternalBlob external) {
         var app = AppService.Get<Files>(id);
-
-        var blobs = new List<Blob>();
-        foreach (var eb in external) {
-            try {
-                var blob = BlobService.Insert(eb);
-                blobs.Add(blob);
-            } catch (Exception ex) {
-                _log.Warning("Failed to insert external blob {name}: {msg}", eb.Name, ex.Message);
-            }
+        if (!app.HasPermission(Permission.Create)) {
+            return Forbid();
         }
-        return HandleFiles(app, blobs, uuid, force);
-    }
-
-    /// <summary>
-    /// Creates and returns a zip file with all the local files attached to this <see cref="App"/>.
-    /// </summary>
-    /// <param name="id">The id of the <see cref="App"/> to get files for.</param>
-    /// <returns></returns>
-    [HttpGet("{id:int}/archive")]
-    public IActionResult GetArchive(int id) {
-        var app = AppService.Get(id);
-
-        if (app == null || !app.CanDownloadChildrenAsArchive()) {
-            return BadRequest();
-        }
-
-        var archive = FileService.GetArchive(app);
-
-        if (archive == null) {
-            return NotFound();
-        }
-
-        var file = new System.IO.FileInfo(archive);
-
-        if (file == null || !file.Exists) {
-            return NotFound();
-        }
-
-        var contentType = FileUtils.GetMediaType(file.Name);
-        var modified = new DateTimeOffset(file.LastWriteTimeUtc);
-        var entityTag = new EntityTagHeaderValue("\"" + (file.ETag()) + "\"");
-        Response.Headers.Append(HeaderNames.CacheControl, "private, no-cache");
-        return PhysicalFile(file.FullName, contentType, FileUtils.SafeName(app.DisplayName + file.Extension), modified, entityTag, true);
+        var blob = BlobService.Insert(external);
+        return TryInsert(app, blob);
     }
 
     [HttpPost("error")]
     public ActionResult Error([FromBody] FileUploadErrorModel model) {
-        var result = new TurboStreamsResult();
-        result.Streams.Add(TurboStream.Replace($"file-upload-progress-{model.Uuid}", "_UploadError", model));
-        return result;
+        return TurboStream.Replace($"upload-{model.Uuid}", "_Error", model);
     }
 
     /// <summary>
-    /// Add or replace files
+    /// Try to create and add a new file from the specified blob.
     /// </summary>
-    /// <param name="app">The app to add the files to</param>
-    /// <param name="blobs">The blobs to add</param>
-    /// <param name="index">The index of the blob to add</param>
-    /// <param name="force"><c>true</c> to force replace of existing file, otherwise <c>false</c></param>
+    /// <param name="app">The app</param>
+    /// <param name="blob">The blob</param>
+    /// <param name="uuid"></param>
     /// <returns></returns>
-    private IActionResult HandleFiles(Files app, List<Blob> blobs, string uuid, bool force) {
+    private IActionResult TryInsert(Files app, Blob blob) {
 
-        if (app == null) {
-            return BadRequest();
-        }
+        // get uuid from blob metadata so we can update the correct ui element
+        blob.Metadata.TryGetValue("uuid", out var uuid);
+        var layout = GetLayout(app.Id);
 
-        if (!app.HasPermission(Permission.Create)) {
-            return Forbid();
-        }
-
-        var files = new List<File>();
-
-        if (blobs.Any()) {
-
+        // check if app already has a file with the same name
+        var existing = FileService.Get(app, blob.Name, trashed: true);
+        if (existing == null) {
+            // insert new file
+            var inserted = FileService.Insert(blob, app);
             var result = new TurboStreamsResult();
-
-            foreach (var blob in blobs) {
-                // check if app already has a file with the same name
-                var existing = FileService.Get(app, blob.Name, sudo: true, trashed: true);
-
-                var layout = GetLayout(app.Id);
-
-                if (existing != null && !force) {
-                    ViewData["uuid"] = uuid;
-                    result.Streams.Add(TurboStream.Replace($"file-upload-progress-{uuid}", "_FileExistError", blob));
-                    result.StatusCode = 409;                    
-                } else if (existing != null && force) {
-                    existing.Blob = blob;
-                    files.Add(FileService.Update(existing, backup: true));
-                    existing = FileService.Get(app, blob.Name, sudo: true, trashed: true);
-                    result.Streams.Add(TurboStream.Replace($"~/Areas/Dropin/Views/File/_{layout}File.cshtml", existing));
-                    result.Streams.Add(TurboStream.Replace($"file-upload-progress-{uuid}", "_UploadProgress", files));
-                } else {
-                    files.Add(FileService.Insert(blob, app));
-                    ViewData["Layout"] = layout;
-                    result.Streams.Add(TurboStream.Prepend("file-list", "_Uploaded", files));
-                    result.Streams.Add(TurboStream.Replace($"file-upload-progress-{uuid}", "_UploadProgress", files));
-                }
-            }
+            result.Streams.Add(TurboStream.Replace($"upload-{uuid}", "_Uploaded", inserted));
+            result.Streams.Add(TurboStream.Prepend("file-list", $"~/Areas/Dropin/Views/File/_{layout}File.cshtml", inserted));
             return result;
-
-        } else {
-            // most likely file type was not allowed...
-            return StatusCode(StatusCodes.Status415UnsupportedMediaType);
+        } else if (existing.IsTrashed()) {
+            // update and restore trashed file
+            existing.Blob = blob;
+            existing.TrashedAt = null;
+            existing.TrashedById = null;
+            var updated = FileService.Update(existing, backup: true);
+            var result = new TurboStreamsResult();
+            result.Streams.Add(TurboStream.Replace($"upload-{uuid}", "_Uploaded", updated));
+            result.Streams.Add(TurboStream.Remove($"~/Areas/Dropin/Views/File/_{layout}File.cshtml", updated));
+            result.Streams.Add(TurboStream.Prepend("file-list", $"~/Areas/Dropin/Views/File/_{layout}File.cshtml", updated));
+            return result;
+        } else { 
+            // display file exists error
+            var result = TurboStream.Replace($"upload-{uuid}", "_Conflict", blob);
+            result.StatusCode = StatusCodes.Status409Conflict;
+            return result;
         }
+        
     }
 }

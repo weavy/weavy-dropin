@@ -30,7 +30,7 @@
       <button data-sidebar-target="maximize" class="wy-sidebar-handle"></button>
     </nav>
     <div class="wy-pane wy-scroll-y">
-      <turbo-frame loading="lazy" class="wy-pane-body wy-pane-group" id="versions" src="@Url.Action(nameof(FileController.Versions), typeof(FileController).ControllerName(), new { id = Model.Id, version = version })">
+      <turbo-frame loading="lazy" class="wy-pane-body" id="versions" src="@Url.Action(nameof(FileController.Versions), typeof(FileController).ControllerName(), new { id = Model.Id, version = version })">
         @Svg.Spinner(spin: true)
       </turbo-frame>
     </div>

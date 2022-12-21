@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import { delay } from "../utils/timing-helpers"
+import { delay } from "../utils/timing-helpers";
+import { getNextPositionedChild, scrollParentToBottom } from "../utils/scroll-position";
 import WeavyConsole from "../utils/console";
 
 const console = new WeavyConsole("message-toast");
@@ -50,7 +51,8 @@ export default class extends Controller {
             toast.id = toasterId;
             toast.innerHTML = lastToast.innerHTML;
             toast.addEventListener("click", () => {
-              this.toBottom();
+              getNextPositionedChild(toast)?.scrollIntoView({ block: "start", behavior: "smooth" })
+              //this.toBottom()
             });
             // insert toast before last new message
             parent.insertBefore(toast, messageReference);
@@ -70,7 +72,8 @@ export default class extends Controller {
 
   async toBottom() {
     await delay();
-    document.scrollingElement.scrollTop = 99999999999;
+    //document.scrollingElement.scrollTop = 99999999999;
+    scrollParentToBottom(this.element, true);
   }
 
   setRead(messageId) {

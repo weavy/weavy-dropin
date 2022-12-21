@@ -10,16 +10,16 @@
 }
 <div id="preview" class="turbo-stream-content">
 
-@if (fmt == PreviewFormat.Text) {
+  @if (fmt == PreviewFormat.Text) {
     <div class="wy-document wy-light">
       <pre class="wy-content-text">@System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob).FullName)</pre>
     </div>
-} else if (fmt == PreviewFormat.Code) {
+  } else if (fmt == PreviewFormat.Code) {
     <div class="wy-content wy-content-code">
       @Html.Raw(System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob, ".html").FullName))
     </div>
 
-} else if (fmt == PreviewFormat.Html) {
+  } else if (fmt == PreviewFormat.Html) {
 
     <div class="wy-document wy-light">
       <div class="wy-content-html">
@@ -27,87 +27,87 @@
       </div>
     </div>
 
-} else if (fmt == PreviewFormat.Image) {
+  } else if (fmt == PreviewFormat.Image) {
 
-  // our thumb function cannot handle animated gifs, and svgs don't need to be resized
-  var ext = FileUtils.GetExtension(Model.Blob.Name);
-  var src = (ext == ".gif" || ext == ".svg") ? Model.Url() : Model.ThumbUrl(1920, 1920);
+    // our thumb function cannot handle animated gifs, and svgs don't need to be resized
+    var ext = FileUtils.GetExtension(Model.Blob.Name);
+    var src = (ext == ".gif" || ext == ".svg") ? Model.Url(cachebust: true) : Model.ThumbUrl(1920, 1920);
 
-  if (Model.Blob.Width != null && Model.Blob.Height != null) {
-    <div class="wy-content-image wy-responsive-image" data-controller="image" style="--width: @Model.Blob.Width; --height: @Model.Blob.Height">
-      <img data-image-target="image" src="@src" width="@Model.Blob.Width" height="@Model.Blob.Height" decoding="async" />
-      @Svg.Spinner(spin: true)
+    if (Model.Blob.Width != null && Model.Blob.Height != null) {
+      <div class="wy-content-image wy-responsive-image" data-controller="image" style="--width: @Model.Blob.Width; --height: @Model.Blob.Height">
+        <img data-image-target="image" src="@src" width="@Model.Blob.Width" height="@Model.Blob.Height" decoding="async" />
+        @Svg.Spinner(spin: true)
+      </div>
+    } else {
+      <div data-controller="image" class="wy-content-image wy-responsive-image wy-intrinsic-image">
+        <img data-image-target="image" src="@Model.Url(cachebust:true)" decoding="async" />
+      </div>
+    }
+
+  } else if (fmt == PreviewFormat.Pdf) {
+
+    <div class="wy-content-pdf" data-controller="pdf" data-pdf-url-value="@Model.Url(extension: ".pdf", cachebust: true)">
+      <div class="wy-toolbars-bottom">
+        <nav class="wy-toolbar wy-toolbar-center">
+          <div class="wy-toolbar-buttons">
+            <input type="text" class="wy-input" data-action="change->pdf#updatePage click->pdf#select" data-pdf-target="pageNumber" value="1" />
+            <span class="wy-toolbar-text">/</span>
+            <span class="wy-toolbar-text" data-pdf-target="totalPages">1</span>
+          </div>
+          <div class="wy-toolbar-buttons">
+            <button class="wy-button wy-button-icon btn-zoom-out" data-action="click->pdf#zoomOut" title="@T["Zoom out"]"><icon name="minus" /></button>
+            <input type="text" class="wy-input" data-action="change->pdf#updateZoom click->pdf#select" data-pdf-target="zoomLevel" value="100%" />
+            <button class="wy-button wy-button-icon btn-zoom-in" data-action="click->pdf#zoomIn" title="@T["Zoom in"]"><icon name="plus" /></button>
+          </div>
+          <div class="wy-toolbar-buttons">
+            <button class="wy-button wy-button-icon btn-fit-page" data-action="click->pdf#fitToWidth" title="@T["Fit to width"]"><icon name="fit-width" /></button>
+            <button class="wy-button wy-button-icon" data-action="click->pdf#fitToPage" title="@T["Fit to screen"]"><icon name="fit-screen" /></button>
+          </div>
+        </nav>
+      </div>
+      <div class="wy-pdf-container" data-pdf-target="container">
+        <div id="viewer" class="pdfViewer"></div>
+      </div>
     </div>
+
+  } else if (fmt == PreviewFormat.Video) {
+
+    <video id="content-video" data-controller="media" class="wy-content-video" controls crossorigin="use-credentials" autoplay>
+      <source src="@Model.Url(cachebust:true)" type="@Model.Blob.MediaType" />
+      <div class="wy-content-icon">
+        <icon name="@icon" size="64" />
+        <div>@T["No preview available :("]</div>
+      </div>
+    </video>
+    @Svg.Spinner(spin: true)
+
+  } else if (fmt == PreviewFormat.Audio) {
+
+    <audio id="content-audio" data-controller="media" class="wy-content-audio" controls crossorigin="use-credentials" autoplay>
+      <source src="@Model.Url(cachebust:true)" type="@Model.Blob.MediaType" />
+    </audio>
+
+  } else if (fmt == PreviewFormat.Embed) {
+
+    @* iframe needs to be object to not render error pages when content is blocked *@
+    <object data-controller="embed-html" class="wy-content-iframe wy-loading" data="@Model.Blob.Embed"></object>
+    @Svg.Spinner(spin: true)
+
+    @* fallback to file-type icon if embed cannot be loaded *@
+    <div class="wy-content-icon wy-content-iframe-fallback">
+      <icon name="@icon" size="64" />
+      <div>@T["No preview available."] <a href="@Model.Blob.Link" target="_blank">@T["Open in {0}", Model.Blob.Provider]?</a></div>
+    </div>
+
   } else {
-    <div data-controller="image" class="wy-content-image wy-responsive-image wy-intrinsic-image">
-      <img data-image-target="image" src="@Model.Url()" decoding="async" />
-    </div>
-  }
 
-} else if (fmt == PreviewFormat.Pdf) {
-
-  <div class="wy-content-pdf" data-controller="pdf" data-pdf-url-value="@Model.Url(extension: ".pdf", cachebust: true)">
-    <div class="wy-toolbars-bottom">
-      <nav class="wy-toolbar wy-toolbar-center">
-        <div class="wy-toolbar-buttons">
-          <input type="text" class="wy-input" data-action="change->pdf#updatePage click->pdf#select" data-pdf-target="pageNumber" value="1" />
-          <span>/</span>
-          <span data-pdf-target="totalPages">1</span>
-        </div>
-        <div class="wy-toolbar-buttons">
-          <button class="wy-button wy-button-icon btn-zoom-out" data-action="click->pdf#zoomOut" title="@T["Zoom out"]"><icon name="minus" /></button>
-          <input type="text" class="wy-input" data-action="change->pdf#updateZoom click->pdf#select" data-pdf-target="zoomLevel" value="100%"/>
-          <button class="wy-button wy-button-icon btn-zoom-in" data-action="click->pdf#zoomIn" title="@T["Zoom in"]"><icon name="plus" /></button>
-        </div>
-        <div class="wy-toolbar-buttons">
-          <button class="wy-button wy-button-icon btn-fit-page" data-action="click->pdf#fitToWidth" title="@T["Fit to width"]"><icon name="fit-width" /></button>
-          <button class="wy-button wy-button-icon" data-action="click->pdf#fitToPage" title="@T["Fit to screen"]"><icon name="fit-screen" /></button>
-        </div>
-      </nav>
-    </div>
-    <div class="wy-pdf-container" data-pdf-target="container">
-      <div id="viewer" class="pdfViewer"></div>
-    </div>
-  </div>
-
-} else if (fmt == PreviewFormat.Video) {
-
-  <video id="content-video" data-controller="media" class="wy-content-video" controls crossorigin="use-credentials" autoplay>
-    <source src="@Model.Url()" type="@Model.Blob.MediaType" />
     <div class="wy-content-icon">
       <icon name="@icon" size="64" />
-      <div>@T["No preview available :("]</div>
+      @if (Model.Blob.Link != null) {
+        <div>@T["No preview available."] <a href="@Model.Blob.Link" target="_blank">@T["Open in {0}", Model.Blob.Provider]?</a></div>
+      } else {
+        <div>@T["No preview available :("]</div>
+      }
     </div>
-  </video>
-  @Svg.Spinner(spin: true)
-
-} else if (fmt == PreviewFormat.Audio) {
-
-  <audio id="content-audio" data-controller="media" class="wy-content-audio" controls crossorigin="use-credentials" autoplay>
-    <source src="@Model.Url()" type="@Model.Blob.MediaType" />
-  </audio>
-
-} else if (fmt == PreviewFormat.Embed) {
-
-  @* iframe needs to be object to not render error pages when content is blocked *@
-  <object data-controller="embed-html" class="wy-content-iframe wy-loading" data="@Model.Blob.Embed"></object>
-  @Svg.Spinner(spin: true)
-
-  @* fallback to file-type icon if embed cannot be loaded *@
-  <div class="wy-content-icon wy-content-iframe-fallback">
-    <icon name="@icon" size="64" />
-    <div>@T["No preview available."] <a href="@Model.Blob.Link" target="_blank">@T["Open in {0}", Model.Blob.Provider]?</a></div>
-  </div>
-
-} else {
-
-  <div class="wy-content-icon">
-    <icon name="@icon" size="64" />
-    @if (Model.Blob.Link != null) {
-      <div>@T["No preview available."] <a href="@Model.Blob.Link" target="_blank">@T["Open in {0}", Model.Blob.Provider]?</a></div>
-    } else {
-      <div>@T["No preview available :("]</div>
-    }
-  </div>
-}
+  }
 </div>

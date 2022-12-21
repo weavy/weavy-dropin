@@ -35,9 +35,9 @@
     }
 
     @* attachments *@
-    @if (Model?.Message?.Attachments().Any() ?? false) {
+    @if (Model?.Message?.Attachments.Any() ?? false) {
       <div class="wy-picker-list" data-editor-target="attachments" data-attachments-target="list" data-file-picker-target="list">
-        @foreach (var attachment in Model.Message.Attachments()) {
+        @foreach (var attachment in Model.Message.Attachments) {
           <div class="wy-picker-list-item">
             <icon name="@FileUtils.GetIcon(attachment)" />
             <span class="wy-picker-list-item-title">@attachment.Name</span>

@@ -1,6 +1,8 @@
 @model UpdateConversationModel
 @{
   Layout = "_Layout";
+  // pass conversation to _Member partial
+  ViewData[nameof(Conversation)] = Model.Conversation;
 }
 <main class="wy-pane">
   <header class="wy-appbars" data-adjust-scrollbar-top>
@@ -20,24 +22,24 @@
     @if (Model.Conversation is PrivateChat) {
       @* REVIEW: display profile details and, contact information? *@
     } else {
-      <form asp-action="@nameof(MessengerController.Update)" asp-route-id="@Model.Conversation.Id">
-        <div class="wy-pane-group">
-          <label asp-for="Name" class="wy-input-label"></label>
-          <input asp-for="Name" type="text" class="wy-input" value="@Model.Name" />
-          <div asp-description-for="Name" class="wy-description"></div>
+      <form class="wy-pane-group" asp-action="@nameof(MessengerController.Update)" asp-route-id="@Model.Conversation.Id">
+        <label asp-for="Name" class="wy-input-label"></label>
+        <div class="wy-input-group">
+          <input asp-for="Name" type="text" class="wy-input" value="@Model.Name" placeholder="@Html.If(Model.Name == null, Model.Conversation.DisplayName)" />
+          <button type="submit" class="wy-button wy-button-icon" title="@T["Save"]"><icon name="content-save" /></button>
         </div>
-        <div class="wy-pane-group">
-          <label class="wy-input-label">@T["Members"]</label>
-          <partial name="_ConversationUsers" model="new UserSearchResult()" />
-        </div>
-        <div class="wy-footerbars wy-footerbars-fixed" data-adjust-scrollbar-bottom>
-          <div class="wy-footerbar">
-            <div class="wy-pane-group wy-buttons">
-              <input type="submit" class="wy-button wy-button-primary" value="@T["Save"]">
-            </div>
-          </div>
-        </div>
+        <div asp-description-for="Name" class="wy-description"></div>
       </form>
+      <div class="wy-pane-group">
+        <label class="wy-input-label">@T["Members"]</label>
+        @foreach (var member in Model.Conversation.Members) {
+          <partial name="_Member" model="member" />
+        }
+        <a asp-action="@nameof(MessengerController.Members)" asp-route-id="@Model.Conversation.Id" data-target="modal" class="wy-item">
+          <icon name="account-plus" />
+          <div class="wy-item-body">@T["Add members"]</div>
+        </a>
+      </div>
     }
   </div>
 </main>

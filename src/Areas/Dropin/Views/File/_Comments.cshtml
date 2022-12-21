@@ -2,9 +2,9 @@
 
 @if (Context.Request.IsTurboFrame() && Action == nameof(FileController.Comments)) {
   // render turbo-frame with comments
-  <turbo-frame id="@DomId(Model)">
+  <turbo-frame id="@DomId(Model)" class="wy-pane-body">
     <div class="wy-comments">
-      @foreach (var comment in Model.Comments()) {
+      @foreach (var comment in Model.Comments) {
         <partial name="_Comment" model="comment" />
       }
       <partial name="_CommentPlaceholder" />
@@ -15,9 +15,7 @@
   </turbo-frame>
 } else {
 // render turbo-frame that is lazy-loaded when visible (when the comments sidebar is displayed)
-  <turbo-frame class="wy-pane wy-scroll-y" id="@DomId(Model)" data-controller="comment" src="@Url.Action(nameof(FileController.Comments), typeof(FileController).ControllerName(), new { id = Model.Id })" loading="lazy">
-    <div class="wy-pane-body wy-pane-group">
+  <turbo-frame class="wy-pane-body" id="@DomId(Model)" data-controller="comment" src="@Url.Action(nameof(FileController.Comments), typeof(FileController).ControllerName(), new { id = Model.Id })" loading="lazy">
       @Svg.Spinner(spin: true)
-    </div>
   </turbo-frame>
 }

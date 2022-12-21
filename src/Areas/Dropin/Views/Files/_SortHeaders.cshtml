@@ -1,6 +1,6 @@
 @model Query
 @{
-  var orderby = Model.SortItems?.FirstOrDefault() ?? new SortItem(Model.SortProperties[0]);
+  var orderby = Model.GetSortOrder(Model.SortProperties[0]).FirstOrDefault();
   var headers = new Dictionary<string, string>() { { "Name", nameof(File.Name) }, { "Modified" , nameof(File.ModifiedAt) }, { "Kind", null }, { "Size", nameof(File.Blob.Size) } };
 }
 <thead>

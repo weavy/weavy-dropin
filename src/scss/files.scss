@@ -3,6 +3,7 @@
 @use "turbo";
 
 // theme
+@use "theme/base/vars";
 @use "theme/base/scroll";
 @use "theme/appbar";
 @use "theme/buttons";
@@ -10,6 +11,7 @@
 @use "theme/files";
 @use "theme/icons";
 @use "theme/input";
+@use "theme/item";
 @use "theme/pager";
 @use "theme/pane";
 @use "theme/spinner";

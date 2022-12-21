@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Weavy.Core.Http;
@@ -68,17 +67,12 @@ public class PostController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            // remove attachments that should no longer be associated with the comment
-            foreach (var attachmentId in post.AttachmentIds.Except(model.Attachments)) {
-                FileService.Trash(attachmentId);
-            }
-
-            // update post and attach additional blobs (if any)
+            post.AttachmentIds = model.Attachments;
             post.EmbedId = model.EmbedId;
-            post.Text = model.Text;
             post.MeetingId = model.MeetingId;
-            post = MessageService.Update(post, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
-
+            post.Text = model.Text;
+            post.Options = model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text });
+            post = MessageService.Update(post, blobs: model.Blobs);
             return PartialView("_Post", post);
         }
         model.Parent = post.Parent;
@@ -178,8 +172,7 @@ public class PostController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var comment = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId  };
-            comment = MessageService.Insert(comment, post, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
+            var comment = MessageService.Insert(new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) }, post, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 var result = new TurboStreamsResult();
@@ -300,20 +293,14 @@ public class PostController : AreaController {
         if (comment == null) {
             return BadRequest();
         }
-        
 
         if (ModelState.IsValid) {
-            // remove attachments that should no longer be associated with the comment
-            foreach (var attachmentId in comment.AttachmentIds.Except(model.Attachments)) {
-                FileService.Trash(attachmentId);
-            }
-
-            // update comment and attach additional blobs (if any)            
+            comment.AttachmentIds = model.Attachments;
             comment.EmbedId = model.EmbedId;
             comment.MeetingId = model.MeetingId;
             comment.Text = model.Text;
-            comment = MessageService.Update(comment, blobs: model.Blobs, options: model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text }));
-
+            comment.Options = model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text });
+            comment = MessageService.Update(comment, blobs: model.Blobs);
             return PartialView("_Comment", comment);
         }
 
