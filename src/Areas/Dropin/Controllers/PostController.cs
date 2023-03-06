@@ -20,7 +20,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpGet("{id:int}")]
     public IActionResult Get(int id) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
@@ -38,7 +38,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpGet("{id:int}/edit")]
     public IActionResult Edit(int id) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
@@ -61,7 +61,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPut("{id:int}")]
     public IActionResult Update(int id, MessageModel model) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
@@ -72,7 +72,7 @@ public class PostController : AreaController {
             post.MeetingId = model.MeetingId;
             post.Text = model.Text;
             post.Options = model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text });
-            post = MessageService.Update(post, blobs: model.Blobs);
+            post = PostService.Update(post, blobs: model.Blobs);
             return PartialView("_Post", post);
         }
         model.Parent = post.Parent;
@@ -87,12 +87,12 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/pin")]
     public IActionResult Pin(int id) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
 
-        post = MessageService.Pin(post.Id);
+        post = PostService.Pin(post.Id);
         return PartialView("_Post", post);
     }
 
@@ -103,12 +103,12 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/unpin")]
     public IActionResult Unpin(int id) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
 
-        post = MessageService.Unpin(post.Id);
+        post = PostService.Unpin(post.Id);
         return PartialView("_Post", post);
     }
 
@@ -119,12 +119,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/trash")]
     public IActionResult Trash(int id) {
-        var post = MessageService.Get(id);
-        if (post == null) {
-            return BadRequest();
-        }
-
-        post = MessageService.Trash(post.Id);
+        var post = PostService.Trash(id);
         return PartialView("_Post", post);
     }
 
@@ -135,12 +130,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/restore")]
     public IActionResult Restore(int id) {
-        var post = MessageService.Get(id, trashed: true);
-        if (post == null) {
-            return BadRequest();
-        }
-
-        post = MessageService.Restore(post.Id);
+        var post = PostService.Restore(id);
         return PartialView("_Post", post);
     }
 
@@ -151,7 +141,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpGet("{id:int}/comments")]
     public IActionResult Comments(int id) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
@@ -166,19 +156,19 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/comments")]
     public IActionResult InsertComment(int id, MessageModel model) {
-        var post = MessageService.Get(id);
+        var post = PostService.Get(id);
         if (post == null) {
             return BadRequest();
         }
 
         if (ModelState.IsValid) {
-            var comment = MessageService.Insert(new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) }, post, blobs: model.Blobs);
+            var comment = CommentService.Insert(new Comment { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) }, post, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 var result = new TurboStreamsResult();
 
                 // get post again (for updated comment count)
-                post = MessageService.Get(id);
+                post = PostService.Get(id);
 
                 // reset form
                 ModelState.Clear();               
@@ -206,7 +196,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpGet("comments/{id:int}")]
     public IActionResult GetComment(int id) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
@@ -224,13 +214,8 @@ public class PostController : AreaController {
     /// <param name="id">Id of the comment to trash.</param>
     /// <returns></returns>
     [HttpPost("comments/{id:int}/trash")]
-    public IActionResult TrashComment(int id) {
-        var comment = MessageService.Get(id);
-        if (comment == null) {
-            return BadRequest();
-        }
-
-        comment = MessageService.Trash(comment.Id);
+    public IActionResult TrashComment(int id) {        
+        var comment = CommentService.Trash(id);
 
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Comment", comment));
@@ -246,12 +231,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPost("comments/{id:int}/restore")]
     public IActionResult RestoreComment(int id) {
-        var comment = MessageService.Get(id, trashed: true);
-        if (comment == null) {
-            return BadRequest();
-        }
-
-        comment = MessageService.Restore(comment.Id);
+        var comment = CommentService.Restore(id);
 
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Comment", comment));
@@ -266,7 +246,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpGet("comments/{id:int}/edit")]
     public IActionResult EditComment(int id) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
@@ -289,7 +269,7 @@ public class PostController : AreaController {
     /// <returns></returns>
     [HttpPut("comments/{id:int}")]
     public IActionResult UpdateComment(int id, MessageModel model) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
@@ -300,7 +280,7 @@ public class PostController : AreaController {
             comment.MeetingId = model.MeetingId;
             comment.Text = model.Text;
             comment.Options = model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text });
-            comment = MessageService.Update(comment, blobs: model.Blobs);
+            comment = CommentService.Update(comment, blobs: model.Blobs);
             return PartialView("_Comment", comment);
         }
 

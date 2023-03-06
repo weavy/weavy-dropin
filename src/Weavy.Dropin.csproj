@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Weavy.Core" Version="15.0.1" />
+    <PackageReference Include="Weavy.Core" Version="16.0.0" />
   </ItemGroup>
 
   <ItemGroup>

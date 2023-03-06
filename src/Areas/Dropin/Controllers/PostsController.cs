@@ -21,22 +21,22 @@ public class PostsController : AreaController {
     /// <param name="query"></param>
     /// <returns></returns>
     [HttpGet("{id:int}")]
-    public IActionResult Get(int id, MessageQuery query) {
+    public IActionResult Get(int id, PostQuery query) {
         var app = AppService.Get<Posts>(id);
         if (app == null) {
             return BadRequest();
         }
 
         query.AppId = app.Id;
-        query.OrderBy = $"IsPinned DESC, {nameof(Message.Id)} DESC";
+        query.OrderBy = $"IsPinned DESC, {nameof(Post.Id)} DESC";
         query.Parent = app;
         // limit page size to [1,10]
         query.Top = Math.Clamp(query.Top ?? PageSizeSmall, 1, PageSizeSmall);
-        app.Messages = MessageService.Search(query);
+        app.Items = PostService.Search(query);
 
         if (Request.IsAjaxRequest()) {
             // infinite scroll, return partial view                
-            return PartialView("_Posts", app.Messages);
+            return PartialView("_Posts", app.Items);
         }
 
         return View(app);
@@ -56,8 +56,8 @@ public class PostsController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var post = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
-            post = MessageService.Insert(post, app, blobs: model.Blobs);
+            var post = new Post { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
+            post = PostService.Insert(post, app, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {                              
                 var result = new TurboStreamsResult();

@@ -44,10 +44,10 @@
     "@microsoft/signalr": "^6.0.4",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.2",
-    "pdfjs-dist": "^3.0.279"
+    "pdfjs-dist": "^3.2.146"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=19.3.0",
+    "npm": ">=9.2.0"
   }
 }

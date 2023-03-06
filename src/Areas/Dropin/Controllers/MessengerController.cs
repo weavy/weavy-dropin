@@ -141,7 +141,7 @@ public class MessengerController : AreaController {
     /// <summary>
     /// Called by messenger-controller to update ui after message was updated.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">Id of the updated <see cref="Message"/>.</param>
     /// <returns></returns>
     [HttpGet("turbostream-update-message/{id:int}")]
     public IActionResult TurboStreamUpdateMessage(int id) {

@@ -1,4 +1,4 @@
-@model Message
+@model Comment
 @{
   var user = Model.CreatedBy();
   var images = Model.Attachments.Where(x => FileUtils.IsImage(x.Blob.Name) && x.ThumbUrl(null, null) != null);

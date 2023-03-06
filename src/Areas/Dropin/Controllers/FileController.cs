@@ -254,7 +254,7 @@ public class FileController : AreaController {
 
 
         if (ModelState.IsValid) {
-            var comment = MessageService.Insert(new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) }, file, blobs: model.Blobs);
+            var comment = CommentService.Insert(new Comment { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) }, file, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {
                 var result = new TurboStreamsResult();
@@ -282,7 +282,7 @@ public class FileController : AreaController {
     /// <returns></returns>
     [HttpGet("comments/{id:int}")]
     public IActionResult GetComment(int id) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
@@ -301,11 +301,11 @@ public class FileController : AreaController {
     /// <returns></returns>
     [HttpPost("comments/{id:int}/trash")]
     public IActionResult TrashComment(int id) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
-        comment = MessageService.Trash(comment.Id);
+        comment = CommentService.Trash(comment.Id);
 
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Comment", comment));
@@ -319,12 +319,7 @@ public class FileController : AreaController {
     /// <returns></returns>
     [HttpPost("comments/{id:int}/restore")]
     public IActionResult RestoreComment(int id) {
-        var comment = MessageService.Get(id, trashed: true);
-        if (comment == null) {
-            return BadRequest();
-        }
-
-        comment = MessageService.Restore(comment.Id);
+        var comment = CommentService.Restore(id);
 
         var result = new TurboStreamsResult();
         result.Streams.Add(TurboStream.Replace("_Comment", comment));
@@ -338,7 +333,7 @@ public class FileController : AreaController {
     /// <returns></returns>
     [HttpGet("comments/{id:int}/edit")]
     public IActionResult EditComment(int id) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
@@ -361,7 +356,7 @@ public class FileController : AreaController {
     /// <returns></returns>
     [HttpPut("comments/{id:int}")]
     public IActionResult UpdateComment(int id, MessageModel model) {
-        var comment = MessageService.Get(id);
+        var comment = CommentService.Get(id);
         if (comment == null) {
             return BadRequest();
         }
@@ -372,7 +367,7 @@ public class FileController : AreaController {
             comment.Text = model.Text;
             comment.MeetingId = model.MeetingId;
             comment.Options = model.Options?.Select(x => new PollOption { Id = x.Id, Text = x.Text });
-            comment = MessageService.Update(comment, blobs: model.Blobs);
+            comment = CommentService.Update(comment, blobs: model.Blobs);
 
             return PartialView("_Comment", comment);
         }

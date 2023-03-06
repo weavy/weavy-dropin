@@ -23,7 +23,7 @@ public class MessageModel : IValidatableObject {
     /// <summary>
     /// The Message itself (when editing existing message).
     /// </summary>
-    public Message Message { get; set; }
+    public Msg Message { get; set; }
 
     /// <summary>
     /// Gets or sets ids of files attached to the <see cref="Message"/>.

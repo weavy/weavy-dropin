@@ -111,8 +111,8 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpPost("{id:int}/vote")]
     public IActionResult Vote(int id) {
-        var option = MessageService.Vote(id);
-        var poll = MessageService.Get(option.MessageId);
+        var option = PollService.Vote(id);
+        var poll = option.Parent as Msg;
         return TurboStream.Replace("_Poll", poll);
     }
 
@@ -123,7 +123,7 @@ public class EntityController : AreaController {
     /// <returns></returns>
     [HttpGet("{id:int}/votes")]
     public IActionResult Votes(int id) {
-        var option = MessageService.GetOption(id);
+        var option = PollService.GetOption(id);
         return View("_VotesSheet", option);
     }
 
