@@ -29,10 +29,10 @@ export function setClassNames(classNames) {
     }
 
     // Skip any already existing classes
-    classNamesList = classNamesList.filter((x) => !document.documentElement.classList.contains(x));
+    var onlyNewClassNamesList = classNamesList.filter((x) => !document.documentElement.classList.contains(x));
 
-    if (classNamesList && classNamesList.length) {
-      document.documentElement.classList.add(...classNamesList);
+    if (onlyNewClassNamesList && onlyNewClassNamesList.length) {
+      document.documentElement.classList.add(...onlyNewClassNamesList);
     }
     _lastClassNames = classNamesList;
   }
