@@ -8,19 +8,18 @@
   var method = edit ? HttpMethod.Put : HttpMethod.Post;
   var id = edit ? Model.Message.Id : Model.Parent.Id;
   var buttonText = edit ? T["Update"] : T["Post"];
-  var buttonTitle = edit ? T["Update the post"] : T["Create the post"];
 
-  bool attachments = true;
-  bool cloudfiles = ConfigurationService.BlobProviders.Any();
-  bool embeds = true;
-  bool meetings = false;
-  bool polls = true;
+  bool attachments = Feature.Attachments.IsEnabledFor(Model.Parent); ;
+  bool cloudfiles = Feature.CloudFiles.IsEnabledFor(Model.Parent) && ConfigurationService.BlobProviders.Any();
+  bool embeds = Feature.Embeds.IsEnabledFor(Model.Parent);
+  bool meetings = Feature.Meetings.IsEnabledFor(Model.Parent) && (ConfigurationService.TeamsMeetings || ConfigurationService.ZoomMeetings);
+  bool polls = Feature.Polls.IsEnabledFor(Model.Parent);
 
   var formAttributes = new Dictionary<string, object>();
   formAttributes["data-controller"] = "editor";
   formAttributes["data-editor-placeholder-value"] = @T["Create a post..."];
-  formAttributes["data-editor-target"] = "form";
-  formAttributes["data-editor-draft-value"] = false;
+  formAttributes["data-editor-mentions-value"] = Feature.Mentions.IsEnabledFor(Model.Parent);
+  formAttributes["data-editor-typing-value"] = Feature.Typing.IsEnabledFor(Model.Parent);
   formAttributes["data-action"] = "submit->editor#prepare";
 
   if (!edit) {
@@ -100,7 +99,7 @@
       @if (polls) {
         <button type="button" class="wy-button wy-button-icon" data-polls-target="button" data-action="polls#addPoll" title="@T["Add poll"]"><icon name="poll-box" /></button>
       }
-      <button type="submit" class="wy-button wy-button-primary" data-editor-target="button" title="@buttonTitle">@buttonText</button>
+      <button type="submit" class="wy-button wy-button-primary" data-editor-target="button">@buttonText</button>
     </div>
 
     @* polls *@

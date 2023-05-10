@@ -1,18 +1,16 @@
 @model Message
 @{
-  // get data for "new messages" and "read by" indicators (get conversation from ViewData instead of Model.Parent when possible to avoid N+1 member lookup for every message)
-  var conversation = ViewData[nameof(Message.Parent)] as Conversation;
-  if (conversation == null) {
-    conversation = Model.Parent as Conversation;
+  if (!Feature.Receipts.IsEnabledFor(Model)) {
+    return;
   }
-  var readBy = conversation.Members.Where(x => x.Id != WeavyContext.Current.User.Id && x.MarkedId == Model.Id);  
+
+  // try to get conversation from ViewData instead of Model.Parent when possible to avoid N+1 member lookup for every message
+  var conversation = ViewData[nameof(Message.Parent)] as Conversation ?? Model.Parent as Conversation;
 }
 
 <div id="@DomId(Model)" class="wy-readby-status">
-  @if (readBy.Any()) {
-    foreach (var member in readBy) {
-      @* IMPORTANT: match content with html emitted from MessengerHook.Handle(ConversationMarked) *@
+  @foreach (var member in conversation.Members.Where(x => x.Id != WeavyContext.Current.User.Id && x.MarkedId == Model.Id)) {
+      @* NOTE: match content with html emitted from MessengerHook.Handle(ConversationMarked) *@
       <avatar for="member" size="18" id="readby-@member.Id" data-controller="@Html.If(Context.Request.IsTurboStream(), "readby")" title="@T["Seen by {0} {1}", member.DisplayName, member.MarkedAt.Value.When()]" data-readby-who-value="@member.Id" />
     }
-  }
 </div>

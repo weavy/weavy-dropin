@@ -94,10 +94,14 @@
       </div>
 
       <div class="wy-post-footer">
-        <div class="wy-reactions-line">
-          <partial name="_Reactions" />
-          <partial name="_ReactionMenu" />
-        </div>
+        @if (Feature.Reactions.IsEnabledFor(Model)) {
+          <div class="wy-reactions-line">
+            <partial name="_Reactions" />
+            <partial name="_ReactionMenu" />
+          </div>
+        } else {
+          <partial name="_Likes" />
+        }
         <partial name="~/Areas/Dropin/Views/Post/_CommentCount.cshtml" />
       </div>
 

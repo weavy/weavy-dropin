@@ -10,6 +10,7 @@
 @use "theme/buttons";
 @use "theme/content";
 @use "theme/dropdown";
+@use "theme/embed";
 @use "theme/emoji";
 @use "theme/icons";
 @use "theme/image-grid";
@@ -31,16 +32,6 @@
 @use "theme/toasts";
 @use "theme/typing";
 @use "theme/meeting";
-
-/*html {
-  height: 100%;
-}*/
-
-/*body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}*/
 
 .wy-main {
   min-height: 100vh;

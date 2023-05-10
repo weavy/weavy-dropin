@@ -2,6 +2,10 @@
 @use "theme/base/reboot";
 @use "theme/base/vars";
 
+:where(:root) {
+  --wy-font-family: #{vars.$font-family-sans-serif};
+}
+
 *,
 *::before,
 *::after {
@@ -9,7 +13,7 @@
 }
 
 html {
-  font-family: var(--wy-font-family), #{vars.$font-family-sans-serif};
+  font-family: var(--wy-font-family);
   font-size: vars.$font-size-base;
   font-weight: vars.$font-weight-base;
   line-height: vars.$line-height-base;

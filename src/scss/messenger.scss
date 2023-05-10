@@ -2,7 +2,7 @@
 @use "reboot";
 @use "turbo";
 
-// thheme components
+// theme components
 @use "theme/base/vars";
 @use "theme/base/scroll";
 @use "theme/appbar";
@@ -13,6 +13,7 @@
 @use "theme/content";
 @use "theme/conversations";
 @use "theme/dropdown";
+@use "theme/embed";
 @use "theme/emoji";
 @use "theme/facepile";
 @use "theme/icons";
@@ -37,16 +38,6 @@
 @use "theme/toasts";
 @use "theme/typing";
 @use "theme/meeting";
-
-/*html {
-  height: 100%;
-}*/
-
-/*body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}*/
 
 .wy-main {
   min-height: 100vh;

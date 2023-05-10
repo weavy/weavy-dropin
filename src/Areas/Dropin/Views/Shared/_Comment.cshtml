@@ -58,11 +58,15 @@
         }
       </div>
     </div>
-    <div class="wy-reactions-line">
-      <partial name="_Reactions" />
-      <partial name="_ReactionMenu" />
-    </div>
 
+    @if (Feature.Reactions.IsEnabledFor(Model)) {
+      <div class="wy-reactions-line">
+        <partial name="_Reactions" />
+        <partial name="_ReactionMenu" />
+      </div>
+    } else {
+      <partial name="_Likes" />
+    }
 
   </turbo-frame>
 }

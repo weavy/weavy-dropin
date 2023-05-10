@@ -1,6 +1,6 @@
 @model Chat
 @{
-  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);  
+  HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
   BodyAttributes.Add("data-app-id", Model.Id.ToString());
   BodyAttributes.Add("data-app-uid", Model.Eid());
   BodyAttributes.Add("data-user-id", WeavyContext.Current.User.Id.ToString());
@@ -22,13 +22,14 @@
 <body>
 
   <main role="main"
-    class="wy-main wy-pane wy-pane-background"
-    data-controller="scroll chat message pagination"
-    data-pagination-mode-value="reverse"
-    data-pagination-deferred-value="true"
-    data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom scroll:at-bottom->pagination#setup"
-    data-chat-events-value="[&quot;message_created&quot;,&quot;read_by&quot;,&quot;reaction_added&quot;,&quot;reaction_removed&quot;]"
-    data-chat-group-value="@Model.Eid()">
+        class="wy-main wy-pane wy-pane-background"
+        data-controller="scroll chat message pagination"
+        data-pagination-mode-value="reverse"
+        data-pagination-deferred-value="true"
+        data-action="load@window->scroll#toBottom turbo:load@window->scroll#toBottom scroll:at-bottom->pagination#setup"
+        data-chat-events-value="[&quot;message_created&quot;,&quot;read_by&quot;,&quot;reaction_added&quot;,&quot;reaction_removed&quot;]"
+        data-chat-group-value="@Model.Eid()"
+        data-message-app-value="@Model.Id">
     <div class="wy-pane-body">
       <div id="messages" class="wy-messages" data-message-target="container" style="visibility: hidden;">
         <partial name="_MessagePlaceholder" />

@@ -84,7 +84,7 @@ public class ChatController : AreaController {
         }
 
         if (ModelState.IsValid) {
-            var message = new Message { Text = model.Text, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
+            var message = new Message { Text = model.Text, EmbedId = model.EmbedId, MeetingId = model.MeetingId, Options = model.Options?.Select(x => new PollOption(x.Text)) };
             message = MessageService.Insert(message, conversation, blobs: model.Blobs);
 
             if (Request.IsTurboStream()) {

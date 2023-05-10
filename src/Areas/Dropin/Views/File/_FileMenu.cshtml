@@ -15,8 +15,9 @@
       @if (Model.Blob.Provider != null) {
         <a class="wy-dropdown-item" href="@Model.Blob.Link" target="_blank"><icon name="@Model.Blob.Provider.ToKebabCase()" /> @T["Open in {0}", Model.Blob.Provider]</a>
       } else {
-        if (FileUtils.IsOfficeDocument(Model.Name)) {
-          <a class="wy-dropdown-item" href="@Model.OfficeUrl(hmac: true)"><icon name="@FileUtils.GetIcon(Model)" /> @T["Open in {0}", FileUtils.OpenWith(Model.Name)] </a>
+        var officeUrl = Model.OfficeUrl(hmac: true);
+        if (officeUrl != null) {
+          <a class="wy-dropdown-item" href="@officeUrl"><icon for="@Model.Blob" /> @T["Open in {0}", FileUtils.OpenWith(Model.Name)] </a>
         }
         <a class="wy-dropdown-item" href="@Model.Url()" download><icon name="download" />@T["Download"]</a>
       }

@@ -13,54 +13,27 @@ import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 
 export default class extends Controller {
 
-  static targets = ["container", "control", "form", "button", "attachments", "meetings", "polls", "placeholder"];
+  static targets = ["container", "control", "button", "attachments", "meetings", "polls"];
   static values = {
     autofocus: { type: Boolean, default: false },
     placeholder: { type: String, default: "" },
-    draft: { type: Boolean, default: true },
-    typing: { type: Boolean, default: false }
+    draft: { type: Boolean, default: false },
+    mentions: { type: Boolean, default: false }
   };
 
-  appId = document.querySelector("body").dataset.appId;
   editor;
-  throttledTyping;
+
+  // REVIEW: we should probably declare appId as value instead of reading from DOM
+  appId = document.querySelector("body").dataset.appId;
+  
+  // throttled typing event
+  typing = throttle(function () { this.dispatch("typing") }, 2000);
 
   connect() {
     let that = this;
 
     // define extensions
     let extensions = [
-      autocompletion({
-        override: [autocomplete],
-        closeOnBlur: false,
-        icons: false,
-        addToOptions: [
-          {
-            render: function (completion, state) {
-              let div = document.createElement("div");
-              div.classList.add("wy-item");
-              div.classList.add("wy-item-hover");
-
-              if (!completion.item.is_member) {
-                div.classList.add("wy-disabled");
-              }
-
-              let img = document.createElement("img");
-              img.classList.add("wy-avatar");
-              img.src = completion.item.avatar_url;
-
-              let name = document.createElement("div");
-              name.classList.add("wy-item-body");
-              name.innerText = (completion.item.display_name);
-
-              div.appendChild(img);
-              div.appendChild(name);
-              return div;
-            },
-            position: 10
-          }
-        ]
-      }),
       history(),
       dropCursor(),
       mentions,
@@ -89,18 +62,58 @@ export default class extends Controller {
       })
     ];
 
-    // hook up typing
-    this.throttledTyping = throttle(function () { that.sendTyping() }, 2000);
+    // register autocomplete users
+    if (this.mentionsValue) {
+      extensions.push(
+        autocompletion({
+          override: [autocomplete],
+          closeOnBlur: false,
+          icons: false,
+          addToOptions: [
+            {
+              render: function (completion, state) {
+                let div = document.createElement("div");
+                div.classList.add("wy-item");
+                div.classList.add("wy-item-hover");
 
+                if (!completion.item.is_member) {
+                  div.classList.add("wy-disabled");
+                }
+
+                let img = document.createElement("img");
+                img.classList.add("wy-avatar");
+                img.src = completion.item.avatar_url;
+
+                let name = document.createElement("div");
+                name.classList.add("wy-item-body");
+                name.innerText = (completion.item.display_name);
+
+                div.appendChild(img);
+                div.appendChild(name);
+                return div;
+              },
+              position: 10
+            }
+          ]
+        })
+      );
+    }
+
+    // register update listener
     extensions.push(EditorView.updateListener.of(update => {
-      // REVIEW: should probably reset state or something to stop typing after a message has been submitted, instead of checking if text is empty
-      let content = this.editor.state.doc.toString();
+      if (update.docChanged) {
+        // get update content
+        let content = this.editor.state.doc.toString();
 
-      if (update.docChanged && content.length > 0) {
-        if (this.typingValue) {
-          this.throttledTyping();
+        // dispatch "editor:updated" event
+        this.dispatch("updated", { detail: { content: content } })
+        //this.sendDocUpdated(content);
+
+        // REVIEW: should probably reset state or something to stop typing after a message has been submitted, instead of checking if text is empty
+        if (content.length > 0) {
+          this.typing();
         }
-        this.sendDocUpdated(content);
+
       }
     }));
 
@@ -133,16 +146,11 @@ export default class extends Controller {
     });
   }
 
-  sendTyping() {
-    fetch("/dropin/messenger/" + this.appId + "/typing", { method: "POST" }).catch(err => { /* deal with error */ });
-  }
-
-  sendDocUpdated(content) {
-    this.dispatch("updated", { detail: { content: content } })
-  }
-
+  // REVIEW: dispatch "editor:submit" event instead of trying to submit the form from within the editor?
   submitForm() {
-    this.buttonTarget.click();
+    if (this.hasButtonTarget) {
+      this.buttonTarget.click();
+    }
   }
 
   saveDraft() {
@@ -184,9 +192,8 @@ export default class extends Controller {
     // clear text
     this.editor.dispatch({ changes: { from: 0, to: this.editor.state.doc.length, insert: "" } });
 
-    if (this.throttledTyping) {
-      this.throttledTyping.cancel();
-    }
+    // cancel outstanding typing events
+    this.typing.cancel();
   }
 
   disconnect() {

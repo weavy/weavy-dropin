@@ -4,16 +4,18 @@
 }
 
 <div id="@DomId(Model)" class="wy-likes">
-    @if (Model.IsLiked()) {
-        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unlike)" asp-route-id="@Model.Eid()">
-            <button type="submit" class="wy-button wy-button-icon"><icon name="thumb-up" /></button>
-        </form>
-    } else {
-        <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Like)" asp-route-id="@Model.Eid()">
-            <button type="submit" class="wy-button wy-button-icon"><icon name="thumb-up-outline" /></button>
-        </form>
-    }
-    @if (likes > 0) {
-        <a class="p-1" href="#"><small>@likes</small></a>
-    }
+  @if (Model.IsLiked()) {
+    <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Unlike)" asp-route-id="@Model.Eid()">
+      <button type="submit" class="wy-button wy-button-icon wy-like-button"><icon name="thumb-up" size="20" /></button>
+    </form>
+  } else {
+    <form asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.Like)" asp-route-id="@Model.Eid()">
+      <button type="submit" class="wy-button wy-button-icon wy-like-button"><icon name="thumb-up-outline" size="20" /></button>
+    </form>
+  }
+  @if (likes > 0) {
+    <a class="wy-like-count" asp-controller="@typeof(EntityController).ControllerName()" asp-action="@nameof(EntityController.ReactionsModal)" asp-route-id="@Model.Eid()" data-turbo-frame="sheet">
+      @T.Plural(likes, "{0} like", "{0} likes")
+    </a>
+  }
 </div>

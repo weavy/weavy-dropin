@@ -5,6 +5,17 @@ export default class extends Controller {
 
   static targets = ["container", "placeholder"]
 
+  static values = {
+    app: Number
+  }
+
+  // notify server that authenticated user is typing a message
+  notifyTyping() {
+    if (this.appValue) {
+      fetch("/api/apps/" + this.appValue + "/messages/typing/", { method: "PUT" }).catch(err => { console.warn(err); });
+    }
+  }
+
   // inject a placeholder message that will be visible during the submit phase
   showPlaceholder(data) {
 

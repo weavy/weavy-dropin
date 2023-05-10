@@ -1,6 +1,17 @@
 @model MessageModel
 
 @{
+  // feature checks
+  if (!Feature.Comments.IsEnabledFor(Model.Parent)) {
+    return;
+  }
+
+  bool attachments = Feature.Attachments.IsEnabledFor(Model.Parent);
+  bool cloudfiles = Feature.CloudFiles.IsEnabledFor(Model.Parent) && ConfigurationService.BlobProviders.Any();
+  bool embeds = Feature.Embeds.IsEnabledFor(Model.Parent);
+  bool meetings = Feature.Meetings.IsEnabledFor(Model.Parent) && (ConfigurationService.TeamsMeetings || ConfigurationService.ZoomMeetings);
+  bool polls = false; // Feature.Polls.IsEnabledFor(Model.Parent);
+
   // update or insert?
   var edit = Model.Message != null;
 
@@ -16,19 +27,12 @@
   // for inline editing we need to generate the same id as the _Comment partial
   var domId = Model.Message != null ? DomId("_Comment", Model.Message) : DomId(Model.Parent);
 
-  // TODO: get from configuration
-  bool attachments = true;
-  bool cloudfiles = ConfigurationService.BlobProviders.Any();
-  bool embeds = false;
-  bool meetings = false;
-  bool polls = false;
-
   var formAttributes = new Dictionary<string, object>();
   formAttributes["data-controller"] = "editor";
   formAttributes["data-editor-placeholder-value"] = @T["Write a comment..."];
-  formAttributes["data-editor-target"] = "form";
-  formAttributes["data-editor-draft-value"] = false;
-  formAttributes["data-action"] = "submit->editor#prepare";
+  formAttributes["data-editor-mentions-value"] = Feature.Mentions.IsEnabledFor(Model.Parent);
+  formAttributes["data-editor-typing-value"] = Feature.Typing.IsEnabledFor(Model.Parent);  
+    formAttributes["data-action"] = "submit->editor#prepare";
   if (!edit) {
     formAttributes["data-action"] += " editor:placeholder->comment#showPlaceholder";
   }
@@ -81,33 +85,32 @@
 
     @* editor *@
     <div class="wy-comment-editor-inputs" data-attachments-target="dropzone">
-      <div class="wy-dropdown dropdown">
-        <button class="wy-button wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown" title="@T["Attach"]"><icon name="plus" />@Svg.Spinner(size: 20, spin: true)</button>
-        <div class="wy-dropdown-menu dropdown-menu">
-          @if (attachments) {
-            <button type="button" class="wy-dropdown-item" data-action="attachments#select"><icon name="attachment" />@T["File from device"]</button>
-            <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
-
-          }
-          @if (cloudfiles) {
-            <button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" />@T["File from cloud"]</button>
-          }
-          @if (meetings) {
-            if (ConfigurationService.TeamsMeetings) {
-              <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" /> @T["Teams meeting"]</button>
+      @if (attachments || cloudfiles || meetings || polls) {
+        <div class="wy-dropdown dropdown">
+          <button class="wy-button wy-button-icon" data-file-picker-target="dropdown" data-bs-toggle="dropdown" title="@T["Attach"]"><icon name="plus" />@Svg.Spinner(size: 20, spin: true)</button>
+          <div class="wy-dropdown-menu dropdown-menu">
+            @if (attachments) {
+              <button type="button" class="wy-dropdown-item" data-action="attachments#select"><icon name="attachment" />@T["File from device"]</button>
+              <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-attachments-target="input" data-action="change->attachments#upload" multiple hidden />
             }
-            if (ConfigurationService.ZoomMeetings) {
-              <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" /> @T["Zoom meeting"]</button>
+            @if (cloudfiles) {
+              <button type="button" class="wy-dropdown-item" data-action="click->file-picker#open"><icon name="cloud" />@T["File from cloud"]</button>
             }
-          }
-          @if (polls) {
-            <button type="button" class="wy-dropdown-item" data-polls-target="button" data-action="polls#addPoll"><icon name="poll-box" /> @T["Poll"]</button>
-          }
+            @if (meetings) {
+              if (ConfigurationService.TeamsMeetings) {
+                <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="teams"><icon name="microsoft-teams" color="native" /> @T["Teams meeting"]</button>
+              }
+              if (ConfigurationService.ZoomMeetings) {
+                <button type="button" class="wy-dropdown-item" data-meetings-target="button" data-action="meetings#add" data-meetings-provider-param="zoom"><icon name="zoom" color="native" /> @T["Zoom meeting"]</button>
+              }
+            }
+            @if (polls) {
+              <button type="button" class="wy-dropdown-item" data-polls-target="button" data-action="polls#addPoll"><icon name="poll-box" /> @T["Poll"]</button>
+            }
+          </div>
         </div>
-      </div>
-
+      }
       <div class="wy-comment-editor-text">
-        
         <div class="wy-comment-editor-container" data-editor-target="container"><input type="hidden" asp-for="Text" data-editor-target="control" /></div>
       </div>
       <button type="submit" class="wy-button wy-button-icon" data-editor-target="button"><icon name="send" color="primary" /></button>

@@ -497,21 +497,5 @@ public class MessengerController : AreaController {
         AppService.RemoveMember(conversation.Id, WeavyContext.Current.User.Id);
         return SeeOtherAction(nameof(Index));
     }
-
-    /// <summary>
-    /// Called by current user to indicate that they are typing in a conversation.
-    /// </summary>
-    /// <param name="id">Id of conversation.</param>
-    /// <returns></returns>
-    [HttpPost]
-    [Route("{id:int}/typing")]
-    public IActionResult Typing(int id) {
-        var conversation = ConversationService.Get(id);
-        if (conversation == null) {
-            return NotFound();
-        }
-        EntityService.Typing(conversation);
-        return Ok(id);
-    }
 }
 

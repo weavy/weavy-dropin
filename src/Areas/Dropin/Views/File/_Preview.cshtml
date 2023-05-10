@@ -1,20 +1,23 @@
 @model File
 @{
-  // get icon and preview format for blob
-  var icon = FileUtils.GetIcon(Model);
-  var fmt = Model.PreviewFormat;
+  // get url, preview format and icon
+  var url = Model.PreviewUrl(out var fmt);
   if (fmt == PreviewFormat.Embed && WeavyContext.Current.Browser.Platform == "iOS") {
     // cannot embed on ios?
     fmt = PreviewFormat.None;
   }
+  var icon = FileUtils.GetIcon(Model.Blob);
 }
 <div id="preview" class="turbo-stream-content">
 
   @if (fmt == PreviewFormat.Text) {
+
     <div class="wy-document wy-light">
       <pre class="wy-content-text">@System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob).FullName)</pre>
     </div>
+
   } else if (fmt == PreviewFormat.Code) {
+
     <div class="wy-content wy-content-code">
       @Html.Raw(System.IO.File.ReadAllText(BlobService.GetContent(Model.Blob, ".html").FullName))
     </div>
@@ -31,7 +34,7 @@
 
     // our thumb function cannot handle animated gifs, and svgs don't need to be resized
     var ext = FileUtils.GetExtension(Model.Blob.Name);
-    var src = (ext == ".gif" || ext == ".svg") ? Model.Url(cachebust: true) : Model.ThumbUrl(1920, 1920);
+    var src = (ext == ".gif" || ext == ".svg") ? Model.Url(cachebust: true) : @url;
 
     if (Model.Blob.Width != null && Model.Blob.Height != null) {
       <div class="wy-content-image wy-responsive-image" data-controller="image" style="--width: @Model.Blob.Width; --height: @Model.Blob.Height">
@@ -46,7 +49,7 @@
 
   } else if (fmt == PreviewFormat.Pdf) {
 
-    <div class="wy-content-pdf" data-controller="pdf" data-pdf-url-value="@Model.Url(extension: ".pdf", cachebust: true)">
+    <div class="wy-content-pdf" data-controller="pdf" data-pdf-url-value="@url">
       <div class="wy-toolbars-bottom">
         <nav class="wy-toolbar wy-toolbar-center">
           <div class="wy-toolbar-buttons">
@@ -73,7 +76,7 @@
   } else if (fmt == PreviewFormat.Video) {
 
     <video id="content-video" data-controller="media" class="wy-content-video" controls crossorigin="use-credentials" autoplay>
-      <source src="@Model.Url(cachebust:true)" type="@Model.Blob.MediaType" />
+      <source src="@url" type="@Model.Blob.MediaType" />
       <div class="wy-content-icon">
         <icon name="@icon" size="64" />
         <div>@T["No preview available :("]</div>
@@ -84,13 +87,13 @@
   } else if (fmt == PreviewFormat.Audio) {
 
     <audio id="content-audio" data-controller="media" class="wy-content-audio" controls crossorigin="use-credentials" autoplay>
-      <source src="@Model.Url(cachebust:true)" type="@Model.Blob.MediaType" />
+      <source src="@url" type="@Model.Blob.MediaType" />
     </audio>
 
   } else if (fmt == PreviewFormat.Embed) {
 
     @* iframe needs to be object to not render error pages when content is blocked *@
-    <object data-controller="embed-html" class="wy-content-iframe wy-loading" data="@Model.Blob.Embed"></object>
+    <object data-controller="embed-html" class="wy-content-iframe wy-loading" data="@url"></object>
     @Svg.Spinner(spin: true)
 
     @* fallback to file-type icon if embed cannot be loaded *@
