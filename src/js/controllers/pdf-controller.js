@@ -44,11 +44,11 @@ export default class extends Controller {
     });
 
     // Some PDFs need external cmaps.
-    const CMAP_URL = "/js/cmaps/";
+    const CMAP_URL = "/cmaps/";
     const CMAP_PACKED = true;
 
     // Setting worker path to worker bundle.
-    pdfjsLib.GlobalWorkerOptions.workerSrc =  "/js/preview.worker.js";
+    pdfjsLib.GlobalWorkerOptions.workerSrc =  "/js/pdf.worker.min.js";
 
     this.pdfViewer = new pdfjsViewer.PDFViewer({
       container,

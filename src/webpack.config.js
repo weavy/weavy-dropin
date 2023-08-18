@@ -4,7 +4,6 @@ const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env, argv) => {
   const config = {
@@ -32,10 +31,6 @@ module.exports = (env, argv) => {
         import: './js/preview.js',
         dependOn: 'asap'
       },
-      "preview.worker": {
-        import: 'pdfjs-dist/build/pdf.worker.min',
-        filename: "preview.worker.js"
-      },
       test: {
         import: './js/test.js',
       },
@@ -49,15 +44,9 @@ module.exports = (env, argv) => {
       new webpack.DefinePlugin({
         WEAVY_DEVELOPMENT: JSON.stringify(argv.mode === "development" ? true : false),
         WEAVY_PRODUCTION: JSON.stringify(argv.mode === "production" ? true : false),
-      }),
-      new CopyPlugin({
-        patterns: [
-          { from: "node_modules/pdfjs-dist/cmaps", to: 'cmaps', info: { minimized: true } },
-        ],
-      }),
+      })
     ],
     module: {
-      noParse: /pdfjs-dist[\\/]build[\\/]pdf\.worker/,
       rules: [
         {
           test: /\.js$/,
