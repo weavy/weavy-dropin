@@ -10,7 +10,7 @@
 
 <div id="@DomId(Model)" class="wy-readby-status">
   @foreach (var member in conversation.Members.Where(x => x.Id != WeavyContext.Current.User.Id && x.MarkedId == Model.Id)) {
-      @* NOTE: match content with html emitted from MessengerHook.Handle(ConversationMarked) *@
-      <avatar for="member" size="18" id="readby-@member.Id" data-controller="@Html.If(Context.Request.IsTurboStream(), "readby")" title="@T["Seen by {0} {1}", member.DisplayName, member.MarkedAt.Value.When()]" data-readby-who-value="@member.Id" />
+      @* NOTE: must match markup emitted from MessengerHook.Handle(ConversationMarked) *@
+    <avatar for="member" size="18" id="readby-@member.Id" title="@T["Seen by {0} {1}", member.DisplayName, member.MarkedAt.Value.When()]" data-controller="@Html.If(Context.Request.IsTurboStream(), "readby")" data-readby-who-value="@member.Id" />
     }
 </div>

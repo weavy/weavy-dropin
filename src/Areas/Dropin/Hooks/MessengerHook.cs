@@ -26,8 +26,14 @@ public class MessengerHook : IHook<ConversationMarked> {
             // append new "read by" indicator (stimulus controller will move the indicator to the correct position)            
             var domId = TurboStreamHelper.DomId("/Areas/dropin/Views/Shared/_ReadBy.cshtml", "m" + e.MarkedId.Value);
 
-            // NOTE: match content with the _ReadBy partial
-            template = @$"<turbo-stream action=""append"" target=""{domId}""><template><img id=""readby-{e.Actor.Id}"" src=""{e.Actor.AvatarUrl(18)}"" width=""18"" height=""18"" alt="""" class=""wy-avatar"" hidden title=""{string.Format(CultureInfo.InvariantCulture, "Seen by {0} {1}", e.Actor.DisplayName, e.MarkedAt.Value.When())}"" data-controller=""readby"" data-readby-who-value=""{e.Actor.Id}""></template></turbo-stream>";
+            // NOTE: must match markup in _ReadBy.cshtml
+            template = $"""
+            <turbo-stream target="{domId}" action="append">
+                <template>
+                    <img id="readby-{e.Actor.Id}" class="wy-avatar" src="{e.Actor.AvatarUrl(18)}" width="18" height="18" alt="" title="Seen by {e.Actor.DisplayName} {e.MarkedAt.Value.When()}" data-controller="readby" data-readby-who-value="{e.Actor.Id}" hidden>
+                </template>
+            </turbo-stream>
+            """;
         }
         await PushService.PushToGroupAsync(e.Conversation.Eid(), "read_by", template);
     }

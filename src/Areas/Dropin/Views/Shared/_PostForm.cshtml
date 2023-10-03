@@ -10,7 +10,7 @@
   var buttonText = edit ? T["Update"] : T["Post"];
 
   bool attachments = Feature.Attachments.IsEnabledFor(Model.Parent); ;
-  bool cloudfiles = Feature.CloudFiles.IsEnabledFor(Model.Parent) && ConfigurationService.BlobProviders.Any();
+  bool cloudfiles = attachments && Feature.CloudFiles.IsEnabledFor(Model.Parent) && ConfigurationService.BlobProviders.Any();
   bool embeds = Feature.Embeds.IsEnabledFor(Model.Parent);
   bool meetings = Feature.Meetings.IsEnabledFor(Model.Parent) && (ConfigurationService.TeamsMeetings || ConfigurationService.ZoomMeetings);
   bool polls = Feature.Polls.IsEnabledFor(Model.Parent);

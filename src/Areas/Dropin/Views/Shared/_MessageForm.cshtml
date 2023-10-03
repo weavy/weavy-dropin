@@ -2,7 +2,7 @@
 @{
 
   bool attachments = Feature.Attachments.IsEnabledFor(Model.Parent); ;
-  bool cloudfiles = Feature.CloudFiles.IsEnabledFor(Model.Parent) && ConfigurationService.BlobProviders.Any();
+  bool cloudfiles = attachments && Feature.CloudFiles.IsEnabledFor(Model.Parent) && ConfigurationService.BlobProviders.Any();
   bool embeds = Feature.Embeds.IsEnabledFor(Model.Parent);
   bool meetings = Feature.Meetings.IsEnabledFor(Model.Parent) && (ConfigurationService.TeamsMeetings || ConfigurationService.ZoomMeetings);
   // TODO: add support for polls in message editor, for now we disable it
