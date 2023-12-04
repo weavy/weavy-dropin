@@ -13,9 +13,14 @@
 
 <section class="wy-test-section">
   <h2 class="wy-headline">Avatars</h2>
-  <avatar for="WeavyContext.Current.User" size="48" />
-  <avatar for="WeavyContext.Current.User" size="32" />
-  <avatar for="WeavyContext.Current.User" size="24" />
+  <avatar for="WeavyContext.Current.User" size="64" />
+  <avatar for="WeavyContext.Current.User" size="48" presence="true" />
+  <div class="wy-avatars" style="width:48px; height:48px;">
+    <avatar for="WeavyContext.Current.User" size="48" style="color: green" />
+    <avatar for="WeavyContext.Current.User" size="48" style="color: blue" />
+  </div>
+  <avatar for="WeavyContext.Current.User" size="32" style="color: yellow" />
+  <avatar for="WeavyContext.Current.User" size="24" style="color: lime" />
 </section>
 
 <section class="wy-test-section">
@@ -58,9 +63,7 @@
 
 <section class="wy-test-section">
   <h2 class="wy-headline">Emoji</h2>
-  @Svg.Emoji(";)")
-  @Svg.Emoji(":smiley:", inline:true)
-  @Svg.Emoji("😎")
+  Emoji <emoji name=":smiley:" /> inline with <emoji name="😎" /> text
 </section>
 
 <section class="wy-test-section">

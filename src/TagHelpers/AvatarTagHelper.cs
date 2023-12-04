@@ -1,8 +1,14 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
+using System.Linq;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.VisualBasic;
+using Weavy.Core;
 using Weavy.Core.Models;
 using Weavy.Core.Services;
 using Weavy.Core.Utils;
@@ -49,40 +55,97 @@ public class AvatarTagHelper : TagHelper {
         }
 
         if (For != null) {
-            // create avatar image
-            var img = new TagBuilder("img");
-            img.Attributes["alt"] = "";
-            img.Attributes["src"] = For.AvatarUrl(Size);
-            img.Attributes["width"] = img.Attributes["height"] = Size.ToString(CultureInfo.InvariantCulture);
-            img.AddCssClass("wy-avatar");
+            IHtmlContent avatar = null;
 
-            if (Presence) {
-                var userId = For is User user ? user.Id : For is PrivateChat chat ? chat.User?.Id : null;
-                if (userId != null) {
-                    var presence = UserService.GetPresence(userId.Value);
+            var user = For switch {
+                User u => u,
+                PrivateChat chat => chat.User,
+                _ => null
+            };
 
-                    // wrap img in element with position:relative
-                    var div = new TagBuilder("div");
-                    div.AddCssClass("wy-avatar-presence");
-                    output.TagName = div.TagName;
+            if (user != null) {
+                // get avatar for user 
+                avatar = GetAvatar(user);
+
+                if (Presence) {
+                    // wrap avatar in .wy-avatar-presence with position:relative
+                    output.TagName = "div";
                     output.TagMode = TagMode.StartTagAndEndTag;
-                    output.MergeAttributes(div);
-                    output.Content.SetHtmlContent(img);
+                    output.AddClass("wy-avatar-presence", HtmlEncoder.Default);
+                    output.Content.SetHtmlContent(avatar);
 
                     // add absolutely positioned presence indicator
                     var indicator = new TagBuilder("div");
-                    indicator.Attributes["data-presence-id"] = userId.Value.ToString(CultureInfo.InvariantCulture);
+                    indicator.Attributes["data-presence-id"] = user.Id.ToString(CultureInfo.InvariantCulture);
                     indicator.AddCssClass("wy-presence");
+
+                    // get presence for user
+                    var presence = UserService.GetPresence(user.Id);
                     if (presence.Status == PresenceStatus.Active) {
                         indicator.AddCssClass("wy-presence-active");
                     }
                     output.Content.AppendHtml(indicator);
-
                     return;
                 }
+            } else if (For is ChatRoom room && room.Avatar == null) {
+                // composite avatar to indicate a chat room
+                output.TagName = "div";
+                output.TagMode = TagMode.StartTagAndEndTag;
+                output.AddClass("wy-avatars", HtmlEncoder.Default);
+                output.Attributes.SetAttribute("style", $"width:{Size}px; height:{Size}px");
+
+                var member1 = room.Members.FirstOrDefault(x => x.Id != WeavyContext.Current.User.Id);
+                if (member1 != null) {
+                    var member2 = room.Members.FirstOrDefault(x => x.Id != member1.Id && x.Id != WeavyContext.Current.User.Id);
+                    if (member2 == null) {
+                        // current user + other member
+                        output.Content.AppendHtml(GetAvatar(room.Member));
+                        output.Content.AppendHtml(GetAvatar(member1));
+                    } else {
+                        // two members that are not current user
+                        output.Content.AppendHtml(GetAvatar(member1));
+                        output.Content.AppendHtml(GetAvatar(member2));
+                    }
+                } else {
+                    // null + current user
+                    output.Content.AppendHtml(GetAvatar(member1));
+                    output.Content.AppendHtml(GetAvatar(room.Member));                    
+                }
+                
+                return;
+            } else {
+                avatar = GetAvatar(For);
             }
-            output.TagName = img.TagName;
-            output.MergeAttributes(img);
+
+            if (avatar is TagBuilder tb) {
+                // must be img
+                output.TagName = tb.TagName;
+                output.TagMode = TagMode.SelfClosing;
+                output.MergeAttributes(tb);
+                output.Content.SetHtmlContent(tb);
+            } else {
+                // must be svg initials
+                output.TagName = null;
+                output.TagMode = TagMode.StartTagAndEndTag;
+                output.Content.SetHtmlContent(avatar);
+            }
         }
+    }
+
+
+    private IHtmlContent GetAvatar(IHasAvatar hasAvatar) {
+        // use avatar image if available
+        if (hasAvatar?.Avatar != null) {
+            var img = new TagBuilder("img");
+            img.AddCssClass("wy-avatar");
+            img.Attributes["width"] = img.Attributes["height"] = Size.ToString(CultureInfo.InvariantCulture);
+            img.Attributes["src"] = hasAvatar.AvatarUrl(Size);
+            img.Attributes["alt"] = "";
+            return img;
+        }
+
+        // otherwise, fallback to initials (will possibly render circle without initials, which is what we want in case of no avatar image)
+        var name = hasAvatar is User u ? u.DisplayName : "";
+        return Weavy.Core.Utils.Svg.Initials(name ?? "", size: Size, htmlAttributes: new { @class = "wy-avatar" });
     }
 }

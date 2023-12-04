@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EmojiToolkit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Weavy.Core;
@@ -190,7 +191,7 @@ public class EntityController : AreaController {
         }
 
         // convert to unicode
-        content = Emojione.UnifyUnicode(content);
+        content = Emoji.Raw(content);
 
         // toggle reaction
         var reaction = ReactionService.Get(reactable, WeavyContext.Current.User.Id);

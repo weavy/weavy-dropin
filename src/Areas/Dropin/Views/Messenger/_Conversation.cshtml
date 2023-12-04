@@ -1,21 +1,6 @@
+@using EmojiToolkit;
 @model Conversation
-@{
-  // get snippet of last message
-  var snippet = "";
-  if (Model.LastMessage != null) {
-    snippet = Model.LastMessage.Plain;
-    snippet = Emojione.ToImage(snippet);
-    if (string.IsNullOrWhiteSpace(snippet)) {
-      if (Model.LastMessage.AttachmentIds.Any()) {
-        snippet = Weavy.Core.Utils.Svg.Icon("attachment").ToString();
-      } else if (Model.LastMessage.EmbedId != null) {
-        snippet = Weavy.Core.Utils.Svg.Icon("link").ToString();
-      } else if (Model.LastMessage.MeetingId != null) {
-        snippet = Weavy.Core.Utils.Svg.Icon("video").ToString();
-      }
-    }
-  }
-}
+
 <a id="@DomId(Model)" class="wy-item wy-item-lg wy-item-hover wy-conversation @Html.If(Model.IsUnread(), "wy-unread")" data-controller="messenger link @Html.If(ViewData["IsInitialLoad"] == null, "sort")" data-sort-order="@Model.AsSortableDate()" data-sort-direction="desc" data-messenger-group-value="@Model.Eid()" data-messenger-events-value="[&quot;message_created&quot;,&quot;member_added&quot;,&quot;member_removed&quot;]" asp-action="@nameof(MessengerController.Get)" asp-route-id="@Model.Id" data-turbo-frame="_top">
   <avatar for="@Model" size="48" presence="true" />
   <div class="wy-item-body">
@@ -34,7 +19,15 @@
             } else if (Model is ChatRoom) {
               <text>@Model.LastMessage.CreatedBy().DisplayName: </text>
             }
-            @Html.Raw(snippet)
+            @if (!string.IsNullOrEmpty(Model.LastMessage.Plain)) {
+              <text>@Model.LastMessage.Plain</text>
+            } else if (Model.LastMessage.AttachmentIds.Any()) {
+              <icon name="attachment"/>;
+            } else if (Model.LastMessage.EmbedId != null) {
+              <icon name="link" />
+            } else if (Model.LastMessage.MeetingId != null) {
+              <icon name="video" />
+            }
           } else {
             <text>&nbsp;</text>
           }
