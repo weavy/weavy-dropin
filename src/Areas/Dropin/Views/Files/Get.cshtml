@@ -1,6 +1,5 @@
 @model Files
 @{
-  bool attachments = Feature.Attachments.IsEnabledFor(Model);
   bool cloudfiles = Feature.CloudFiles.IsEnabledFor(Model) && ConfigurationService.BlobProviders.Any();
 
   HtmlAttributes.Add("data-allowed-origins", ConfigurationService.AllowedOrigins);
@@ -26,22 +25,18 @@
   <header class="wy-appbars">
     <nav class="wy-toolbar">
       <div class="wy-toolbar-buttons">
-          @if (attachments || cloudfiles) {
             <div class="wy-dropdown">
               <button class="wy-button" data-bs-toggle="dropdown"><span>Add files</span><icon name="plus" /></button>
               <ul class="wy-dropdown-menu dropdown-menu">
-                @if (attachments) {
-                  <li>
-                    <button type="button" class="wy-dropdown-item" data-action="files#select"><icon name="attachment" />@T["From device"]</button>
-                    <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-files-target="input" data-action="change->files#handleSelect" multiple hidden />
-                  </li>
-                }
+                <li>
+                  <button type="button" class="wy-dropdown-item" data-action="files#select"><icon name="attachment" />@T["From device"]</button>
+                  <input class="form-control" type="file" accept="@FileUtils.GetAcceptedFileTypes()" data-files-target="input" data-action="change->files#handleSelect" multiple hidden />
+                </li>
                 @if (cloudfiles) {
                 <li><button type="button" class="wy-dropdown-item" data-action="click->files#openExternalPicker"><icon name="cloud" /> @T["From cloud"] </button></li>
                 }
               </ul>
             </div>
-          }
         </div>
       <div class="wy-toolbar-buttons wy-toolbar-buttons-last">
         <button class="wy-button wy-button-icon" data-action="click->files#toggleSheet" data-files-target="uploadButton" hidden>
