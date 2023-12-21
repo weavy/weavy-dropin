@@ -78,10 +78,10 @@ public class MessengerController : AreaController {
             var member = model.Member();
             if (member.MarkedId == null) {
                 // user has never read this conversation, mark as read and assign the model property to avoid rendering the "New messages" separator
-                model = ConversationService.Mark(model.Id, model.LastMessageId.Value);
+                model = ConversationService.Mark(model.Id, model.LastMessageId);
             } else {
                 // mark as read, but do not assign the read conversation -> this will render the "New messages" separator in the correct place
-                _ = ConversationService.Mark(model.Id, model.LastMessageId.Value);
+                _ = ConversationService.Mark(model.Id, model.LastMessageId);
             }
         }
 
